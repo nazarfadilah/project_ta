@@ -31,6 +31,7 @@ class PeminjamanTransaksiResource extends JsonResource
             'nama_kegiatan' => $this->nama_kegiatan,
             'tgl_peminjaman' => $this->tgl_peminjaman,
             'tgl_pengembalian' => $this->tgl_pengembalian,
+            'tgl_verifikasi' => $this->tgl_verifikasi,
             'waktu_mulai' => $this->waktu_mulai,
             'waktu_selesai' => $this->waktu_selesai,
             'durasi_jam' => $this->calculateDurasi(),

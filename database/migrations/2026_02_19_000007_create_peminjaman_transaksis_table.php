@@ -21,8 +21,9 @@ return new class extends Migration
             $table->time('waktu_selesai');
             $table->enum('status_peminjaman', ['Diajukan', 'Disetujui', 'Dibatalkan', 'Ditolak'])->default('Diajukan');
             $table->text('keterangan')->nullable();
-            $table->enum('status_sarana', [' ','Disiapkan', 'Siap Pakai'])->default(' ');
+            $table->enum('status_sarana', ['Menunggu Verifikasi','Disiapkan', 'Siap Pakai'])->default('Menunggu Verifikasi');
             $table->string('email_admin', 128)->nullable();
+            $table->date('tgl_verifikasi')->nullable();
             $table->timestamps();
             $table->foreign('email_users')->references('email_users')->on('users')->onDelete('restrict');
             $table->foreign('ruangan_id')->references('id')->on('ruangan')->onDelete('restrict');

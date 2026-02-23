@@ -19,7 +19,8 @@ return new class extends Migration
             $table->text('isi');
             $table->string('gambar');
             $table->date('tanggal_publish');
-            $table->enum('status', ['approved', 'draft'])->default('draft');
+            $table->enum('status', ['approved', 'draft', 'rejected'])->default('draft');
+            $table->text('keterangan')->nullable();
             $table->timestamps();
             $table->foreign('email_admin')->references('email_admin')->on('admin')->onDelete('restrict');
         });

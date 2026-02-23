@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name_users', 128)->nullable();
             $table->string('password_users', 64);
             $table->string('no_hp_users', 15)->nullable();
+            $table->string('rembember_token', 100)->nullable();
             $table->timestamps();
         });
 
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->string('no_hp_admin', 15)->nullable();
             $table->enum('role', ['admin', 'petugas', 'pimpinan'])->default('petugas');
             $table->unsignedBigInteger('gedung_id')->nullable();
+            $table->string('rembember_token', 100)->nullable();
             $table->timestamps();
         });
 

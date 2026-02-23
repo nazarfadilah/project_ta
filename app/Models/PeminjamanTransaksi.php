@@ -24,11 +24,13 @@ class PeminjamanTransaksi extends Model
         'status_sarana',
         'keterangan',
         'email_admin',
+        'tgl_verifikasi',
     ];
 
     protected $casts = [
         'tgl_peminjaman' => 'date',
         'tgl_pengembalian' => 'date',
+        'tgl_verifikasi' => 'date',
     ];
 
     public function user(): BelongsTo

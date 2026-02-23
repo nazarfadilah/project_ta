@@ -230,6 +230,7 @@ class DatabaseSeeder extends Seeder
                 'keterangan' => 'Peminjaman untuk acara ' . $namaKegiatan[$i],
                 'status_sarana' => $statusSarana[rand(0, 2)],
                 'email_admin' => $petugas1->email_admin,
+                'tgl_verifikasi' => now()->addDays(rand(0, 5)),
             ]);
         }
 
@@ -255,6 +256,7 @@ class DatabaseSeeder extends Seeder
                 'gambar' => 'https://via.placeholder.com/800x400?text=Berita1',
                 'tanggal_publish' => now()->subDays(10),
                 'status' => 'approved',
+                'keterangan' => 'Sistem baru dengan fitur lengkap dan user-friendly interface.',
             ],
             [
                 'email_admin' => 'pimpinan@siprasa.com',
@@ -264,6 +266,7 @@ class DatabaseSeeder extends Seeder
                 'gambar' => 'https://via.placeholder.com/800x400?text=Berita2',
                 'tanggal_publish' => now()->subDays(5),
                 'status' => 'approved',
+                'keterangan' => 'Penambahan sarana meliputi proyektor, laptop, dan peralatan presentasi lainnya.',
             ],
             [
                 'email_admin' => 'petugas1@siprasa.com',
@@ -273,6 +276,7 @@ class DatabaseSeeder extends Seeder
                 'gambar' => 'https://via.placeholder.com/800x400?text=Berita3',
                 'tanggal_publish' => now()->subDays(2),
                 'status' => 'draft',
+                'keterangan' => 'Workshop akan diadakan setiap hari Jumat pukul 14:00 di Ruang Pelatihan.',
             ],
         ];
 

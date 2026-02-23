@@ -18,6 +18,7 @@ class Berita extends Model
         'gambar',
         'tanggal_publish',
         'status',
+        'keterangan',
     ];
 
     protected $casts = [
