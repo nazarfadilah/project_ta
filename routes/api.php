@@ -11,7 +11,6 @@ use App\Http\Controllers\Api\TentangController;
 use App\Http\Controllers\Api\GambarDashboardController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AdminController;
-use App\Http\Controllers\Api\ProfilController;
 use App\Http\Controllers\Api\DetailPeminjamanSaranaController;
 
 Route::get('/user', function (Request $request) {
@@ -31,7 +30,6 @@ Route::apiResource('tentang', TentangController::class);
 Route::apiResource('gambar-dashboard', GambarDashboardController::class);
 Route::apiResource('users', UserController::class);
 Route::apiResource('admin', AdminController::class);
-Route::apiResource('profil', ProfilController::class);
 Route::apiResource('detail-peminjaman-sarana', DetailPeminjamanSaranaController::class);
 
 

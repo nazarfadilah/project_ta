@@ -18,12 +18,10 @@ class UserResource extends JsonResource
             'email_users' => $this->email_users,
             'name_users' => $this->name_users,
             'no_hp_users' => $this->no_hp_users,
-            'profil' => [
-                'foto' => $this->profil?->first()?->foto,
-                'jenis_kelamin' => $this->profil?->first()?->jenis_kelamin,
-                'alamat_users' => $this->profil?->first()?->alamat_users,
-                'tanggal_lahir' => $this->profil?->first()?->tanggal_lahir,
-            ],
+            'foto' => $this->foto,
+            'jenis_kelamin' => $this->jenis_kelamin,
+            'alamat_users' => $this->alamat_users,
+            'tanggal_lahir' => $this->tanggal_lahir,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -129,8 +129,8 @@ SELECT
     pt.status_peminjaman,
     g.nama as gedung_nama,
     r.nama as ruangan_nama,
-    COALESCE(pu.nama_lengkap, 'Pengguna Sistem') as peminjam_nama,
-    COALESCE(pa.nama_lengkap, 'Admin') as admin_nama,
+    COALESCE(u.name_users, 'Pengguna Sistem') as peminjam_nama,
+    COALESCE(a.name_admin, 'Admin') as admin_nama,
     a.role as admin_role,
     TIMESTAMPDIFF(HOUR, pt.waktu_mulai, pt.waktu_selesai) as durasi_jam,
     (SELECT COUNT(*) FROM detail_peminjaman_saranas WHERE peminjaman_id = pt.id) as jumlah_jenis_sarana,
@@ -142,9 +142,7 @@ FROM peminjaman_transaksis pt
 LEFT JOIN ruangans r ON pt.ruangan_id = r.id
 LEFT JOIN gedungs g ON r.gedung_id = g.id
 LEFT JOIN users u ON pt.email_users = u.email_users
-LEFT JOIN profils pu ON u.email_users = pu.email_users
 LEFT JOIN admins a ON pt.email_admin = a.email_admin
-LEFT JOIN profils pa ON a.email_admin = pa.email_admin
 WHERE pt.tgl_peminjaman BETWEEN ? AND ?
 ORDER BY pt.tgl_peminjaman DESC;
 ```

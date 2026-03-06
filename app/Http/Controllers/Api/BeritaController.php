@@ -16,7 +16,7 @@ class BeritaController extends Controller
     {
         $perPage = $request->get('per_page', 10);
         
-        $beritas = Berita::with(['admin.profil'])
+        $beritas = Berita::with(['admin'])
             ->orderBy('tanggal_publish', 'desc')
             ->paginate($perPage);
 
@@ -29,7 +29,7 @@ class BeritaController extends Controller
     public function store(Request $request)
     {
         $berita = Berita::create($request->all());
-        return new BeritaResource($berita->load(['admin.profil']));
+        return new BeritaResource($berita->load(['admin']));
     }
 
     /**
@@ -37,7 +37,7 @@ class BeritaController extends Controller
      */
     public function show(Berita $berita)
     {
-        return new BeritaResource($berita->load(['admin.profil']));
+        return new BeritaResource($berita->load(['admin']));
     }
 
     /**
@@ -46,7 +46,7 @@ class BeritaController extends Controller
     public function update(Request $request, Berita $berita)
     {
         $berita->update($request->all());
-        return new BeritaResource($berita->load(['admin.profil']));
+        return new BeritaResource($berita->load(['admin']));
     }
 
     /**

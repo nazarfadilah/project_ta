@@ -16,7 +16,7 @@ class UserController extends Controller
     {
         $perPage = $request->get('per_page', 20);
         
-        $users = User::with('profil')->paginate($perPage);
+        $users = User::paginate($perPage);
 
         return UserResource::collection($users);
     }
@@ -27,7 +27,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $user = User::create($request->all());
-        return new UserResource($user->load('profil'));
+        return new UserResource($user);
     }
 
     /**
@@ -35,7 +35,7 @@ class UserController extends Controller
      */
     public function show($email_users)
     {
-        $user = User::with('profil')->findOrFail($email_users);
+        $user = User::findOrFail($email_users);
         return new UserResource($user);
     }
 
@@ -46,7 +46,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($email_users);
         $user->update($request->all());
-        return new UserResource($user->load('profil'));
+        return new UserResource($user);
     }
 
     /**

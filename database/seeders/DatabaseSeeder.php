@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Admin;
-use App\Models\Profil;
 use App\Models\Gedung;
 use App\Models\Ruangan;
 use App\Models\Sarana;
@@ -31,15 +30,9 @@ class DatabaseSeeder extends Seeder
             'no_hp_admin' => '081234567890',
             'role' => 'admin',
             'gedung_id' => null,
-        ]);
-
-        // Profil Admin
-        Profil::create([
-            'email_admin' => 'admin@siprasa.com',
-            'email_users' => null,
             'foto' => 'https://via.placeholder.com/150?text=Admin',
             'jenis_kelamin' => true,
-            'alamat_users' => 'Jl. Admin No. 1, Jakarta',
+            'alamat_admin' => 'Jl. Admin No. 1, Jakarta',
             'tanggal_lahir' => '1990-01-15',
         ]);
 
@@ -51,15 +44,9 @@ class DatabaseSeeder extends Seeder
             'no_hp_admin' => '081234567891',
             'role' => 'pimpinan',
             'gedung_id' => null,
-        ]);
-
-        // Profil Pimpinan
-        Profil::create([
-            'email_admin' => 'pimpinan@siprasa.com',
-            'email_users' => null,
             'foto' => 'https://via.placeholder.com/150?text=Pimpinan',
             'jenis_kelamin' => true,
-            'alamat_users' => 'Jl. Pimpinan No. 5, Jakarta',
+            'alamat_admin' => 'Jl. Pimpinan No. 5, Jakarta',
             'tanggal_lahir' => '1985-03-20',
         ]);
 
@@ -93,6 +80,10 @@ class DatabaseSeeder extends Seeder
             'no_hp_admin' => '081298765432',
             'role' => 'petugas',
             'gedung_id' => $gedung1->id,
+            'foto' => 'https://via.placeholder.com/150?text=Petugas1',
+            'jenis_kelamin' => false,
+            'alamat_admin' => 'Jl. Petugas 1, Jakarta',
+            'tanggal_lahir' => '1995-05-10',
         ]);
 
         $petugas2 = Admin::create([
@@ -102,6 +93,10 @@ class DatabaseSeeder extends Seeder
             'no_hp_admin' => '081298765433',
             'role' => 'petugas',
             'gedung_id' => $gedung2->id,
+            'foto' => 'https://via.placeholder.com/150?text=Petugas2',
+            'jenis_kelamin' => true,
+            'alamat_admin' => 'Jl. Petugas 2, Jakarta',
+            'tanggal_lahir' => '1993-08-22',
         ]);
 
         $petugas3 = Admin::create([
@@ -111,37 +106,13 @@ class DatabaseSeeder extends Seeder
             'no_hp_admin' => '081298765434',
             'role' => 'petugas',
             'gedung_id' => $gedung3->id,
-        ]);
-
-        // Profil Petugas
-        Profil::create([
-            'email_admin' => 'petugas1@siprasa.com',
-            'email_users' => null,
-            'foto' => 'https://via.placeholder.com/150?text=Petugas1',
-            'jenis_kelamin' => false,
-            'alamat_users' => 'Jl. Petugas 1, Jakarta',
-            'tanggal_lahir' => '1995-05-10',
-        ]);
-
-        Profil::create([
-            'email_admin' => 'petugas2@siprasa.com',
-            'email_users' => null,
-            'foto' => 'https://via.placeholder.com/150?text=Petugas2',
-            'jenis_kelamin' => true,
-            'alamat_users' => 'Jl. Petugas 2, Jakarta',
-            'tanggal_lahir' => '1993-08-22',
-        ]);
-
-        Profil::create([
-            'email_admin' => 'petugas3@siprasa.com',
-            'email_users' => null,
             'foto' => 'https://via.placeholder.com/150?text=Petugas3',
             'jenis_kelamin' => false,
-            'alamat_users' => 'Jl. Petugas 3, Jakarta',
+            'alamat_admin' => 'Jl. Petugas 3, Jakarta',
             'tanggal_lahir' => '1994-11-07',
         ]);
 
-        // Users 5 (2 dengan profil lengkap, 3 kosong profil)
+        // Users 5
         $users = [];
         for ($i = 1; $i <= 5; $i++) {
             $users[$i] = User::create([
@@ -149,27 +120,12 @@ class DatabaseSeeder extends Seeder
                 'name_users' => "User Test $i",
                 'password_users' => Hash::make('user' . $i . '123'),
                 'no_hp_users' => '0812345678' . str_pad($i, 2, '0', STR_PAD_LEFT),
+                'foto' => 'https://via.placeholder.com/150?text=User' . $i,
+                'jenis_kelamin' => $i % 2 == 0,
+                'alamat_users' => 'Jl. User ' . $i . ', Jakarta',
+                'tanggal_lahir' => now()->subYears(20 + $i)->format('Y-m-d'),
             ]);
         }
-
-        // Profil Users (hanya 2, sisanya kosong)
-        Profil::create([
-            'email_admin' => null,
-            'email_users' => 'user1@siprasa.com',
-            'foto' => 'https://via.placeholder.com/150?text=User1',
-            'jenis_kelamin' => true,
-            'alamat_users' => 'Jl. User 1, Jakarta',
-            'tanggal_lahir' => '1998-02-14',
-        ]);
-
-        Profil::create([
-            'email_admin' => null,
-            'email_users' => 'user2@siprasa.com',
-            'foto' => 'https://via.placeholder.com/150?text=User2',
-            'jenis_kelamin' => false,
-            'alamat_users' => 'Jl. User 2, Jakarta',
-            'tanggal_lahir' => '1999-06-25',
-        ]);
 
         // Ruangan 10 (acak di gedung)
         $ruangans = [];

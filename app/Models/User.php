@@ -20,16 +20,16 @@ class User extends Model
         'name_users',
         'password_users',
         'no_hp_users',
+        'rembember_token',
+        'foto',
+        'jenis_kelamin',
+        'alamat_users',
+        'tanggal_lahir',
     ];
 
     protected $hidden = [
         'password_users',
     ];
-
-    public function profil(): HasMany
-    {
-        return $this->hasMany(Profil::class, 'email_users', 'email_users');
-    }
 
     public function peminjaman_transaksis(): HasMany
     {

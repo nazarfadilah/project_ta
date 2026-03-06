@@ -18,9 +18,7 @@ class PeminjamanTransaksiController extends Controller
         $perPage = $request->get('per_page', 15);
         
         $peminjamanTransaksis = PeminjamanTransaksi::with([
-            'user.profil',
             'ruangan.gedung',
-            'admin.profil',
             'detail_peminjaman_saranas.sarana'
         ])->paginate($perPage);
 
@@ -34,9 +32,7 @@ class PeminjamanTransaksiController extends Controller
     {
         $peminjamanTransaksi = PeminjamanTransaksi::create($request->all());
         return new PeminjamanTransaksiResource($peminjamanTransaksi->load([
-            'user.profil',
             'ruangan.gedung',
-            'admin.profil',
             'detail_peminjaman_saranas.sarana'
         ]));
     }
@@ -47,9 +43,7 @@ class PeminjamanTransaksiController extends Controller
     public function show(PeminjamanTransaksi $peminjamanTransaksi)
     {
         return new PeminjamanTransaksiResource($peminjamanTransaksi->load([
-            'user.profil',
             'ruangan.gedung',
-            'admin.profil',
             'detail_peminjaman_saranas.sarana'
         ]));
     }
@@ -61,9 +55,7 @@ class PeminjamanTransaksiController extends Controller
     {
         $peminjamanTransaksi->update($request->all());
         return new PeminjamanTransaksiResource($peminjamanTransaksi->load([
-            'user.profil',
             'ruangan.gedung',
-            'admin.profil',
             'detail_peminjaman_saranas.sarana'
         ]));
     }

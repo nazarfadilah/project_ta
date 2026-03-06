@@ -16,7 +16,7 @@ class AdminController extends Controller
     {
         $perPage = $request->get('per_page', 20);
         
-        $admins = Admin::with('profil', 'gedung')->paginate($perPage);
+        $admins = Admin::with('gedung')->paginate($perPage);
 
         return AdminResource::collection($admins);
     }
@@ -27,7 +27,7 @@ class AdminController extends Controller
     public function store(Request $request)
     {
         $admin = Admin::create($request->all());
-        return new AdminResource($admin->load('profil', 'gedung'));
+        return new AdminResource($admin->load('gedung'));
     }
 
     /**
@@ -35,7 +35,7 @@ class AdminController extends Controller
      */
     public function show($email_admin)
     {
-        $admin = Admin::with('profil', 'gedung')->findOrFail($email_admin);
+        $admin = Admin::with('gedung')->findOrFail($email_admin);
         return new AdminResource($admin);
     }
 
@@ -46,7 +46,7 @@ class AdminController extends Controller
     {
         $admin = Admin::findOrFail($email_admin);
         $admin->update($request->all());
-        return new AdminResource($admin->load('profil', 'gedung'));
+        return new AdminResource($admin->load('gedung'));
     }
 
     /**

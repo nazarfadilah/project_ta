@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('password_users', 64);
             $table->string('no_hp_users', 15)->nullable();
             $table->string('rembember_token', 100)->nullable();
+            $table->string('foto')->nullable();
+            $table->boolean('jenis_kelamin')->nullable();
+            $table->text('alamat_users')->nullable();
+            $table->date('tanggal_lahir')->nullable();
             $table->timestamps();
         });
 
@@ -28,6 +32,10 @@ return new class extends Migration
             $table->enum('role', ['admin', 'petugas', 'pimpinan'])->default('petugas');
             $table->unsignedBigInteger('gedung_id')->nullable();
             $table->string('rembember_token', 100)->nullable();
+            $table->string('foto')->nullable();
+            $table->boolean('jenis_kelamin')->nullable();
+            $table->text('alamat_admin')->nullable();
+            $table->date('tanggal_lahir')->nullable();
             $table->timestamps();
         });
 

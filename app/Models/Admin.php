@@ -20,16 +20,16 @@ class Admin extends Model
         'no_hp_admin',
         'role',
         'gedung_id',
+        'rembember_token',
+        'foto',
+        'jenis_kelamin',
+        'alamat_admin',
+        'tanggal_lahir',
     ];
 
     protected $hidden = [
         'password_admin',
     ];
-
-    public function profil(): HasMany
-    {
-        return $this->hasMany(Profil::class, 'email_admin', 'email_admin');
-    }
 
     public function gedung(): BelongsTo
     {
