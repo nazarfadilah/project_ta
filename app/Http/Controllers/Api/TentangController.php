@@ -23,7 +23,13 @@ class TentangController extends Controller
      */
     public function store(Request $request)
     {
-        $tentang = Tentang::create($request->all());
+        $validated = $request->validate([
+            'key' => 'required|string|max:255',
+            'key2' => 'required|string|max:255',
+            'value' => 'required|string',
+        ]);
+
+        $tentang = Tentang::create($validated);
         return new TentangResource($tentang);
     }
 
@@ -40,7 +46,13 @@ class TentangController extends Controller
      */
     public function update(Request $request, Tentang $tentang)
     {
-        $tentang->update($request->all());
+        $validated = $request->validate([
+            'key' => 'sometimes|string|max:255',
+            'key2' => 'sometimes|string|max:255',
+            'value' => 'sometimes|string',
+        ]);
+
+        $tentang->update($validated);
         return new TentangResource($tentang);
     }
 
@@ -50,6 +62,6 @@ class TentangController extends Controller
     public function destroy(Tentang $tentang)
     {
         $tentang->delete();
-        return response()->json(['message' => 'Data tentang berhasil dihapus']);
+        return response()->noContent();
     }
 }

@@ -12,31 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->string('email_users', 128)->primary();
-            $table->string('name_users', 128)->nullable();
-            $table->string('password_users', 64);
-            $table->string('no_hp_users', 15)->nullable();
-            $table->string('rembember_token', 100)->nullable();
-            $table->string('foto')->nullable();
-            $table->boolean('jenis_kelamin')->nullable();
-            $table->text('alamat_users')->nullable();
-            $table->date('tanggal_lahir')->nullable();
+            $table->id();
+            $table->string('username', 100)->unique();
+            $table->string('email', 255)->unique();
+            $table->string('password', 255);
+            $table->unsignedInteger('roleId');
+            $table->string('phone', 20)->nullable();
+            $table->unsignedInteger('guestId')->nullable();
+            $table->enum('status', ['ACTIVE', 'INACTIVE', 'SUSPENDED'])->default('ACTIVE');
+            $table->timestamp('lastLoginAt')->nullable();
             $table->timestamps();
-        });
-
-        Schema::create('admin', function (Blueprint $table) {
-            $table->string('email_admin', 128)->primary();
-            $table->string('name_admin', 128)->nullable();
-            $table->string('password_admin', 64);
-            $table->string('no_hp_admin', 15)->nullable();
-            $table->enum('role', ['admin', 'petugas', 'pimpinan'])->default('petugas');
-            $table->unsignedBigInteger('gedung_id')->nullable();
-            $table->string('rembember_token', 100)->nullable();
-            $table->string('foto')->nullable();
-            $table->boolean('jenis_kelamin')->nullable();
-            $table->text('alamat_admin')->nullable();
-            $table->date('tanggal_lahir')->nullable();
-            $table->timestamps();
+            $table->comment('Tabel pengguna sistem (staff & tamu terdaftar)');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

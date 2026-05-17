@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('berita', function (Blueprint $table) {
             $table->id('id');
-            $table->string('email_admin', 128);
+            $table->unsignedBigInteger('userId')->nullable();
             $table->string('judul', 128);
             $table->string('slug', 64);
             $table->text('isi');
-            $table->string('gambar');
+            $table->string('gambar', 255);
             $table->date('tanggal_publish');
             $table->enum('status', ['approved', 'draft', 'rejected'])->default('draft');
             $table->text('keterangan')->nullable();
             $table->timestamps();
-            $table->foreign('email_admin')->references('email_admin')->on('admin')->onDelete('restrict');
+            $table->foreign('userId')->references('id')->on('users')->onDelete('set null');
         });
     }
 

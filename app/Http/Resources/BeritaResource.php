@@ -16,16 +16,13 @@ class BeritaResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'email_admin' => $this->email_admin,
-            'admin' => [
-                'email' => $this->admin?->email_admin,
-                'nama' => $this->admin?->name_admin ?? 'Admin',
-            ],
             'judul' => $this->judul,
+            'slug' => $this->slug,
             'isi' => $this->isi,
+            'gambar' => $this->gambar,
+            'tanggal_publish' => $this->tanggal_publish,
             'status' => $this->status,
             'keterangan' => $this->keterangan,
-            'tanggal_publish' => $this->tanggal_publish,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

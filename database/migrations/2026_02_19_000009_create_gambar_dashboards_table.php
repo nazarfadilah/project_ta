@@ -13,12 +13,9 @@ return new class extends Migration
     {
         Schema::create('gambar_dashboard', function (Blueprint $table) {
             $table->id('id');
-            $table->string('email_admin', 128);
-            $table->boolean('posisi');
+            $table->tinyInteger('posisi');
             $table->string('path');
             $table->timestamp('waktu_upload');
-            $table->timestamps();
-            $table->foreign('email_admin')->references('email_admin')->on('admin')->onDelete('restrict');
         });
     }
 

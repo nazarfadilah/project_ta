@@ -1,28 +1,19 @@
 <?php
-
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class DetailPeminjamanSarana extends Model
-{
+class DetailPeminjamanSarana extends Model {
+    use HasFactory;
     protected $table = 'detail_peminjaman_sarana';
-    protected $primaryKey = 'id';
+    protected $guarded = [];
 
-    protected $fillable = [
-        'sarana_id',
-        'peminjaman_id',
-        'jumlah',
-    ];
-
-    public function sarana(): BelongsTo
-    {
+    public function sarana() {
         return $this->belongsTo(Sarana::class, 'sarana_id', 'id');
     }
 
-    public function peminjaman_transaksi(): BelongsTo
-    {
+    public function peminjamanTransaksi() {
         return $this->belongsTo(PeminjamanTransaksi::class, 'peminjaman_id', 'id');
     }
 }

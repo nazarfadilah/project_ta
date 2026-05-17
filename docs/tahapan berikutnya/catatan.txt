@@ -1,0 +1,4 @@
+Admin : Kelola Users, Kelola Tamu, Kelola Berita, Kelola Landing Page
+(Tentang, Gambar Dashboard, Galeri)
+Petugas : Kelola Peminjaman Transaksi (Konfirmasi, Penolakan, Pembayaran, Check-in, Check-out), 
+Kelola sarana, kelola ruangan, kelola gedung, kelola paket ruangan, Kelola Invoice, buat berita.

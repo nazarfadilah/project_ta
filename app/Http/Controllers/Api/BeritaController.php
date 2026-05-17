@@ -16,9 +16,7 @@ class BeritaController extends Controller
     {
         $perPage = $request->get('per_page', 10);
         
-        $beritas = Berita::with(['admin'])
-            ->orderBy('tanggal_publish', 'desc')
-            ->paginate($perPage);
+        $beritas = Berita::orderBy('tanggal_publish', 'desc')->paginate($perPage);
 
         return BeritaResource::collection($beritas);
     }
@@ -28,8 +26,18 @@ class BeritaController extends Controller
      */
     public function store(Request $request)
     {
-        $berita = Berita::create($request->all());
-        return new BeritaResource($berita->load(['admin']));
+        $validated = $request->validate([
+            'judul' => 'required|string|max:128',
+            'slug' => 'required|string|max:64',
+            'isi' => 'required|string',
+            'gambar' => 'required|string|max:255',
+            'tanggal_publish' => 'required|date',
+            'status' => 'required|in:approved,draft,rejected',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        $berita = Berita::create($validated);
+        return new BeritaResource($berita);
     }
 
     /**
@@ -37,7 +45,7 @@ class BeritaController extends Controller
      */
     public function show(Berita $berita)
     {
-        return new BeritaResource($berita->load(['admin']));
+        return new BeritaResource($berita);
     }
 
     /**
@@ -45,8 +53,18 @@ class BeritaController extends Controller
      */
     public function update(Request $request, Berita $berita)
     {
-        $berita->update($request->all());
-        return new BeritaResource($berita->load(['admin']));
+        $validated = $request->validate([
+            'judul' => 'sometimes|string|max:128',
+            'slug' => 'sometimes|string|max:64',
+            'isi' => 'sometimes|string',
+            'gambar' => 'sometimes|string|max:255',
+            'tanggal_publish' => 'sometimes|date',
+            'status' => 'sometimes|in:approved,draft,rejected',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        $berita->update($validated);
+        return new BeritaResource($berita);
     }
 
     /**
@@ -55,6 +73,6 @@ class BeritaController extends Controller
     public function destroy(Berita $berita)
     {
         $berita->delete();
-        return response()->json(['message' => 'Data berita berhasil dihapus']);
+        return response()->noContent();
     }
 }

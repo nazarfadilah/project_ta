@@ -11,7 +11,7 @@ class Berita extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'email_admin',
+        'userId',
         'judul',
         'slug',
         'isi',
@@ -23,10 +23,12 @@ class Berita extends Model
 
     protected $casts = [
         'tanggal_publish' => 'date',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
-    public function admin(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Admin::class, 'email_admin', 'email_admin');
+        return $this->belongsTo(User::class, 'userId', 'id');
     }
 }

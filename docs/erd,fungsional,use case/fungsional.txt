@@ -1,0 +1,18 @@
+a.	Kebutuhan fungsional
+1)	Admin, Pimpinan, Petugas, dan Peminjam dapat melakukan login dan logout
+2)	Admin dapat mengelola data pengguna berdasarkan role masing-masing
+3)	Admin dapat mengelola data tamu
+4)	Admin dapat mengelola data gedung
+5)	Admin dapat mengelola data ruangan
+6)	Admin dapat mengelola data sarana
+7)      Admin dapat mengelola data paket ruangan
+7)	Peminjam/tamu dapat melakukan permohonan dan pembatalan peminjaman 
+8)	Admin dan petugas dapat melakukan verifikasi peminjaman dan check-in/check-out peminjaman.
+9)	Admin dapat mengelola data invoice
+10)	Admin, Pimpinan, Petugas, dan Peminjam/tamu dapat menampilkan daftar penggunaan ruangan
+11)	Admin dan Pimpinan dapat menghasilkan laporan peminjaman dan penggunaan fasilitas
+12)	Admin dan Petugas dapat mengelola data berita
+13)	Admin dapat mengelola data gambar
+14)	Admin dapat mengelola data tentang.
+15) 	Check-in dan Check-out
+16)     Admin dapat mengelola arsip dokumen

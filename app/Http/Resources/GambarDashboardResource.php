@@ -16,15 +16,9 @@ class GambarDashboardResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'email_admin' => $this->email_admin,
-            'admin' => [
-                'email' => $this->admin?->email_admin,
-                'nama' => $this->admin?->name_admin,
-            ],
             'posisi' => $this->posisi,
             'path' => $this->path,
             'waktu_upload' => $this->waktu_upload,
-            'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
     }

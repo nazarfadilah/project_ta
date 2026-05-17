@@ -5,34 +5,45 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Model
 {
     use HasFactory;
 
     protected $table = 'users';
-    protected $primaryKey = 'email_users';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    protected $primaryKey = 'id';
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     protected $fillable = [
-        'email_users',
-        'name_users',
-        'password_users',
-        'no_hp_users',
-        'rembember_token',
-        'foto',
-        'jenis_kelamin',
-        'alamat_users',
-        'tanggal_lahir',
+        'username',
+        'email',
+        'password',
+        'roleId',
+        'phone',
+        'guestId',
+        'status',
+        'lastLoginAt',
     ];
 
     protected $hidden = [
-        'password_users',
+        'password',
     ];
 
-    public function peminjaman_transaksis(): HasMany
+    protected $casts = [
+        'lastLoginAt' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    public function role(): BelongsTo
     {
-        return $this->hasMany(PeminjamanTransaksi::class, 'email_users', 'email_users');
+        return $this->belongsTo(Role::class, 'roleId', 'id');
+    }
+
+    public function beritas(): HasMany
+    {
+        return $this->hasMany(Berita::class, 'userId', 'id');
     }
 }

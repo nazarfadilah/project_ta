@@ -16,7 +16,7 @@ class GambarDashboardController extends Controller
     {
         $perPage = $request->get('per_page', 20);
         
-        $gambarDashboards = GambarDashboard::with('admin')->paginate($perPage);
+        $gambarDashboards = GambarDashboard::paginate($perPage);
 
         return GambarDashboardResource::collection($gambarDashboards);
     }
@@ -26,8 +26,15 @@ class GambarDashboardController extends Controller
      */
     public function store(Request $request)
     {
-        $gambarDashboard = GambarDashboard::create($request->all());
-        return new GambarDashboardResource($gambarDashboard->load('admin'));
+        $validated = $request->validate([
+            'posisi' => 'required|integer',
+            'path' => 'required|string|max:255',
+            'waktu_upload' => 'required|date_format:Y-m-d H:i:s',
+            'updated_at' => 'required|date_format:Y-m-d H:i:s',
+        ]);
+
+        $gambarDashboard = GambarDashboard::create($validated);
+        return new GambarDashboardResource($gambarDashboard);
     }
 
     /**
@@ -35,7 +42,7 @@ class GambarDashboardController extends Controller
      */
     public function show(GambarDashboard $gambarDashboard)
     {
-        return new GambarDashboardResource($gambarDashboard->load('admin'));
+        return new GambarDashboardResource($gambarDashboard);
     }
 
     /**
@@ -43,8 +50,15 @@ class GambarDashboardController extends Controller
      */
     public function update(Request $request, GambarDashboard $gambarDashboard)
     {
-        $gambarDashboard->update($request->all());
-        return new GambarDashboardResource($gambarDashboard->load('admin'));
+        $validated = $request->validate([
+            'posisi' => 'sometimes|integer',
+            'path' => 'sometimes|string|max:255',
+            'waktu_upload' => 'sometimes|date_format:Y-m-d H:i:s',
+            'updated_at' => 'sometimes|date_format:Y-m-d H:i:s',
+        ]);
+
+        $gambarDashboard->update($validated);
+        return new GambarDashboardResource($gambarDashboard);
     }
 
     /**
@@ -53,6 +67,6 @@ class GambarDashboardController extends Controller
     public function destroy(GambarDashboard $gambarDashboard)
     {
         $gambarDashboard->delete();
-        return response()->json(['message' => 'Gambar dashboard berhasil dihapus']);
+        return response()->noContent();
     }
 }

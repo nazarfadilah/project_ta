@@ -1,0 +1,6 @@
+1)	Semua data pengguna dan password terenkripsi bcrypt
+2)	Antarmuka pengguna menarik dan mudah dimengerti oleh pengguna bootstrap
+3)	Sistem dapat diakses melalui berbagai perangkat yang terhubung dengan internet menggunakan browser
+4)	Kemudahan login tambahan menggunakan google
+5)	Sistem mampu menyimpan data secara aman menggunakan captcha
+6)	Peminjam dapat menerima notifikasi melalui email pemberitahuan menggunakan SMTP.
