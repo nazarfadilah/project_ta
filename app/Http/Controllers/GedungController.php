@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Gedung;
@@ -8,51 +9,55 @@ class GedungController extends Controller
 {
     public function index()
     {
-        $gedungs = Gedung::all();
-        // return view('gedung.index', compact('gedungs'));
-        return response()->json($gedungs); // Placeholder until views are created
+        $gedungs = Gedung::orderBy('id_gedung', 'desc')->get();
+        return view('main.master.gedung.index', compact('gedungs'));
     }
 
     public function create()
     {
-        // return view('gedung.create');
+        $gedung = new Gedung();
+        $mode = 'create';
+        return view('main.master.gedung.form', compact('gedung', 'mode'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            // Add validation rules here
+            'nama_gedung' => 'required|string|max:255',
+            'koordinat' => 'nullable|string|max:100',
+            'keterangan' => 'nullable|string',
         ]);
 
-        $gedung = Gedung::create($validated);
-        // return redirect()->route('gedung.index')->with('success', 'Data created successfully.');
-        return response()->json(['message' => 'Created successfully', 'data' => $gedung]);
+        Gedung::create($validated);
+
+        return redirect()->route('main.gedung.index')->with('success', 'Gedung berhasil ditambahkan.');
     }
 
     public function show($id)
     {
         $gedung = Gedung::findOrFail($id);
-        // return view('gedung.show', compact('gedung'));
-        return response()->json($gedung);
+        return redirect()->route('main.gedung.edit', $id);
     }
 
     public function edit($id)
     {
         $gedung = Gedung::findOrFail($id);
-        // return view('gedung.edit', compact('gedung'));
+        $mode = 'edit';
+        return view('main.master.gedung.form', compact('gedung', 'mode'));
     }
 
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            // Add validation rules here
+            'nama_gedung' => 'required|string|max:255',
+            'koordinat' => 'nullable|string|max:100',
+            'keterangan' => 'nullable|string',
         ]);
 
         $gedung = Gedung::findOrFail($id);
         $gedung->update($validated);
         
-        // return redirect()->route('gedung.index')->with('success', 'Data updated successfully.');
-        return response()->json(['message' => 'Updated successfully', 'data' => $gedung]);
+        return redirect()->route('main.gedung.index')->with('success', 'Gedung berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -60,7 +65,6 @@ class GedungController extends Controller
         $gedung = Gedung::findOrFail($id);
         $gedung->delete();
         
-        // return redirect()->route('gedung.index')->with('success', 'Data deleted successfully.');
-        return response()->json(['message' => 'Deleted successfully']);
+        return redirect()->route('main.gedung.index')->with('success', 'Gedung berhasil dihapus.');
     }
 }

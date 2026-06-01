@@ -14,5 +14,4 @@ a.	Kebutuhan fungsional
 12)	Admin dan Petugas dapat mengelola data berita
 13)	Admin dapat mengelola data gambar
 14)	Admin dapat mengelola data tentang.
-15) 	Check-in dan Check-out
-16)     Admin dapat mengelola arsip dokumen
+15) 	Check-in dan Check-out

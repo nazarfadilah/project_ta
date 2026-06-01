@@ -109,6 +109,44 @@
         .btn-login:hover {
             background-color: #333;
         }
+        .btn-google {
+            width: 100%;
+            padding: 12px;
+            background-color: white;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-google:hover {
+            background-color: #f9f9f9;
+            border-color: #ccc;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #999;
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #ddd;
+        }
+        .divider span {
+            margin: 0 10px;
+            font-size: 12px;
+        }
         .register-section {
             text-align: center;
             margin-top: 20px;
@@ -224,6 +262,19 @@
                     </div>
 
                     <button type="submit" class="btn-login">Daftar</button>
+
+                    <div class="divider"><span>atau</span></div>
+
+                    <a href="{{ route('login.google') }}" class="btn-google" style="text-decoration: none;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <path d="M12 1v6m0 6v6"></path>
+                            <path d="M4.22 4.22l4.24 4.24m6.08 0l4.24-4.24"></path>
+                            <path d="M1 12h6m6 0h6"></path>
+                            <path d="M4.22 19.78l4.24-4.24m6.08 0l4.24 4.24"></path>
+                        </svg>
+                        Daftar dengan Google
+                    </a>
 
                     <div class="register-section">
                         <p>Sudah punya akun? <a href="{{ route('login') }}">Masuk di sini</a></p>

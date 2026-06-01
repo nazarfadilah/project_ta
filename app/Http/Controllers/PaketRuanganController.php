@@ -1,58 +1,72 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\PaketRuangan;
+use App\Models\Ruangan;
 use Illuminate\Http\Request;
 
 class PaketRuanganController extends Controller
 {
     public function index()
     {
-        $paketRuangans = PaketRuangan::all();
-        // return view('paket_ruangan.index', compact('paketRuangans'));
-        return response()->json($paketRuangans); // Placeholder until views are created
+        $paketRuangans = PaketRuangan::with('ruangan.gedung')->orderBy('id', 'desc')->get();
+        return view('main.master.paket_ruangan.index', compact('paketRuangans'));
     }
 
     public function create()
     {
-        // return view('paket_ruangan.create');
+        $paketRuangan = new PaketRuangan();
+        $ruangans = Ruangan::with('gedung')->orderBy('nama_ruangan')->get();
+        $mode = 'create';
+        return view('main.master.paket_ruangan.form', compact('paketRuangan', 'ruangans', 'mode'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            // Add validation rules here
+            'ruangan_id' => 'required|exists:ruangan,id_ruangan',
+            'nama_paket' => 'required|string|max:255',
+            'durasi' => 'nullable|integer|min:1',
+            'harga' => 'required|numeric|min:0',
+            'status' => 'required|in:ACTIVE,INACTIVE,MAINTENANCE',
         ]);
 
-        $paketRuangan = PaketRuangan::create($validated);
-        // return redirect()->route('paket_ruangan.index')->with('success', 'Data created successfully.');
-        return response()->json(['message' => 'Created successfully', 'data' => $paketRuangan]);
+        $validated['currency'] = 'IDR';
+
+        PaketRuangan::create($validated);
+
+        return redirect()->route('main.paket_ruangan.index')->with('success', 'Paket Ruangan berhasil ditambahkan.');
     }
 
     public function show($id)
     {
         $paketRuangan = PaketRuangan::findOrFail($id);
-        // return view('paket_ruangan.show', compact('paketRuangan'));
-        return response()->json($paketRuangan);
+        return redirect()->route('main.paket_ruangan.edit', $id);
     }
 
     public function edit($id)
     {
         $paketRuangan = PaketRuangan::findOrFail($id);
-        // return view('paket_ruangan.edit', compact('paketRuangan'));
+        $ruangans = Ruangan::with('gedung')->orderBy('nama_ruangan')->get();
+        $mode = 'edit';
+        return view('main.master.paket_ruangan.form', compact('paketRuangan', 'ruangans', 'mode'));
     }
 
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            // Add validation rules here
+            'ruangan_id' => 'required|exists:ruangan,id_ruangan',
+            'nama_paket' => 'required|string|max:255',
+            'durasi' => 'nullable|integer|min:1',
+            'harga' => 'required|numeric|min:0',
+            'status' => 'required|in:ACTIVE,INACTIVE,MAINTENANCE',
         ]);
 
         $paketRuangan = PaketRuangan::findOrFail($id);
         $paketRuangan->update($validated);
         
-        // return redirect()->route('paket_ruangan.index')->with('success', 'Data updated successfully.');
-        return response()->json(['message' => 'Updated successfully', 'data' => $paketRuangan]);
+        return redirect()->route('main.paket_ruangan.index')->with('success', 'Paket Ruangan berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -60,7 +74,6 @@ class PaketRuanganController extends Controller
         $paketRuangan = PaketRuangan::findOrFail($id);
         $paketRuangan->delete();
         
-        // return redirect()->route('paket_ruangan.index')->with('success', 'Data deleted successfully.');
-        return response()->json(['message' => 'Deleted successfully']);
+        return redirect()->route('main.paket_ruangan.index')->with('success', 'Paket Ruangan berhasil dihapus.');
     }
 }

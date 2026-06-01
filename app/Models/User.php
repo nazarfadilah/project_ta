@@ -25,6 +25,7 @@ class User extends Model
         'guestId',
         'status',
         'lastLoginAt',
+        'google_id',
     ];
 
     protected $hidden = [
@@ -40,6 +41,16 @@ class User extends Model
     public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class, 'roleId', 'id');
+    }
+
+    public function guest(): BelongsTo
+    {
+        return $this->belongsTo(Guest::class, 'guestId', 'id');
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->guest?->name ?? $this->username;
     }
 
     public function beritas(): HasMany

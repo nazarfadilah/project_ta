@@ -69,18 +69,6 @@
                                    style="padding: 4px 10px; font-size: 13px; color: #fff;">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('main.berita.edit', $berita->id) }}" 
-                                   class="btn btn-sm btn-warning" 
-                                   title="Edit"
-                                   style="padding: 4px 10px; font-size: 13px;">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button class="btn btn-sm btn-danger" 
-                                        title="Delete"
-                                        onclick="hapusData('{{ route('main.berita.destroy', $berita->id) }}')"
-                                        style="padding: 4px 10px; font-size: 13px;">
-                                    <i class="fas fa-trash"></i>
-                                </button>
                             </td>
                         </tr>
                         @empty

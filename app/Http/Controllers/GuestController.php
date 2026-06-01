@@ -9,50 +9,61 @@ class GuestController extends Controller
     public function index()
     {
         $guests = Guest::all();
-        // return view('guest.index', compact('guests'));
-        return response()->json($guests); // Placeholder until views are created
+        return view('main.tamu.index', compact('guests'));
     }
 
     public function create()
     {
-        // return view('guest.create');
+        $guest = new Guest();
+        $isDetail = false;
+        return view('main.tamu.form', compact('guest', 'isDetail'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            // Add validation rules here
+            'nik' => 'required|string|max:16|unique:guest,nik',
+            'name' => 'required|string|max:255',
+            'gender' => 'required|in:MALE,FEMALE',
+            'address' => 'nullable|string',
+            'bloodType' => 'nullable|string|max:5',
+            'notes' => 'nullable|string',
         ]);
 
-        $guest = Guest::create($validated);
-        // return redirect()->route('guest.index')->with('success', 'Data created successfully.');
-        return response()->json(['message' => 'Created successfully', 'data' => $guest]);
+        Guest::create($validated);
+        
+        return redirect()->route('main.tamu.index')->with('success', 'Data tamu berhasil ditambahkan.');
     }
 
     public function show($id)
     {
-        $guest = Guest::findOrFail($id);
-        // return view('guest.show', compact('guest'));
-        return response()->json($guest);
+        $guest = Guest::withCount('peminjamanTransaksis')->findOrFail($id);
+        $isDetail = true;
+        return view('main.tamu.form', compact('guest', 'isDetail'));
     }
 
     public function edit($id)
     {
-        $guest = Guest::findOrFail($id);
-        // return view('guest.edit', compact('guest'));
+        $guest = Guest::withCount('peminjamanTransaksis')->findOrFail($id);
+        $isDetail = false;
+        return view('main.tamu.form', compact('guest', 'isDetail'));
     }
 
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            // Add validation rules here
+            'nik' => 'required|string|max:16|unique:guest,nik,'.$id,
+            'name' => 'required|string|max:255',
+            'gender' => 'required|in:MALE,FEMALE',
+            'address' => 'nullable|string',
+            'bloodType' => 'nullable|string|max:5',
+            'notes' => 'nullable|string',
         ]);
 
         $guest = Guest::findOrFail($id);
         $guest->update($validated);
         
-        // return redirect()->route('guest.index')->with('success', 'Data updated successfully.');
-        return response()->json(['message' => 'Updated successfully', 'data' => $guest]);
+        return redirect()->route('main.tamu.index')->with('success', 'Data tamu berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -60,7 +71,6 @@ class GuestController extends Controller
         $guest = Guest::findOrFail($id);
         $guest->delete();
         
-        // return redirect()->route('guest.index')->with('success', 'Data deleted successfully.');
-        return response()->json(['message' => 'Deleted successfully']);
+        return redirect()->route('main.tamu.index')->with('success', 'Data tamu berhasil dihapus.');
     }
 }

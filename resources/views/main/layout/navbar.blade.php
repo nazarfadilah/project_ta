@@ -37,6 +37,14 @@
                 </a>
             </li>
 
+            <!-- Kelola Tamu -->
+            <li class="nav-item">
+                <a href="{{ route('main.tamu.index') }}" class="nav-link {{ request()->routeIs('main.tamu.*') ? 'active' : '' }}" title="Kelola Tamu">
+                    <i class="fas fa-user-tie menu-icon"></i>
+                    <span class="menu-text">Kelola Tamu</span>
+                </a>
+            </li>
+
             <!-- Divider -->
             <hr class="sidebar-divider">
 
@@ -46,6 +54,33 @@
                     <i class="fas fa-newspaper menu-icon"></i>
                     <span class="menu-text">Kelola Berita</span>
                 </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Transaksi Peminjaman Dropdown -->
+            <li class="nav-item">
+                <a href="#transaksiPeminjamanMenu" class="nav-link dropdown-toggle {{ request()->routeIs('main.transaksi.peminjaman.*') || request()->routeIs('main.peminjaman_sarana.*') ? 'active' : '' }}" data-bs-toggle="collapse" title="Transaksi Peminjaman">
+                    <i class="fas fa-calendar-check menu-icon"></i>
+                    <span class="menu-text">Peminjaman</span>
+                </a>
+                <div class="collapse {{ request()->routeIs('main.transaksi.peminjaman.*') || request()->routeIs('main.peminjaman_sarana.*') ? 'show' : '' }}" id="transaksiPeminjamanMenu">
+                    <ul class="nav flex-column ps-4">
+                        <li class="nav-item">
+                            <a href="{{ route('main.transaksi.peminjaman.index') }}" class="nav-link {{ request()->routeIs('main.transaksi.peminjaman.*') ? 'active' : '' }}" title="Peminjaman Ruangan">
+                                <i class="fas fa-door-open menu-icon"></i>
+                                <span class="menu-text">Peminjaman Ruangan</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('main.peminjaman_sarana.index') }}" class="nav-link {{ request()->routeIs('main.peminjaman_sarana.*') ? 'active' : '' }}" title="Peminjaman Sarana">
+                                <i class="fas fa-tools menu-icon"></i>
+                                <span class="menu-text">Peminjaman Sarana</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
 
             <!-- Divider -->
@@ -98,6 +133,56 @@
                         </li>
                     </ul>
                 </div>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Data Master Dropdown -->
+            <li class="nav-item">
+                <a href="#dataMasterMenu" class="nav-link dropdown-toggle {{ request()->routeIs('main.ruangan.*') || request()->routeIs('main.sarana.*') || request()->routeIs('main.gedung.*') || request()->routeIs('main.paket_ruangan.*') ? 'active' : '' }}" data-bs-toggle="collapse" title="Data Master">
+                    <i class="fas fa-database menu-icon"></i>
+                    <span class="menu-text">Data Master</span>
+                </a>
+                <div class="collapse {{ request()->routeIs('main.ruangan.*') || request()->routeIs('main.sarana.*') || request()->routeIs('main.gedung.*') || request()->routeIs('main.paket_ruangan.*') ? 'show' : '' }}" id="dataMasterMenu">
+                    <ul class="nav flex-column ps-4">
+                        <li class="nav-item">
+                            <a href="{{ route('main.ruangan.index') }}" class="nav-link {{ request()->routeIs('main.ruangan.*') ? 'active' : '' }}" title="Ruangan">
+                                <i class="fas fa-door-open menu-icon"></i>
+                                <span class="menu-text">Ruangan</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('main.sarana.index') }}" class="nav-link {{ request()->routeIs('main.sarana.*') ? 'active' : '' }}" title="Sarana">
+                                <i class="fas fa-tools menu-icon"></i>
+                                <span class="menu-text">Sarana</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('main.gedung.index') }}" class="nav-link {{ request()->routeIs('main.gedung.*') ? 'active' : '' }}" title="Gedung">
+                                <i class="fas fa-building menu-icon"></i>
+                                <span class="menu-text">Gedung</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('main.paket_ruangan.index') }}" class="nav-link {{ request()->routeIs('main.paket_ruangan.*') ? 'active' : '' }}" title="Paket Ruangan">
+                                <i class="fas fa-box-open menu-icon"></i>
+                                <span class="menu-text">Paket Ruangan</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Laporan -->
+            <li class="nav-item">
+                <a href="{{ route('main.laporan.index') }}" class="nav-link {{ request()->routeIs('main.laporan.*') ? 'active' : '' }}" title="Laporan">
+                    <i class="fas fa-file-invoice menu-icon"></i>
+                    <span class="menu-text">Laporan</span>
+                </a>
             </li>
         </ul>
     </div>

@@ -8,6 +8,7 @@ use App\Models\Tentang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -96,16 +97,50 @@ class AuthController extends Controller
     // ─── GOOGLE LOGIN ─────────────────────────────────────────
     public function redirectToGoogle()
     {
-        // For future implementation with Laravel Socialite
-        // return Socialite::driver('google')->redirect();
-        return back()->with('info', 'Google login akan segera tersedia.');
+        return Socialite::driver('google')->redirect();
     }
 
     public function handleGoogleCallback()
     {
-        // For future implementation with Laravel Socialite
-        // $user = Socialite::driver('google')->user();
-        // ...
+        try {
+            $googleUser = Socialite::driver('google')->user();
+
+            $user = User::where('google_id', $googleUser->id)
+                        ->orWhere('email', $googleUser->email)
+                        ->first();
+
+            if (!$user) {
+                // Get peminjam role
+                $peminjamRole = Role::where('name', 'peminjam')->first();
+                if (!$peminjamRole) {
+                    return redirect()->route('login')->withErrors(['error' => 'Role peminjam tidak ditemukan. Hubungi administrator.']);
+                }
+
+                $user = User::create([
+                    'username' => $googleUser->name ?? explode('@', $googleUser->email)[0],
+                    'email' => $googleUser->email,
+                    'google_id' => $googleUser->id,
+                    'password' => null, // Password is null for google users
+                    'roleId' => $peminjamRole->id,
+                    'status' => 'ACTIVE',
+                ]);
+            } else {
+                // Update google_id if it's missing (user registered normally before)
+                if (!$user->google_id) {
+                    $user->update(['google_id' => $googleUser->id]);
+                }
+            }
+
+            $user->update(['lastLoginAt' => now()]);
+            Auth::guard('web')->login($user);
+            session()->regenerate();
+            session()->forget('captcha');
+
+            return redirect()->route('dashboard'); // Assuming dashboard is the default route after login
+
+        } catch (\Exception $e) {
+            return redirect()->route('login')->withErrors(['error' => 'Gagal login menggunakan Google. Silakan coba lagi.']);
+        }
     }
 
     // ─── LOGOUT ───────────────────────────────────────────────

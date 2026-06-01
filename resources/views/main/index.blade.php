@@ -8,7 +8,7 @@
     <div class="row mb-2">
         <!-- Card Pengguna -->
         <div class="col-md-3 mb-4">
-            <a href="#" class="text-decoration-none">
+            <a href="{{ route('main.users.index') }}" class="text-decoration-none">
                 <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%); min-height: 150px;">
                     <div class="card-body d-flex flex-column justify-content-between h-100">
                         <div class="d-flex justify-content-between align-items-flex-start">
@@ -27,7 +27,7 @@
 
         <!-- Card Tamu -->
         <div class="col-md-3 mb-4">
-            <a href="#" class="text-decoration-none">
+            <a href="{{ route('main.tamu.index') }}" class="text-decoration-none">
                 <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #17A2B8 0%, #138496 100%); min-height: 150px;">
                     <div class="card-body d-flex flex-column justify-content-between h-100">
                         <div class="d-flex justify-content-between align-items-flex-start">
@@ -46,7 +46,7 @@
 
         <!-- Card Gedung -->
         <div class="col-md-3 mb-4">
-            <a href="#" class="text-decoration-none">
+            <a href="{{ route('main.gedung.index') }}" class="text-decoration-none">
                 <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #6C757D 0%, #5A6268 100%); min-height: 150px;">
                     <div class="card-body d-flex flex-column justify-content-between h-100">
                         <div class="d-flex justify-content-between align-items-flex-start">
@@ -57,6 +57,25 @@
                                 <p class="card-text text-white fw-semibold mb-0">Gedung</p>
                             </div>
                             <i class="fas fa-building fa-3x" style="color: rgba(255,255,255,0.2);"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Card Berita -->
+        <div class="col-md-3 mb-4">
+            <a href="{{ route('main.berita.index') }}" class="text-decoration-none">
+                <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #28A745 0%, #218838 100%); min-height: 150px;">
+                    <div class="card-body d-flex flex-column justify-content-between h-100">
+                        <div class="d-flex justify-content-between align-items-flex-start">
+                            <div>
+                                <h3 class="card-title fw-bold display-4 mb-2 text-white">
+                                    {{ $beritas }}
+                                </h3>
+                                <p class="card-text text-white fw-semibold mb-0">Berita</p>
+                            </div>
+                            <i class="fas fa-newspaper fa-3x" style="color: rgba(255,255,255,0.2);"></i>
                         </div>
                     </div>
                 </div>

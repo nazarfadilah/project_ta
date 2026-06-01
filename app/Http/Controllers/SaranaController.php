@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Sarana;
@@ -8,51 +9,57 @@ class SaranaController extends Controller
 {
     public function index()
     {
-        $saranas = Sarana::all();
-        // return view('sarana.index', compact('saranas'));
-        return response()->json($saranas); // Placeholder until views are created
+        $saranas = Sarana::orderBy('id', 'desc')->get();
+        return view('main.master.sarana.index', compact('saranas'));
     }
 
     public function create()
     {
-        // return view('sarana.create');
+        $sarana = new Sarana();
+        $mode = 'create';
+        return view('main.master.sarana.form', compact('sarana', 'mode'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            // Add validation rules here
+            'nama_sarana' => 'required|string|max:255',
+            'jumlah' => 'required|integer|min:0',
+            'kondisi' => 'required|in:BAIK,RUSAK_RINGAN,RUSAK_BERAT,HILANG',
+            'keterangan' => 'nullable|string',
         ]);
 
-        $sarana = Sarana::create($validated);
-        // return redirect()->route('sarana.index')->with('success', 'Data created successfully.');
-        return response()->json(['message' => 'Created successfully', 'data' => $sarana]);
+        Sarana::create($validated);
+
+        return redirect()->route('main.sarana.index')->with('success', 'Sarana berhasil ditambahkan.');
     }
 
     public function show($id)
     {
         $sarana = Sarana::findOrFail($id);
-        // return view('sarana.show', compact('sarana'));
-        return response()->json($sarana);
+        return redirect()->route('main.sarana.edit', $id);
     }
 
     public function edit($id)
     {
         $sarana = Sarana::findOrFail($id);
-        // return view('sarana.edit', compact('sarana'));
+        $mode = 'edit';
+        return view('main.master.sarana.form', compact('sarana', 'mode'));
     }
 
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            // Add validation rules here
+            'nama_sarana' => 'required|string|max:255',
+            'jumlah' => 'required|integer|min:0',
+            'kondisi' => 'required|in:BAIK,RUSAK_RINGAN,RUSAK_BERAT,HILANG',
+            'keterangan' => 'nullable|string',
         ]);
 
         $sarana = Sarana::findOrFail($id);
         $sarana->update($validated);
         
-        // return redirect()->route('sarana.index')->with('success', 'Data updated successfully.');
-        return response()->json(['message' => 'Updated successfully', 'data' => $sarana]);
+        return redirect()->route('main.sarana.index')->with('success', 'Sarana berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -60,7 +67,6 @@ class SaranaController extends Controller
         $sarana = Sarana::findOrFail($id);
         $sarana->delete();
         
-        // return redirect()->route('sarana.index')->with('success', 'Data deleted successfully.');
-        return response()->json(['message' => 'Deleted successfully']);
+        return redirect()->route('main.sarana.index')->with('success', 'Sarana berhasil dihapus.');
     }
 }

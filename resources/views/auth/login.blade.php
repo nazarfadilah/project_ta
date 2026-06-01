@@ -391,9 +391,7 @@
         }
 
         function loginWithGoogle() {
-            // For future implementation with OAuth 2.0
-            // window.location.href = '{{ route("login.google") }}';
-            alert('Login dengan Google akan segera tersedia. Untuk saat ini, silakan gunakan email dan password.');
+            window.location.href = '{{ route("login.google") }}';
         }
 
         // Add event listener to captcha input
