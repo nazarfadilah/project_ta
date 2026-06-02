@@ -56,10 +56,10 @@ Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallba
 
 
 Route::post('/logout', [AuthController::class, 'logoutUser'])->name('logout')->middleware('auth:web');
-Route::post('/admin/logout', [AuthController::class, 'logoutAdmin'])->name('admin.logout')->middleware('auth:admin');
+Route::post('/admin/logout', [AuthController::class, 'logoutUser'])->name('admin.logout')->middleware('auth:web');
 
 // ─── ADMIN ROUTES ────────────────────────────────────────────────
-Route::middleware('auth:admin')->prefix('admin')->group(function () {
+Route::middleware(['auth:web', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'adminIndex'])->name('admin.dashboard');
 
     // User Management
@@ -228,7 +228,7 @@ Route::middleware('auth:admin')->prefix('admin')->group(function () {
 });
 
 // ─── USERS ROUTES ────────────────────────────────────────────────
-Route::middleware('auth:web')->prefix('users')->name('users.')->group(function () {
+Route::middleware(['auth:web', 'tamu'])->prefix('users')->name('users.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'usersindex'])->name('dashboard');
 
     // Profil Saya (My Profile)
@@ -240,6 +240,7 @@ Route::middleware('auth:web')->prefix('users')->name('users.')->group(function (
         // Ruangan routes (view-only)
         Route::prefix('ruangan')->name('ruangan.')->group(function () {
             Route::get('/', [UsersRuanganController::class, 'index'])->name('index');
+            Route::get('/{id}/details', [UsersRuanganController::class, 'getDetails'])->name('details');
             Route::get('/{slug}', [UsersRuanganController::class, 'show'])->name('show');
         });
 
@@ -256,7 +257,7 @@ Route::middleware('auth:web')->prefix('users')->name('users.')->group(function (
         // Reservasi routes
         Route::prefix('reservasi')->name('reservasi.')->group(function () {
             Route::get('/', [UsersReservasiController::class, 'index'])->name('index');
-            Route::post('/create', [UsersReservasiController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/create', [UsersReservasiController::class, 'create'])->name('create');
             Route::post('/', [UsersReservasiController::class, 'store'])->name('store');
             Route::get('/{id}', [UsersReservasiController::class, 'show'])->name('show');
         });

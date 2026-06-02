@@ -38,17 +38,31 @@ class AuthController extends Controller
                     ->orWhere('username', $request->login)
                     ->first();
 
-        if ($user && Hash::check($request->password, $user->password) && $user->status === 'ACTIVE') {
-            // Update last login time
-            $user->update(['lastLoginAt' => now()]);
-            Auth::guard('web')->login($user);
-            $request->session()->invalidate();
-            $request->session()->regenerate();
-            session()->forget('captcha');
-            return redirect()->route('users.dashboard');
+        if ($user) {
+            if ($user->status !== 'ACTIVE') {
+                return back()->withErrors(['login' => 'Akun Anda dinonaktifkan atau ditangguhkan. Hubungi admin.'])->withInput();
+            }
+
+            if (Hash::check($request->password, $user->password)) {
+                // Update last login time
+                $user->update(['lastLoginAt' => now()]);
+                
+                Auth::guard('web')->login($user);
+                $request->session()->regenerate();
+                session()->forget('captcha');
+
+                // Role-based redirection
+                if (in_array($user->roleId, [1, 2, 3])) {
+                    return redirect()->route('admin.dashboard');
+                } else {
+                    return redirect()->route('users.dashboard');
+                }
+            } else {
+                return back()->withErrors(['password' => 'Password yang Anda masukkan salah.'])->withInput();
+            }
         }
 
-        return back()->withErrors(['login' => 'Email/Username atau password salah.'])->withInput();
+        return back()->withErrors(['login' => 'Email atau Username tidak ditemukan.'])->withInput();
     }
 
     // ─── GENERATE CAPTCHA ─────────────────────────────────────
