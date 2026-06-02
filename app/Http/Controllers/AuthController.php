@@ -45,7 +45,7 @@ class AuthController extends Controller
             $request->session()->invalidate();
             $request->session()->regenerate();
             session()->forget('captcha');
-            return redirect()->route('user.dashboard');
+            return redirect()->route('users.dashboard');
         }
 
         return back()->withErrors(['login' => 'Email/Username atau password salah.'])->withInput();
@@ -91,7 +91,7 @@ class AuthController extends Controller
         ]);
 
         Auth::guard('web')->login($user);
-        return redirect()->route('user.dashboard')->with('success', 'Selamat datang, ' . $request->username . '! Akun berhasil dibuat.');
+        return redirect()->route('users.dashboard')->with('success', 'Selamat datang, ' . $request->username . '! Akun berhasil dibuat.');
     }
 
     // ─── GOOGLE LOGIN ─────────────────────────────────────────
@@ -136,7 +136,7 @@ class AuthController extends Controller
             session()->regenerate();
             session()->forget('captcha');
 
-            return redirect()->route('dashboard'); // Assuming dashboard is the default route after login
+            return redirect()->route('users.dashboard'); // Assuming dashboard is the default route after login
 
         } catch (\Exception $e) {
             return redirect()->route('login')->withErrors(['error' => 'Gagal login menggunakan Google. Silakan coba lagi.']);
