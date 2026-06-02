@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Guest;
 use App\Models\Berita;
+use App\Models\Gedung;
+use App\Models\Ruangan;
+use App\Models\Sarana;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -38,10 +41,9 @@ class DashboardController extends Controller
     public function usersindex()
     {
         $stats = [
-            'users' => User::count(),
-            'guests' => Guest::count(),
-            'buildings' => 0,
-            'beritas' => Berita::count(),
+            'buildings' => Gedung::count(),
+            'rooms' => Ruangan::count(),
+            'saranas' => Sarana::count(),
         ];
 
         return view('users.main.index', $stats);

@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Gedung;
+use Illuminate\Http\Request;
+
+class UsersGedungController extends Controller
+{
+    /**
+     * Display a view-only listing of gedung for users.
+     */
+    public function index()
+    {
+        $gedungs = Gedung::orderBy('id_gedung', 'desc')->get();
+        return view('users.main.gedung.index', compact('gedungs'));
+    }
+}

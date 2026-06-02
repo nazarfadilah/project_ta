@@ -18,6 +18,8 @@ use App\Http\Controllers\UsersRuanganController;
 use App\Http\Controllers\UsersReservasiController;
 use App\Http\Controllers\UsersInvoiceController;
 use App\Http\Controllers\UsersProfilController;
+use App\Http\Controllers\UsersGedungController;
+use App\Http\Controllers\UsersSaranaController;
 use App\Http\Controllers\SaranaController;
 use App\Http\Controllers\SaranaAvailabilityController;
 use App\Http\Controllers\PeminjamanSaranaController;
@@ -239,6 +241,16 @@ Route::middleware('auth:web')->prefix('users')->name('users.')->group(function (
         Route::prefix('ruangan')->name('ruangan.')->group(function () {
             Route::get('/', [UsersRuanganController::class, 'index'])->name('index');
             Route::get('/{slug}', [UsersRuanganController::class, 'show'])->name('show');
+        });
+
+        // Gedung routes (view-only)
+        Route::prefix('gedung')->name('gedung.')->group(function () {
+            Route::get('/', [UsersGedungController::class, 'index'])->name('index');
+        });
+
+        // Sarana routes (view-only)
+        Route::prefix('sarana')->name('sarana.')->group(function () {
+            Route::get('/', [UsersSaranaController::class, 'index'])->name('index');
         });
 
         // Reservasi routes

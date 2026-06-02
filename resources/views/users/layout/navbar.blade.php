@@ -37,6 +37,22 @@
                 </a>
             </li>
 
+            <!-- Daftar Gedung -->
+            <li class="nav-item">
+                <a href="{{ route('users.main.gedung.index') }}" class="nav-link {{ request()->routeIs('users.main.gedung.*') ? 'active' : '' }}" title="Daftar Gedung">
+                    <i class="fas fa-building menu-icon"></i>
+                    <span class="menu-text">Daftar Gedung</span>
+                </a>
+            </li>
+
+            <!-- Daftar Sarana -->
+            <li class="nav-item">
+                <a href="{{ route('users.main.sarana.index') }}" class="nav-link {{ request()->routeIs('users.main.sarana.*') ? 'active' : '' }}" title="Daftar Sarana">
+                    <i class="fas fa-tools menu-icon"></i>
+                    <span class="menu-text">Daftar Sarana</span>
+                </a>
+            </li>
+
             <!-- Reservasi Saya -->
             <li class="nav-item">
                 <a href="{{ route('users.main.reservasi.index') }}" class="nav-link {{ request()->routeIs('users.main.reservasi.*') ? 'active' : '' }}" title="Reservasi Saya">

@@ -34,7 +34,7 @@ class UsersProfilController extends Controller
 
         $guest = $user->guest;
 
-        return view('users.main.profil', compact('user', 'guest'));
+        return view('users.main.profil.form', compact('user', 'guest'));
     }
 
     /**

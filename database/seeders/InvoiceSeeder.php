@@ -2,13 +2,87 @@
 namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class InvoiceSeeder extends Seeder {
     public function run(): void {
-        DB::table('invoice')->insert([
-            ['id' => 1, 'noInvoice' => 'INV/2026/0001', 'peminjamanId' => 1, 'subtotal' => 300000.00, 'biayaTambahan' => 0.00, 'totalHarga' => 300000.00, 'statusInvoice' => 'UNPAID', 'status_pembayaran' => 'BELUM_BAYAR', 'tglInvoice' => '2026-04-21 07:53:03', 'tglDueDate' => '2026-04-28 07:53:03', 'tgl_pembayaran' => null, 'tglPaid' => null, 'notes' => 'Invoice untuk peminjaman kamar premium'],
-            ['id' => 2, 'noInvoice' => 'INV/2026/0002', 'peminjamanId' => 2, 'subtotal' => 2500000.00, 'biayaTambahan' => 500000.00, 'totalHarga' => 3000000.00, 'statusInvoice' => 'PARTIAL', 'status_pembayaran' => 'SEBAGIAN', 'tglInvoice' => '2026-04-21 07:53:03', 'tglDueDate' => '2026-04-28 07:53:03', 'tgl_pembayaran' => '2026-04-21 07:53:03', 'tglPaid' => null, 'notes' => 'Invoice untuk peminjaman aula + setup'],
-            ['id' => 3, 'noInvoice' => 'INV/2026/0003', 'peminjamanId' => 3, 'subtotal' => 800000.00, 'biayaTambahan' => 0.00, 'totalHarga' => 800000.00, 'statusInvoice' => 'PAID', 'status_pembayaran' => 'LUNAS', 'tglInvoice' => '2026-04-21 08:00:00', 'tglDueDate' => '2026-04-28 17:00:00', 'tgl_pembayaran' => '2026-04-21 16:30:00', 'tglPaid' => '2026-04-21 16:30:00', 'notes' => 'Invoice untuk peminjaman ruang rapat'],
-        ]);
+        DB::table('invoice')->delete();
+        
+        // Fetch all generated transactions
+        $transaksis = DB::table('peminjaman_transaksi')->get();
+        $invoices = [];
+
+        foreach ($transaksis as $transaksi) {
+            // Fetch corresponding room package to get base price
+            $paket = DB::table('paket_ruangan')->where('id', $transaksi->facilityId)->first();
+            
+            // Default pricing fallbacks if not found
+            $baseHarga = $paket ? $paket->harga : 150000.00;
+            $paketDurasi = $paket ? $paket->durasi : 24;
+
+            // Calculate subtotal based on duration multiplier for daily rooms
+            if ($paketDurasi === 24) {
+                $multiplier = max(1, (int)($transaksi->durasi / 24));
+                $subtotal = $baseHarga * $multiplier;
+            } else {
+                $subtotal = $baseHarga;
+            }
+
+            $biayaTambahan = $transaksi->biayaTambahan;
+            $totalHarga = $subtotal + $biayaTambahan;
+
+            // Align payment status with transaction status
+            if ($transaksi->statusPeminjaman === 'SELESAI') {
+                $statusInvoice = 'PAID';
+                $status_pembayaran = 'LUNAS';
+                $tglInvoice = Carbon::parse($transaksi->tanggalApproval ?? $transaksi->createdAt);
+                $tgl_pembayaran = $tglInvoice->copy()->addMinutes(rand(10, 120))->format('Y-m-d H:i:s');
+                $tglPaid = $tgl_pembayaran;
+            } elseif ($transaksi->statusPeminjaman === 'CHECK_IN') {
+                // 70% paid, 30% partial
+                if ($transaksi->id % 3 === 0) {
+                    $statusInvoice = 'PARTIAL';
+                    $status_pembayaran = 'SEBAGIAN';
+                    $tglInvoice = Carbon::parse($transaksi->tanggalApproval ?? $transaksi->createdAt);
+                    $tgl_pembayaran = $tglInvoice->copy()->addMinutes(rand(10, 120))->format('Y-m-d H:i:s');
+                    $tglPaid = null;
+                } else {
+                    $statusInvoice = 'PAID';
+                    $status_pembayaran = 'LUNAS';
+                    $tglInvoice = Carbon::parse($transaksi->tanggalApproval ?? $transaksi->createdAt);
+                    $tgl_pembayaran = $tglInvoice->copy()->addMinutes(rand(10, 120))->format('Y-m-d H:i:s');
+                    $tglPaid = $tgl_pembayaran;
+                }
+            } else {
+                // RESERVASI or BATAL
+                $statusInvoice = 'UNPAID';
+                $status_pembayaran = 'BELUM_BAYAR';
+                $tglInvoice = Carbon::parse($transaksi->createdAt);
+                $tgl_pembayaran = null;
+                $tglPaid = null;
+            }
+
+            $tglDueDate = $tglInvoice->copy()->addDays(7)->format('Y-m-d H:i:s');
+
+            $invoices[] = [
+                'id' => $transaksi->id,
+                'noInvoice' => 'INV/' . Carbon::parse($transaksi->createdAt)->format('Ymd') . '/' . sprintf('%04d', $transaksi->id),
+                'peminjamanId' => $transaksi->id,
+                'subtotal' => $subtotal,
+                'biayaTambahan' => $biayaTambahan,
+                'totalHarga' => $totalHarga,
+                'statusInvoice' => $statusInvoice,
+                'status_pembayaran' => $status_pembayaran,
+                'tglInvoice' => $tglInvoice->format('Y-m-d H:i:s'),
+                'tglDueDate' => $tglDueDate,
+                'tgl_pembayaran' => $tgl_pembayaran,
+                'tglPaid' => $tglPaid,
+                'notes' => 'Invoice pembayaran resmi fasilitas asrama haji SIPRASA.',
+                'createdAt' => $transaksi->createdAt,
+                'updatedAt' => $transaksi->updatedAt,
+            ];
+        }
+
+        DB::table('invoice')->insert($invoices);
     }
 }
