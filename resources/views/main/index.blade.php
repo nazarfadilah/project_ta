@@ -64,7 +64,7 @@
         @endif
 
         <!-- Card Gedung -->
-        @if(in_array(Auth::user()->roleId, [1, 2]))
+        @if(in_array(Auth::user()->roleId, [2, 3]))
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
             <a href="{{ route('main.gedung.index') }}" class="text-decoration-none">
                 <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #6C757D 0%, #5A6268 100%); min-height: 150px;">
@@ -148,7 +148,7 @@
         @endif
 
         <!-- Card Peminjaman Ruangan -->
-        @if(in_array(Auth::user()->roleId, [1, 2, 3]))
+        @if(in_array(Auth::user()->roleId, [2, 3]))
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
             <a href="{{ route('main.transaksi.peminjaman.index') }}" class="text-decoration-none">
                 <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #6F42C1 0%, #593196 100%); min-height: 150px;">
@@ -244,7 +244,7 @@
         @endif
 
         <!-- Datatable Peminjaman Pending -->
-        @if(in_array(Auth::user()->roleId, [1, 3]))
+        @if(Auth::user()->roleId == 3)
         <div class="col-12 mb-4">
             <div class="card border-0 shadow-sm rounded-3">
                 <div class="card-header d-flex align-items-center justify-content-between" style="background-color: #C9A961; color: #fff; border-radius: 8px 8px 0 0; padding: 14px 20px;">
@@ -515,7 +515,7 @@
         });
         @endif
 
-        @if(in_array(Auth::user()->roleId, [1, 3]))
+        @if(Auth::user()->roleId == 3)
         $('#pendingBookingsTable').DataTable({
             language: {
                 search: "Cari:",
