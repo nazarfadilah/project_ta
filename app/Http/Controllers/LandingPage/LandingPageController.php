@@ -25,7 +25,7 @@ class LandingPageController extends Controller
     {
         $data = $this->landingData();
         $data['galeriItems'] = \App\Models\Galeri::latest()->get();
-        $data['kategoriGaleri'] = \App\Models\Galeri::select('kategori')->whereNotNull('kategori')->distinct()->pluck('kategori');
+        $data['kategoriGaleri'] = \App\Models\Galeri::select('kategori')->whereNotNull('kategori')->distinct()->get()->pluck('kategori')->unique();
         return view('public.main.galeri', $data);
     }
 
@@ -126,7 +126,7 @@ class LandingPageController extends Controller
             ->orderBy('posisi')
             ->get()
             ->map(function ($slide) {
-                $slide->resolved_path = $slide->path ? asset(ltrim($slide->path, '/')) : '';
+                $slide->resolved_path = $slide->path ? (filter_var($slide->path, FILTER_VALIDATE_URL) ? $slide->path : (str_starts_with($slide->path, 'storage/') ? asset($slide->path) : asset('storage/' . $slide->path))) : '';
                 return $slide;
             });
 
@@ -147,7 +147,7 @@ class LandingPageController extends Controller
                 return $berita;
             });
 
-        $galleryCategories = ['all', 'pengapian', 'moshulla', 'aula', 'gedung'];
+        $galleryCategories = ['all', 'penginapan', 'moshulla', 'aula', 'gedung'];
 
         $socialLinks = [
             'facebook' => $settings['facebook'] ?? null,

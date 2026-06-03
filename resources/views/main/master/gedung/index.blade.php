@@ -27,9 +27,11 @@
             <h6 class="mb-0 fw-semibold" style="font-size: 15px;">
                 <i class="fas fa-building me-2"></i>Daftar Gedung
             </h6>
+            @if(Auth::user()->roleId != 2)
             <a href="{{ route('main.gedung.create') }}" class="btn btn-sm btn-light" style="font-size: 13px; padding: 6px 12px;">
                 <i class="fas fa-plus me-1"></i> Tambah Gedung
             </a>
+            @endif
         </div>
         <div class="card-body" style="padding: 20px;">
             <div class="table-responsive">
@@ -40,7 +42,9 @@
                             <th>Nama Gedung</th>
                             <th>Koordinat</th>
                             <th>Keterangan</th>
+                            @if(Auth::user()->roleId != 2)
                             <th style="width: 110px; text-align: center;">Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -50,6 +54,7 @@
                             <td>{{ $gedung->nama_gedung }}</td>
                             <td>{{ $gedung->koordinat }}</td>
                             <td>{{ Str::limit($gedung->keterangan, 50) }}</td>
+                            @if(Auth::user()->roleId != 2)
                             <td style="text-align: center;">
                                 <div class="d-flex justify-content-center gap-1">
                                     <a href="{{ route('main.gedung.edit', $gedung->id_gedung) }}" 
@@ -67,10 +72,11 @@
                                     </button>
                                 </div>
                             </td>
+                            @endif
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" style="text-align: center; color: #999; padding: 30px;">
+                            <td colspan="{{ Auth::user()->roleId == 2 ? 4 : 5 }}" style="text-align: center; color: #999; padding: 30px;">
                                 <i class="fas fa-inbox" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
                                 Belum ada data gedung
                             </td>
@@ -191,8 +197,8 @@
             ordering: true,
             responsive: true,
             columnDefs: [
-                { orderable: false, targets: [0, 4] },
-                { searchable: false, targets: [0, 4] }
+                { orderable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 4] @endif },
+                { searchable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 4] @endif }
             ]
         });
     });

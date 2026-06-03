@@ -50,7 +50,6 @@ class GambarLandingController extends Controller
         }
 
         $validated['waktu_upload'] = now();
-        $validated['updated_at'] = now();
         GambarDashboard::create($validated);
 
         return redirect()->route('main.landing.gambar.index')
@@ -103,7 +102,6 @@ class GambarLandingController extends Controller
             $validated['path'] = $filePath;
         }
 
-        $validated['updated_at'] = now();
         $gambarLanding->update($validated);
 
         return redirect()->route('main.landing.gambar.index')

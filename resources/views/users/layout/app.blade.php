@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SIPRASA')</title>
+    <script>
+        // Apply theme immediately to prevent flashing
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark-theme');
+            }
+        })();
+    </script>
+    <link rel="icon" type="image/jpeg" href="{{ asset('assets/image/icon.jpg') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -367,6 +377,202 @@
             background: rgba(0,0,0,0.15);
             border-radius: 4px;
         }
+
+        /* ===== DARK THEME OVERRIDES ===== */
+        .dark-theme body {
+            background-color: #121212 !important;
+            color: #e0e0e0 !important;
+        }
+
+        .dark-theme #topNavbar {
+            background-color: #1e1e1e !important;
+            border-bottom-color: #2d2d2d !important;
+            color: #e0e0e0 !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+        }
+
+        .dark-theme #topNavbar .page-title {
+            color: #fff !important;
+        }
+
+        .dark-theme #topNavbar .welcome-text {
+            color: #b0b0b0 !important;
+        }
+
+        .dark-theme #topNavbar .vr {
+            background-color: #444 !important;
+        }
+
+        .dark-theme .navbar-toggle-btn {
+            border-color: #444 !important;
+            color: #ccc !important;
+        }
+
+        .dark-theme .navbar-toggle-btn:hover {
+            background-color: #2d2d2d !important;
+            color: #fff !important;
+            border-color: #555 !important;
+        }
+
+        .dark-theme .card {
+            background-color: #1e1e1e !important;
+            border-color: #2d2d2d !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;
+        }
+
+        .dark-theme .card-header {
+            background-color: #252525 !important;
+            border-bottom-color: #2d2d2d !important;
+            color: #fff !important;
+        }
+
+        .dark-theme .card-header h5 {
+            color: #fff !important;
+        }
+
+        .dark-theme .detail-item .value,
+        .dark-theme .ruangan-info-value,
+        .dark-theme .guest-info-value {
+            color: #fff !important;
+        }
+
+        .dark-theme .detail-item label,
+        .dark-theme .ruangan-info-label,
+        .dark-theme .guest-info-label,
+        .dark-theme .keterangan-section label,
+        .dark-theme .timeline-content .label {
+            color: #a0a0a0 !important;
+        }
+
+        .dark-theme .form-card {
+            background: #1e1e1e !important;
+            color: #e0e0e0 !important;
+        }
+
+        .dark-theme .form-label {
+            color: #ccc !important;
+        }
+
+        .dark-theme .form-control,
+        .dark-theme .form-select {
+            background-color: #2d2d2d !important;
+            border-color: #444 !important;
+            color: #fff !important;
+        }
+
+        .dark-theme .form-control:focus,
+        .dark-theme .form-select:focus {
+            background-color: #2d2d2d !important;
+            color: #fff !important;
+            border-color: var(--gold-primary) !important;
+            box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.25) !important;
+        }
+
+        .dark-theme .input-group-text {
+            background-color: #2d2d2d !important;
+            border-color: #444 !important;
+            color: #ccc !important;
+        }
+
+        .dark-theme table {
+            color: #e0e0e0 !important;
+            border-color: #2d2d2d !important;
+        }
+
+        .dark-theme table thead {
+            background-color: #252525 !important;
+        }
+
+        .dark-theme table thead th {
+            color: #ccc !important;
+            background-color: #252525 !important;
+            border-bottom-color: #333 !important;
+        }
+
+        .dark-theme table tbody td {
+            background-color: #1e1e1e !important;
+            color: #e0e0e0 !important;
+            border-color: #2d2d2d !important;
+        }
+
+        .dark-theme table tbody tr:hover td {
+            background-color: #252525 !important;
+        }
+
+        .dark-theme .keterangan-section,
+        .dark-theme .guest-info,
+        .dark-theme .ruangan-info,
+        .dark-theme .timeline-content {
+            background-color: #252525 !important;
+            border-color: var(--gold-primary) !important;
+        }
+
+        .dark-theme .text-muted,
+        .dark-theme .text-muted * {
+            color: #888 !important;
+        }
+
+        .dark-theme .modal-content {
+            background-color: #1e1e1e !important;
+            color: #e0e0e0 !important;
+            border: 1px solid #333 !important;
+        }
+
+        .dark-theme .modal-header {
+            background-color: #252525 !important;
+            border-bottom-color: #333 !important;
+        }
+
+        .dark-theme .modal-title {
+            color: #fff !important;
+        }
+
+        .dark-theme .btn-close {
+            filter: invert(1) grayscale(1) brightness(2) !important;
+        }
+
+        .dark-theme .profile-card {
+            background: #1e1e1e !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+        }
+        .dark-theme .profile-card-body h4 {
+            color: #fff !important;
+        }
+        .dark-theme .profile-info-item {
+            border-bottom-color: #2d2d2d !important;
+        }
+        .dark-theme .profile-info-text p {
+            color: #e0e0e0 !important;
+        }
+        .dark-theme .avatar-wrapper {
+            background-color: #1e1e1e !important;
+        }
+        .dark-theme .profile-avatar {
+            background-color: #2d2d2d !important;
+            border-color: var(--gold-primary) !important;
+        }
+        .dark-theme .gender-radio-label {
+            border-color: #444 !important;
+            color: #a0a0a0 !important;
+        }
+        .dark-theme .gender-radio-card input:checked + .gender-radio-label {
+            border-color: var(--gold-primary) !important;
+            background-color: rgba(201, 169, 97, 0.1) !important;
+            color: var(--gold-light) !important;
+        }
+        .dark-theme .form-section-title {
+            border-bottom-color: rgba(201, 169, 97, 0.3) !important;
+        }
+        .dark-theme .alert-success-gold, .dark-theme .alert-error-gold {
+            background-color: #252525 !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+        }
+        .dark-theme .alert-success-gold span {
+            color: #d4edda !important;
+        }
+        .dark-theme .alert-error-gold span {
+            color: #f8d7da !important;
+        }
     </style>
     @yield('css')
     @stack('styles')
@@ -392,6 +598,9 @@
             <span class="welcome-text">
                 <i class="fas fa-hand-wave me-1"></i> Selamat datang, {{ Auth::user()->name ?? 'Pengguna' }}!
             </span>
+            <button class="navbar-toggle-btn" id="themeToggle" type="button" title="Toggle Tema" style="margin-left: 10px;">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
         </div>
     </nav>
 
@@ -411,5 +620,37 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @yield('js')
     @stack('scripts')
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    const isDark = document.documentElement.classList.toggle('dark-theme');
+                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                    updateThemeIcon(isDark);
+                });
+            }
+
+            function updateThemeIcon(isDark) {
+                if (themeIcon) {
+                    if (isDark) {
+                        themeIcon.classList.remove('fa-moon');
+                        themeIcon.classList.add('fa-sun');
+                        themeIcon.style.color = '#ffc107'; // yellow color for sun icon
+                    } else {
+                        themeIcon.classList.remove('fa-sun');
+                        themeIcon.classList.add('fa-moon');
+                        themeIcon.style.color = '';
+                    }
+                }
+            }
+
+            // Initial sync on load
+            updateThemeIcon(document.documentElement.classList.contains('dark-theme'));
+        });
+    </script>
 </body>
 </html>

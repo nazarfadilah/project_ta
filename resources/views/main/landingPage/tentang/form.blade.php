@@ -30,7 +30,7 @@
             </h6>
         </div>
         <div class="card-body" style="padding: 24px;">
-            <form action="{{ $mode === 'create' ? route('main.landing.tentang.store') : route('main.landing.tentang.update', $tentang->id) }}" method="POST">
+            <form action="{{ $mode === 'create' ? route('main.landing.tentang.store') : route('main.landing.tentang.update', $tentang->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @if($mode === 'edit')
                     @method('PUT')
@@ -59,16 +59,40 @@
                     <label for="value" class="form-label fw-semibold" style="font-size: 13px; color: #555;">
                         Value <span class="text-danger">*</span>
                     </label>
-                    <textarea class="form-control @error('value') is-invalid @enderror" 
-                              id="value" 
-                              name="value" 
-                              rows="6"
-                              placeholder="Masukkan nilai/isi"
-                              style="font-size: 14px; padding: 10px 14px; resize: vertical;">{{ old('value', $tentang?->value ?? '') }}</textarea>
-                    <small class="form-text text-muted">Maksimal 10000 karakter</small>
-                    @error('value')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
+                    @if(($tentang?->key ?? old('key', '')) === 'logo')
+                        <input type="file" 
+                               class="form-control @error('value_file') is-invalid @enderror" 
+                               id="value_file" 
+                               name="value_file" 
+                               accept="image/*"
+                               style="font-size: 14px; padding: 10px 14px;">
+                        <small class="form-text text-muted">Format: JPEG, PNG, JPG, GIF, SVG. Maksimal 2MB</small>
+                        @if($mode === 'edit' && $tentang?->value)
+                            <div class="mt-2">
+                                <p style="font-size: 13px; color: #555; margin-bottom: 5px;">Logo Saat Ini:</p>
+                                @php
+                                    $logoUrl = filter_var($tentang->value, FILTER_VALIDATE_URL) ? $tentang->value : (str_starts_with($tentang->value, 'storage/') ? asset($tentang->value) : asset('storage/' . $tentang->value));
+                                @endphp
+                                <img src="{{ $logoUrl }}" 
+                                     alt="Logo" 
+                                     style="max-width: 150px; max-height: 150px; border-radius: 8px; border: 1px solid #ddd; background: #eee; padding: 5px; object-fit: contain;">
+                            </div>
+                        @endif
+                        @error('value_file')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    @else
+                        <textarea class="form-control @error('value') is-invalid @enderror" 
+                                  id="value" 
+                                  name="value" 
+                                  rows="6"
+                                  placeholder="Masukkan nilai/isi"
+                                  style="font-size: 14px; padding: 10px 14px; resize: vertical;">{{ old('value', $tentang?->value ?? '') }}</textarea>
+                        <small class="form-text text-muted">Maksimal 10000 karakter</small>
+                        @error('value')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    @endif
                 </div>
 
                 {{-- Tombol --}}

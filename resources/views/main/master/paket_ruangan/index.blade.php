@@ -27,9 +27,11 @@
             <h6 class="mb-0 fw-semibold" style="font-size: 15px;">
                 <i class="fas fa-box-open me-2"></i>Daftar Paket Ruangan
             </h6>
+            @if(Auth::user()->roleId != 2)
             <a href="{{ route('main.paket_ruangan.create') }}" class="btn btn-sm btn-light fw-bold" style="font-size: 13px; padding: 6px 14px; border-radius: 5px; color: #B8953F; border: none;">
                 <i class="fas fa-plus me-1"></i> Tambah Paket
             </a>
+            @endif
         </div>
         <div class="card-body" style="padding: 24px;">
             <div class="table-responsive">
@@ -43,7 +45,9 @@
                             <th style="width: 120px; text-align: center;">Durasi (Jam)</th>
                             <th style="width: 150px; text-align: right;">Harga Sewa</th>
                             <th style="width: 120px; text-align: center;">Status</th>
+                            @if(Auth::user()->roleId != 2)
                             <th style="width: 120px; text-align: center;">Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -72,6 +76,7 @@
                                     <span class="badge bg-secondary" style="font-size: 12px; padding: 5px 10px;">Nonaktif</span>
                                 @endif
                             </td>
+                            @if(Auth::user()->roleId != 2)
                             <td style="text-align: center;">
                                 <div class="d-flex justify-content-center gap-1">
                                     <a href="{{ route('main.paket_ruangan.edit', $paket->id) }}" 
@@ -81,18 +86,19 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <button type="button" 
-                                            class="btn btn-sm btn-danger" 
-                                            title="Hapus"
-                                            onclick="confirmDelete('{{ route('main.paket_ruangan.destroy', $paket->id) }}')"
-                                            style="padding: 5px 10px; font-size: 13px; background-color: #dc3545; border: none;">
+                                             class="btn btn-sm btn-danger" 
+                                             title="Hapus"
+                                             onclick="confirmDelete('{{ route('main.paket_ruangan.destroy', $paket->id) }}')"
+                                             style="padding: 5px 10px; font-size: 13px; background-color: #dc3545; border: none;">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
                             </td>
+                            @endif
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" style="text-align: center; color: #999; padding: 30px;">
+                            <td colspan="{{ Auth::user()->roleId == 2 ? 7 : 8 }}" style="text-align: center; color: #999; padding: 30px;">
                                 <i class="fas fa-inbox d-block mb-2 text-secondary" style="font-size: 24px;"></i>
                                 Belum ada data paket ruangan.
                             </td>
@@ -208,8 +214,8 @@
             ordering: true,
             responsive: true,
             columnDefs: [
-                { orderable: false, targets: [0, 7] },
-                { searchable: false, targets: [0, 7] }
+                { orderable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 7] @endif },
+                { searchable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 7] @endif }
             ]
         });
     });

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@yield('title', 'Asrama Haji Emberkasi Landasan Ulin')</title>
+  <link rel="icon" type="image/jpeg" href="{{ asset('assets/image/icon.jpg') }}">
   <meta name="description" content="Nikmati fasilitas penginapan premium dan sewa gedung di Asrama Haji Emberkasi Landasan Ulin. Booking online mudah, harga terjangkau, pelayanan profesional." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

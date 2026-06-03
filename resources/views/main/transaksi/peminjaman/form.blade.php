@@ -410,6 +410,51 @@
     </div>
 </div>
 
+<!-- Informasi Sarana yang Dipinjam -->
+@if($peminjaman->detailSaranas && $peminjaman->detailSaranas->count() > 0)
+<div class="card">
+    <div class="card-header">
+        <h5><i class="fas fa-tools"></i> Sarana yang Dipinjam</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle" style="width: 100%; font-size: 14px;">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 50px;" class="text-center">No</th>
+                        <th>Nama Sarana</th>
+                        <th style="width: 150px;" class="text-center">Jumlah</th>
+                        <th style="width: 150px;" class="text-center">Kondisi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($peminjaman->detailSaranas as $index => $detail)
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td>{{ $detail->sarana->nama ?? 'N/A' }}</td>
+                            <td class="text-center fw-bold">{{ $detail->jumlah }} Unit</td>
+                            <td class="text-center">
+                                @php
+                                    $kondisi = $detail->sarana->kondisi ?? 'Baik';
+                                    $badgeColor = match($kondisi) {
+                                        'Baik Sekali' => 'bg-success',
+                                        'Baik' => 'bg-info',
+                                        'Normal' => 'bg-warning text-dark',
+                                        'Perlu Perbaikan' => 'bg-danger',
+                                        default => 'bg-secondary'
+                                    };
+                                @endphp
+                                <span class="badge {{ $badgeColor }}">{{ $kondisi }}</span>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@endif
+
 <!-- Informasi Peminjaman -->
 <div class="card">
     <div class="card-header">
@@ -465,28 +510,30 @@
 <div class="card">
     <div class="card-body">
         <div class="action-buttons">
-            @if($peminjaman->statusApproval === 'PENDING')
-                <button type="button" class="btn-approve" data-bs-toggle="modal" data-bs-target="#modalApprove">
-                    <i class="fas fa-check"></i> Setujui
-                </button>
-                <button type="button" class="btn-reject" data-bs-toggle="modal" data-bs-target="#modalReject">
-                    <i class="fas fa-times"></i> Tolak
-                </button>
-            @endif
-
-            @if($peminjaman->statusApproval === 'APPROVED' && $peminjaman->statusPeminjaman === 'RESERVASI')
-                <form action="{{ route('main.transaksi.peminjaman.checkin', $peminjaman->id) }}" method="POST" style="display: inline-block;">
-                    @csrf
-                    <button type="submit" class="btn btn-primary fw-bold text-white px-4 py-2" style="background-color: #007bff; border: none; font-size: 13px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-sign-in-alt"></i> Proses Check-In
+            @if(Auth::user()->roleId != 2)
+                @if($peminjaman->statusApproval === 'PENDING')
+                    <button type="button" class="btn-approve" data-bs-toggle="modal" data-bs-target="#modalApprove">
+                        <i class="fas fa-check"></i> Setujui
                     </button>
-                </form>
-            @endif
+                    <button type="button" class="btn-reject" data-bs-toggle="modal" data-bs-target="#modalReject">
+                        <i class="fas fa-times"></i> Tolak
+                    </button>
+                @endif
 
-            @if($peminjaman->statusPeminjaman === 'CHECK_IN')
-                <button type="button" class="btn btn-info fw-bold text-white px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalCheckOut" style="background-color: #17a2b8; border: none; font-size: 13px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-sign-out-alt"></i> Proses Check-Out
-                </button>
+                @if($peminjaman->statusApproval === 'APPROVED' && $peminjaman->statusPeminjaman === 'RESERVASI')
+                    <form action="{{ route('main.transaksi.peminjaman.checkin', $peminjaman->id) }}" method="POST" style="display: inline-block;">
+                        @csrf
+                        <button type="submit" class="btn btn-primary fw-bold text-white px-4 py-2" style="background-color: #007bff; border: none; font-size: 13px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-sign-in-alt"></i> Proses Check-In
+                        </button>
+                    </form>
+                @endif
+
+                @if($peminjaman->statusPeminjaman === 'CHECK_IN')
+                    <button type="button" class="btn btn-info fw-bold text-white px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalCheckOut" style="background-color: #17a2b8; border: none; font-size: 13px; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-sign-out-alt"></i> Proses Check-Out
+                    </button>
+                @endif
             @endif
 
             @if($invoice)

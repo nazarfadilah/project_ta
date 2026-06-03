@@ -40,7 +40,12 @@ class BeritaController extends Controller
      */
     public function index()
     {
-        $beritas = Berita::orderByDesc('tanggal_publish')->get();
+        $user = Auth::user();
+        if ($user->roleId == 3) {
+            $beritas = Berita::with('user')->where('userId', $user->id)->orderByDesc('tanggal_publish')->get();
+        } else {
+            $beritas = Berita::with('user')->orderByDesc('tanggal_publish')->get();
+        }
         return view('main.berita.index', compact('beritas'));
     }
 
@@ -103,6 +108,10 @@ class BeritaController extends Controller
     public function show($id)
     {
         $berita = Berita::findOrFail($id);
+        $user = Auth::user();
+        if ($user->roleId == 3 && $berita->userId !== $user->id) {
+            abort(403, 'Anda tidak memiliki hak akses ke berita ini.');
+        }
         return view('main.berita.detail', compact('berita'));
     }
 
@@ -112,6 +121,10 @@ class BeritaController extends Controller
     public function edit($id)
     {
         $berita = Berita::findOrFail($id);
+        $user = Auth::user();
+        if ($user->roleId == 3 && $berita->userId !== $user->id) {
+            abort(403, 'Anda tidak memiliki hak akses ke berita ini.');
+        }
         return view('main.berita.form', ['berita' => $berita, 'mode' => 'edit']);
     }
 
@@ -121,6 +134,10 @@ class BeritaController extends Controller
     public function update(Request $request, $id)
     {
         $berita = Berita::findOrFail($id);
+        $user = Auth::user();
+        if ($user->roleId == 3 && $berita->userId !== $user->id) {
+            abort(403, 'Anda tidak memiliki hak akses ke berita ini.');
+        }
 
         $validated = $request->validate([
             'judul' => 'required|string|max:128|unique:berita,judul,' . $id . ',id',
@@ -166,6 +183,10 @@ class BeritaController extends Controller
     public function destroy($id)
     {
         $berita = Berita::findOrFail($id);
+        $user = Auth::user();
+        if ($user->roleId == 3 && $berita->userId !== $user->id) {
+            abort(403, 'Anda tidak memiliki hak akses ke berita ini.');
+        }
 
         // Hapus gambar
         if ($berita->gambar && file_exists(public_path($berita->gambar))) {

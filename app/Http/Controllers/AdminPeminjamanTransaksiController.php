@@ -27,7 +27,7 @@ class AdminPeminjamanTransaksiController extends Controller
     public function show($id)
     {
         $peminjaman = PeminjamanTransaksi::findOrFail($id);
-        $peminjaman->load('guest', 'paketRuangan.ruangan.gedung', 'user', 'invoice');
+        $peminjaman->load('guest', 'paketRuangan.ruangan.gedung', 'user', 'invoice', 'detailSaranas.sarana');
 
         // Check if invoice exists
         $invoice = Invoice::where('peminjamanId', $id)->first();

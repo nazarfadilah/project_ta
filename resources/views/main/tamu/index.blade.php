@@ -27,9 +27,11 @@
             <h6 class="mb-0 fw-semibold" style="font-size: 15px;">
                 <i class="fas fa-users me-2"></i>Daftar Tamu (Guest)
             </h6>
+            @if(Auth::user()->roleId != 2)
             <a href="{{ route('main.tamu.create') }}" class="btn btn-sm btn-light" style="font-size: 13px; padding: 6px 12px;">
                 <i class="fas fa-plus me-1"></i> Tambah Tamu
             </a>
+            @endif
         </div>
         <div class="card-body" style="padding: 20px;">
             <div class="table-responsive">
@@ -57,6 +59,7 @@
                                    style="padding: 4px 10px; font-size: 13px; color: #fff;">
                                     <i class="fas fa-eye"></i>
                                 </a>
+                                @if(Auth::user()->roleId != 2)
                                 <button type="button" 
                                         onclick="hapusData('{{ route('main.tamu.destroy', $guest->id) }}')" 
                                         class="btn btn-sm btn-danger" 
@@ -64,6 +67,7 @@
                                         style="padding: 4px 10px; font-size: 13px;">
                                     <i class="fas fa-trash"></i>
                                 </button>
+                                @endif
                             </td>
                         </tr>
                         @empty

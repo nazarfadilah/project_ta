@@ -220,7 +220,7 @@ class UsersReservasiController extends Controller
         $guestId = $user->guestId;
         
         $peminjaman = PeminjamanTransaksi::where('guestId', $guestId)
-            ->with(['paketRuangan.ruangan.gedung', 'paketRuangan.ruangan.mediaFiles'])
+            ->with(['paketRuangan.ruangan.gedung', 'paketRuangan.ruangan.mediaFiles', 'detailSaranas.sarana'])
             ->findOrFail($id);
             
         // Compatibility mapping layer to match Reservasi schema expected by Blade views

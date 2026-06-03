@@ -375,6 +375,10 @@
                 <span class="ruangan-info-label">Kapasitas</span>
                 <span class="ruangan-info-value"><i class="fas fa-users"></i> {{ $reservasi->ruangan->kapasitas }} orang</span>
             </div>
+            <div class="ruangan-info-item">
+                <span class="ruangan-info-label">Paket Ruangan</span>
+                <span class="ruangan-info-value">{{ $reservasi->paketRuangan->nama_paket ?? 'Paket Standar' }} ({{ $reservasi->paketRuangan->durasi ?? $reservasi->durasi }} Jam) - Rp {{ number_format($reservasi->paketRuangan->harga ?? 0, 0, ',', '.') }}</span>
+            </div>
         </div>
     </div>
 </div>
@@ -415,6 +419,37 @@
         </div>
     </div>
 </div>
+
+<!-- Informasi Sarana yang Dipinjam -->
+@if($reservasi->detailSaranas && $reservasi->detailSaranas->count() > 0)
+<div class="card">
+    <div class="card-header">
+        <h5><i class="fas fa-tools"></i> Sarana yang Dipinjam</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle" style="width: 100%; font-size: 14px;">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 50px;" class="text-center">No</th>
+                        <th>Nama Sarana</th>
+                        <th style="width: 150px;" class="text-center">Jumlah</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($reservasi->detailSaranas as $index => $detail)
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td>{{ $detail->sarana->nama ?? 'N/A' }}</td>
+                            <td class="text-center fw-bold">{{ $detail->jumlah }} Unit</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@endif
 
 <!-- Data Kontak -->
 <div class="card">

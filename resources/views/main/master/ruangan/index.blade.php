@@ -27,9 +27,11 @@
             <h6 class="mb-0 fw-semibold" style="font-size: 15px;">
                 <i class="fas fa-door-open me-2"></i>Daftar Ruangan
             </h6>
+            @if(Auth::user()->roleId != 2)
             <a href="{{ route('main.ruangan.create') }}" class="btn btn-sm btn-light" style="font-size: 13px; padding: 6px 12px;">
                 <i class="fas fa-plus me-1"></i> Tambah Ruangan
             </a>
+            @endif
         </div>
         <div class="card-body" style="padding: 20px;">
             <div class="table-responsive">
@@ -41,7 +43,9 @@
                             <th>Gedung</th>
                             <th>Tipe Ruangan</th>
                             <th>Kapasitas</th>
+                            @if(Auth::user()->roleId != 2)
                             <th style="width: 110px; text-align: center;">Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -60,6 +64,7 @@
                                 <span class="badge bg-secondary">{{ str_replace('_', ' ', $ruangan->tipe_ruangan) }}</span>
                             </td>
                             <td>{{ $ruangan->kapasitas }} Orang</td>
+                            @if(Auth::user()->roleId != 2)
                             <td style="text-align: center;">
                                 <div class="d-flex justify-content-center gap-1">
                                     <a href="{{ route('main.ruangan.edit', $ruangan->id_ruangan) }}" 
@@ -77,10 +82,11 @@
                                     </button>
                                 </div>
                             </td>
+                            @endif
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" style="text-align: center; color: #999; padding: 30px;">
+                            <td colspan="{{ Auth::user()->roleId == 2 ? 5 : 6 }}" style="text-align: center; color: #999; padding: 30px;">
                                 <i class="fas fa-inbox" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
                                 Belum ada data ruangan
                             </td>
@@ -201,8 +207,8 @@
             ordering: true,
             responsive: true,
             columnDefs: [
-                { orderable: false, targets: [0, 5] },
-                { searchable: false, targets: [0, 5] }
+                { orderable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 5] @endif },
+                { searchable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 5] @endif }
             ]
         });
     });

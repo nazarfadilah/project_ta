@@ -15,9 +15,6 @@
         <a href="{{ url('/#harga') }}" class="nav-link">Harga</a>
         <a href="{{ url('/berita') }}" class="nav-link">Berita</a>
         <a href="{{ url('/#kontak') }}" class="nav-link">Kontak</a>
-      </div>
-
-      <div class="nav-actions">
         <a href="/login" class="btn-booking" target="_blank">
           <span>📱</span>
           Booking Sekarang

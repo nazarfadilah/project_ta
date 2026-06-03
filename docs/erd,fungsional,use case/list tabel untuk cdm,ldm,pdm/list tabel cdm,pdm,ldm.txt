@@ -1,0 +1,331 @@
+========================================================================
+LIST TABEL DAN FIELD UNTUK MODEL DATA (CDM, LDM, PDM)
+Sistem Informasi Peminjaman Ruangan dan Sarana (SIPRASA)
+========================================================================
+
+Dokumen ini memuat daftar tabel dan field yang membedakan konsep CDM (Conceptual Data Model), LDM (Logical Data Model), dan PDM (Physical Data Model) serta rincian lengkap kamus data dari keseluruhan database.
+
+------------------------------------------------------------------------
+1. PERBEDAAN CDM, LDM, DAN PDM
+------------------------------------------------------------------------
+
+* CONCEPTUAL DATA MODEL (CDM)
+  - Bersifat konseptual, berfokus pada representasi entitas bisnis dan hubungannya.
+  - Tidak memuat Foreign Key (FK) sebagai kolom. Relasi digambarkan sebagai garis hubungan asosiatif langsung antar entitas.
+  - Tipe data bersifat umum/logikal (misal: Text, Number, Date).
+  - Kolom metadata teknis (seperti created_at, updated_at) tidak disertakan.
+
+* LOGICAL DATA MODEL (LDM)
+  - Menjembatani CDM dengan PDM.
+  - Mulai memetakan kolom Foreign Key (FK) hasil dari resolusi relasi antar entitas.
+  - Tipe data dispesifikasikan lebih rinci namun masih independen dari DBMS tertentu (misal: String, Integer, DateTime, Boolean).
+  - Mengidentifikasi opsionalitas (Nullability) dan Primary/Foreign Key.
+
+* PHYSICAL DATA MODEL (PDM)
+  - Representasi fisik database riil yang siap diimplementasikan pada DBMS target (dalam hal ini MySQL/MariaDB).
+  - Menggunakan tipe data spesifik DBMS (misal: VARCHAR, BIGINT UNSIGNED, ENUM, DECIMAL, TIMESTAMP).
+  - Memuat relasi Foreign Key lengkap dengan aksi referensial (seperti ON DELETE CASCADE atau ON DELETE SET NULL).
+  - Menyertakan seluruh kolom metadata teknis/log seperti created_at, updated_at, atau createdAt, updatedAt.
+
+
+------------------------------------------------------------------------
+2. DAFTAR ENTITAS/TABEL & FIELD BERDASARKAN MODEL DATA
+------------------------------------------------------------------------
+
+A. CONCEPTUAL DATA MODEL (CDM)
+   * Entitas:
+     - Role (id, name, description, permissions)
+     - User (id, google_id, username, email, password, phone, status, lastLoginAt)
+     - GambarDashboard (id, posisi, path, waktu_upload)
+     - Berita (id, judul, slug, isi, gambar, tanggal_publish, status, keterangan)
+     - Tentang (id, key, key2, value)
+     - Galeri (id, kategori, judul, isi, gambar)
+     - Gedung (id_gedung, nama_gedung, koordinat, keterangan)
+     - Ruangan (id_ruangan, nama_ruangan, tipe_ruangan, lantai, kapasitas, gender_policy, keterangan)
+     - PaketRuangan (id, nama_paket, durasi, harga, currency, isExclusive, status)
+     - Guest (id, nik, name, gender, address, bloodType, notes)
+     - PeminjamanTransaksi (id, kodePeminjaman, tanggal, jamMulai, checkIn, checkOut, durasi, statusPeminjaman, keterangan, statusApproval, catatanApproval, tanggalApproval, biayaTambahan, kondisiReturn, catatanKerusakan, estimasiDamage)
+     - Invoice (id, noInvoice, subtotal, biayaTambahan, totalHarga, statusInvoice, status_pembayaran, tglInvoice, tglDueDate, tgl_pembayaran, tglPaid, notes)
+     - Sarana (id, nama, kondisi, tgl_penerimaan, stok)
+     - DetailPeminjamanSarana (id, jumlah)
+     - MediaFile (id, path)
+     - ActivityLog (id, action, tabelNama, recordId, detailPerubahan, ipAddress)
+
+B. LOGICAL DATA MODEL (LDM)
+   * Entitas & Atribut (Termasuk FK & Tipe Logikal):
+     - Role (id: Integer, name: String, description: Text, permissions: JSON)
+     - User (id: Integer, google_id: String, username: String, email: String, password: String, roleId: Integer [FK], phone: String, guestId: Integer [FK], status: String, lastLoginAt: DateTime)
+     - GambarDashboard (id: Integer, posisi: Integer, path: String, waktu_upload: DateTime)
+     - Berita (id: Integer, userId: Integer [FK], judul: String, slug: String, isi: Text, gambar: String, tanggal_publish: Date, status: String, keterangan: Text)
+     - Tentang (id: Integer, key: String, key2: String, value: Text)
+     - Galeri (id: Integer, kategori: String, judul: String, isi: Text, gambar: String)
+     - Gedung (id_gedung: Integer, nama_gedung: String, koordinat: String, keterangan: Text)
+     - Ruangan (id_ruangan: Integer, gedung_id: Integer [FK], nama_ruangan: String, tipe_ruangan: String, lantai: Integer, kapasitas: Integer, gender_policy: String, keterangan: Text)
+     - PaketRuangan (id: Integer, ruangan_id: Integer [FK], nama_paket: String, durasi: Integer, harga: Decimal, currency: String, isExclusive: Boolean, status: String)
+     - Guest (id: Integer, nik: String, name: String, gender: String, address: Text, bloodType: String, notes: Text)
+     - PeminjamanTransaksi (id: Integer, kodePeminjaman: String, guestId: Integer [FK], facilityId: Integer [FK], tanggal: Date, jamMulai: DateTime, checkIn: DateTime, checkOut: DateTime, durasi: Integer, statusPeminjaman: String, keterangan: Text, userId: Integer [FK], statusApproval: String, catatanApproval: Text, tanggalApproval: DateTime, biayaTambahan: Decimal, kondisiReturn: String, catatanKerusakan: Text, estimasiDamage: Decimal)
+     - Invoice (id: Integer, noInvoice: String, peminjamanId: Integer [FK], subtotal: Decimal, biayaTambahan: Decimal, totalHarga: Decimal, statusInvoice: String, status_pembayaran: String, tglInvoice: DateTime, tglDueDate: DateTime, tgl_pembayaran: DateTime, tglPaid: DateTime, notes: Text)
+     - Sarana (id: Integer, nama: String, kondisi: String, tgl_penerimaan: Date, stok: String)
+     - DetailPeminjamanSarana (id: Integer, sarana_id: Integer [FK], peminjaman_id: Integer [FK], jumlah: String)
+     - MediaFile (id: Integer, ruangan_id: Integer [FK], path: String)
+     - ActivityLog (id: Integer, userId: Integer [FK], action: String, tabelNama: String, recordId: String, detailPerubahan: JSON, ipAddress: String)
+
+C. PHYSICAL DATA MODEL (PDM)
+   * Berupa skema tabel fisik database sesungguhnya yang memuat relasi spesifik dan tipe data SQL ril yang diuraikan di bawah ini.
+
+
+------------------------------------------------------------------------
+3. DETAIL KAMUS DATA SELURUH TABEL DATABASE (PDM)
+------------------------------------------------------------------------
+
+=== TABEL 1: role ===
+Keterangan: Menyimpan data hak akses (role) pengguna.
++----+-------------+---------------+-------------------------------+
+| No | Nama Kolom  | Tipe Data     | Keterangan                    |
++----+-------------+---------------+-------------------------------+
+| 1  | id          | INT           | Primary Key, Auto Increment   |
+| 2  | name        | VARCHAR(100)  | Unique                        |
+| 3  | description | TEXT          | Nullable                      |
+| 4  | permissions | JSON          | Nullable                      |
+| 5  | createdAt   | TIMESTAMP     | Default: Current Timestamp    |
+| 6  | updatedAt   | TIMESTAMP     | Default: Current Timestamp    |
++----+-------------+---------------+-------------------------------+
+
+=== TABEL 2: users ===
+Keterangan: Menyimpan data akun pengguna (staff & tamu).
++----+-------------+-----------------+---------------------------------------------+
+| No | Nama Kolom  | Tipe Data       | Keterangan                                  |
++----+-------------+-----------------+---------------------------------------------+
+| 1  | id          | BIGINT UNSIGNED | Primary Key, Auto Increment                 |
+| 2  | google_id   | VARCHAR(255)    | Nullable                                    |
+| 3  | username    | VARCHAR(100)    | Unique                                      |
+| 4  | email       | VARCHAR(255)    | Unique                                      |
+| 5  | password    | VARCHAR(255)    | Nullable (jika login Google)                |
+| 6  | roleId      | INT UNSIGNED    | Foreign Key -> role(id)                     |
+| 7  | phone       | VARCHAR(20)     | Nullable                                    |
+| 8  | guestId     | INT UNSIGNED    | Foreign Key -> guest(id), Nullable          |
+| 9  | status      | ENUM            | ENUM: 'ACTIVE', 'INACTIVE', 'SUSPENDED'     |
+| 10 | lastLoginAt | TIMESTAMP       | Nullable                                    |
+| 11 | created_at  | TIMESTAMP       | Nullable                                    |
+| 12 | updated_at  | TIMESTAMP       | Nullable                                    |
++----+-------------+-----------------+---------------------------------------------+
+
+=== TABEL 3: gambar_dashboard ===
+Keterangan: Menyimpan gambar slider untuk dashboard/landing page.
++----+--------------+-----------------+-----------------------------+
+| No | Nama Kolom   | Tipe Data       | Keterangan                  |
++----+--------------+-----------------+-----------------------------+
+| 1  | id           | BIGINT UNSIGNED | Primary Key, Auto Increment |
+| 2  | posisi       | TINYINT         |                             |
+| 3  | path         | VARCHAR(255)    |                             |
+| 4  | waktu_upload | TIMESTAMP       |                             |
++----+--------------+-----------------+-----------------------------+
+
+=== TABEL 4: berita ===
+Keterangan: Menyimpan artikel, berita, atau pengumuman.
++----+-----------------+-----------------+---------------------------------------+
+| No | Nama Kolom      | Tipe Data       | Keterangan                            |
++----+-----------------+-----------------+---------------------------------------+
+| 1  | id              | BIGINT UNSIGNED | Primary Key, Auto Increment           |
+| 2  | userId          | BIGINT UNSIGNED | Foreign Key -> users(id), Nullable    |
+| 3  | judul           | VARCHAR(128)    |                                       |
+| 4  | slug            | VARCHAR(64)     |                                       |
+| 5  | isi             | TEXT            |                                       |
+| 6  | gambar          | VARCHAR(255)    |                                       |
+| 7  | tanggal_publish | DATE            |                                       |
+| 8  | status          | ENUM            | ENUM: 'approved', 'draft', 'rejected' |
+| 9  | keterangan      | TEXT            | Nullable                              |
+| 10 | created_at      | TIMESTAMP       | Nullable                              |
+| 11 | updated_at      | TIMESTAMP       | Nullable                              |
++----+-----------------+-----------------+---------------------------------------+
+
+=== TABEL 5: tentang ===
+Keterangan: Menyimpan konfigurasi Landing Page (logo, visi, misi, dll).
++----+------------+-----------------+-----------------------------+
+| No | Nama Kolom | Tipe Data       | Keterangan                  |
++----+------------+-----------------+-----------------------------+
+| 1  | id         | BIGINT UNSIGNED | Primary Key, Auto Increment |
+| 2  | key        | VARCHAR(255)    |                             |
+| 3  | key2       | VARCHAR(255)    | Nullable                    |
+| 4  | value      | TEXT            |                             |
++----+------------+-----------------+-----------------------------+
+
+=== TABEL 6: galeri ===
+Keterangan: Menyimpan portofolio gambar berdasarkan kategori.
++----+------------+-----------------+----------------------------------------------------+
+| No | Nama Kolom | Tipe Data       | Keterangan                                         |
++----+------------+-----------------+----------------------------------------------------+
+| 1  | id         | BIGINT UNSIGNED | Primary Key, Auto Increment                        |
+| 2  | kategori   | ENUM            | ENUM: 'pengapian', 'moshulla', 'aula', 'gedung'    |
+| 3  | judul      | VARCHAR(128)    |                                                    |
+| 4  | isi        | TEXT            |                                                    |
+| 5  | gambar     | VARCHAR(255)    |                                                    |
+| 6  | created_at | TIMESTAMP       |                                                    |
++----+------------+-----------------+----------------------------------------------------+
+
+=== TABEL 7: gedung ===
+Keterangan: Menyimpan data gedung yang menaungi ruangan.
++----+-------------+--------------+-------------------------------+
+| No | Nama Kolom  | Tipe Data    | Keterangan                    |
++----+-------------+--------------+-------------------------------+
+| 1  | id_gedung   | INT          | Primary Key, Auto Increment   |
+| 2  | nama_gedung | VARCHAR(255) |                               |
+| 3  | koordinat   | VARCHAR(100) | Nullable                      |
+| 4  | keterangan  | TEXT         | Nullable                      |
+| 5  | createdAt   | TIMESTAMP    | Default: Current Timestamp    |
+| 6  | updatedAt   | TIMESTAMP    | Default: Current Timestamp    |
++----+-------------+--------------+-------------------------------+
+
+=== TABEL 8: ruangan ===
+Keterangan: Menyimpan unit ruangan/fasilitas peminjaman utama.
++----+---------------+-----------+---------------------------------------------------------------------------------+
+| No | Nama Kolom    | Tipe Data | Keterangan                                                                      |
++----+---------------+-----------+---------------------------------------------------------------------------------+
+| 1  | id_ruangan    | INT       | Primary Key, Auto Increment                                                     |
+| 2  | gedung_id     | INT       | Foreign Key -> gedung(id_gedung)                                                |
+| 3  | nama_ruangan  | VARCHAR(255) |                                                                              |
+| 4  | tipe_ruangan  | ENUM      | ENUM: 'KAMAR_STANDAR','KAMAR_VIP','KAMAR_PREMIUM','AULA','RUANG_MEETING','RUANG_LAINNYA' |
+| 5  | lantai        | INT       | Nullable                                                                        |
+| 6  | kapasitas     | INT       | Default: 1                                                                      |
+| 7  | gender_policy | ENUM      | ENUM: 'MALE_ONLY','FEMALE_ONLY','MIXED', Nullable                               |
+| 8  | keterangan    | TEXT      | Nullable                                                                        |
+| 9  | createdAt     | TIMESTAMP | Default: Current Timestamp                                                      |
+| 10 | updatedAt     | TIMESTAMP | Default: Current Timestamp                                                      |
++----+---------------+-----------+---------------------------------------------------------------------------------+
+
+=== TABEL 9: paket_ruangan ===
+Keterangan: Menyimpan paket sewa (durasi & harga sewa) dari setiap ruangan.
++----+-------------+---------------+---------------------------------------------+
+| No | Nama Kolom  | Tipe Data     | Keterangan                                  |
++----+-------------+---------------+---------------------------------------------+
+| 1  | id          | INT           | Primary Key, Auto Increment                 |
+| 2  | ruangan_id  | INT           | Foreign Key -> ruangan(id_ruangan)          |
+| 3  | nama_paket  | VARCHAR(255)  |                                             |
+| 4  | durasi      | INT           | Nullable                                    |
+| 5  | harga       | DECIMAL(15,2) |                                             |
+| 6  | currency    | VARCHAR(3)    | Default: 'IDR'                              |
+| 7  | isExclusive | TINYINT(1)    | Default: 0 (Boolean)                        |
+| 8  | status      | ENUM          | ENUM: 'ACTIVE','INACTIVE','MAINTENANCE'     |
+| 9  | createdAt   | TIMESTAMP     | Default: Current Timestamp                  |
+| 10 | updatedAt   | TIMESTAMP     | Default: Current Timestamp                  |
++----+-------------+---------------+---------------------------------------------+
+
+=== TABEL 10: guest ===
+Keterangan: Menyimpan biodata lengkap tamu (guest) penyewa.
++----+------------+--------------+-----------------------------+
+| No | Nama Kolom | Tipe Data    | Keterangan                  |
++----+------------+--------------+-----------------------------+
+| 1  | id         | INT          | Primary Key, Auto Increment |
+| 2  | nik        | CHAR(16)     | Unique                      |
+| 3  | name       | VARCHAR(255) |                             |
+| 4  | gender     | ENUM         | ENUM: 'MALE', 'FEMALE'      |
+| 5  | address    | TEXT         | Nullable                    |
+| 6  | bloodType  | VARCHAR(5)   | Nullable                    |
+| 7  | notes      | TEXT         | Nullable                    |
+| 8  | createdAt  | TIMESTAMP    | Default: Current Timestamp  |
+| 9  | updatedAt  | TIMESTAMP    | Default: Current Timestamp  |
++----+------------+--------------+-----------------------------+
+
+=== TABEL 11: peminjaman_transaksi ===
+Keterangan: Transaksi peminjaman ruangan dan log status peminjaman/approval.
++----+------------------+-----------------+-----------------------------------------------------------+
+| No | Nama Kolom       | Tipe Data       | Keterangan                                                |
++----+------------------+-----------------+-----------------------------------------------------------+
+| 1  | id               | INT             | Primary Key, Auto Increment                               |
+| 2  | kodePeminjaman   | VARCHAR(50)     | Unique                                                    |
+| 3  | guestId          | INT             | Foreign Key -> guest(id)                                  |
+| 4  | facilityId       | INT             | Foreign Key -> paket_ruangan(id)                          |
+| 5  | tanggal          | DATE            |                                                           |
+| 6  | jamMulai         | DATETIME        |                                                           |
+| 7  | checkIn          | DATETIME        | Nullable                                                  |
+| 8  | checkOut         | DATETIME        | Nullable                                                  |
+| 9  | durasi           | INT             |                                                           |
+| 10 | statusPeminjaman | ENUM            | ENUM: 'RESERVASI','CHECK_IN','CHECK_OUT','BATAL','SELESAI'|
+| 11 | keterangan       | TEXT            | Nullable                                                  |
+| 12 | userId           | BIGINT UNSIGNED | Foreign Key -> users(id), Nullable                        |
+| 13 | statusApproval   | ENUM            | ENUM: 'PENDING','APPROVED','REJECTED'                     |
+| 14 | catatanApproval  | TEXT            | Nullable                                                  |
+| 15 | tanggalApproval  | DATETIME        | Nullable                                                  |
+| 16 | biayaTambahan    | DECIMAL(15,2)   | Default: 0.00                                             |
+| 17 | kondisiReturn    | ENUM            | ENUM: 'BAIK','RUSAK_RINGAN','RUSAK_BERAT','HILANG', Null  |
+| 18 | catatanKerusakan | TEXT            | Nullable                                                  |
+| 19 | estimasiDamage   | DECIMAL(15,2)   | Nullable                                                  |
+| 20 | createdAt        | TIMESTAMP       | Default: Current Timestamp                                |
+| 21 | updatedAt        | TIMESTAMP       | Default: Current Timestamp                                |
++----+------------------+-----------------+-----------------------------------------------------------+
+
+=== TABEL 12: invoice ===
+Keterangan: Dokumen tagihan / invoice untuk transaksi peminjaman.
++----+-------------------+---------------+---------------------------------------------+
+| No | Nama Kolom        | Tipe Data     | Keterangan                                  |
++----+-------------------+---------------+---------------------------------------------+
+| 1  | id                | INT           | Primary Key, Auto Increment                 |
+| 2  | noInvoice         | VARCHAR(50)   | Unique                                      |
+| 3  | peminjamanId      | INT           | Foreign Key -> peminjaman_transaksi(id), Unq|
+| 4  | subtotal          | DECIMAL(15,2) |                                             |
+| 5  | biayaTambahan     | DECIMAL(15,2) | Default: 0.00                               |
+| 6  | totalHarga        | DECIMAL(15,2) |                                             |
+| 7  | statusInvoice     | ENUM          | ENUM: 'UNPAID','PARTIAL','PAID','OVERDUE'   |
+| 8  | status_pembayaran | ENUM          | ENUM: 'BELUM_BAYAR','SEBAGIAN','LUNAS'      |
+| 9  | tglInvoice        | DATETIME      | Default: Current Timestamp                  |
+| 10 | tglDueDate        | DATETIME      | Nullable                                    |
+| 11 | tgl_pembayaran    | DATETIME      | Nullable                                    |
+| 12 | tglPaid           | DATETIME      | Nullable                                    |
+| 13 | notes             | TEXT          | Nullable                                    |
+| 14 | createdAt         | TIMESTAMP     | Default: Current Timestamp                  |
+| 15 | updatedAt         | TIMESTAMP     | Default: Current Timestamp                  |
++----+-------------------+---------------+---------------------------------------------+
+
+=== TABEL 13: sarana ===
+Keterangan: Menyimpan data sarana & prasarana pendukung yang dapat dipinjam.
++----+----------------+-----------------+-----------------------------------------------+
+| No | Nama Kolom     | Tipe Data       | Keterangan                                    |
++----+----------------+-----------------+-----------------------------------------------+
+| 1  | id             | BIGINT UNSIGNED | Primary Key, Auto Increment                   |
+| 2  | nama           | VARCHAR(128)    |                                               |
+| 3  | kondisi        | ENUM            | ENUM: 'Baik','Baik Sekali','Normal','Perlu...'|
+| 4  | tgl_penerimaan | DATE            |                                               |
+| 5  | stok           | VARCHAR(5)      |                                               |
+| 6  | created_at     | TIMESTAMP       | Nullable                                      |
+| 7  | updated_at     | TIMESTAMP       | Nullable                                      |
++----+----------------+-----------------+-----------------------------------------------+
+
+=== TABEL 14: detail_peminjaman_sarana ===
+Keterangan: Menyimpan relasi sarana pendukung yang dipinjam dalam transaksi peminjaman.
++----+---------------+-----------------+-------------------------------------------+
+| No | Nama Kolom    | Tipe Data       | Keterangan                                |
++----+---------------+-----------------+-------------------------------------------+
+| 1  | id            | BIGINT UNSIGNED | Primary Key, Auto Increment               |
+| 2  | sarana_id     | BIGINT UNSIGNED | Foreign Key -> sarana(id)                 |
+| 3  | peminjaman_id | INT             | Foreign Key -> peminjaman_transaksi(id)   |
+| 4  | jumlah        | VARCHAR(5)      |                                           |
+| 5  | created_at    | TIMESTAMP       | Nullable                                  |
+| 6  | updated_at    | TIMESTAMP       | Nullable                                  |
++----+---------------+-----------------+-------------------------------------------+
+
+=== TABEL 15: media_file ===
+Keterangan: Menyimpan foto-foto galeri dari setiap ruangan.
++----+------------+-----------------+-------------------------------------+
+| No | Nama Kolom | Tipe Data       | Keterangan                          |
++----+------------+-----------------+-------------------------------------+
+| 1  | id         | BIGINT UNSIGNED | Primary Key, Auto Increment         |
+| 2  | ruangan_id | INT             | Foreign Key -> ruangan(id_ruangan)  |
+| 3  | path       | VARCHAR(255)    |                                     |
+| 4  | created_at | TIMESTAMP       | Nullable                            |
+| 5  | updated_at | TIMESTAMP       | Nullable                            |
++----+------------+-----------------+-------------------------------------+
+
+=== TABEL 16: activity_log ===
+Keterangan: Log audit sistem yang merekam perubahan data sensitif database.
++----+-----------------+-----------------+-------------------------------------+
+| No | Nama Kolom      | Tipe Data       | Keterangan                          |
++----+-----------------+-----------------+-------------------------------------+
+| 1  | id              | INT             | Primary Key, Auto Increment         |
+| 2  | userId          | BIGINT UNSIGNED | Foreign Key -> users(id), Nullable  |
+| 3  | action          | VARCHAR(100)    |                                     |
+| 4  | tabelNama       | VARCHAR(100)    |                                     |
+| 5  | recordId        | VARCHAR(100)    |                                     |
+| 6  | detailPerubahan | JSON            | Nullable                            |
+| 7  | ipAddress       | VARCHAR(50)     | Nullable                            |
+| 8  | createdAt       | TIMESTAMP       | Default: Current Timestamp          |
++----+-----------------+-----------------+-------------------------------------+

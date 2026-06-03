@@ -22,4 +22,22 @@ class Galeri extends Model
     protected $casts = [
         'created_at' => 'datetime',
     ];
+
+    /**
+     * Accessor for kategori column.
+     * Maps 'pengapian' (database typo) to 'penginapan'.
+     */
+    public function getKategoriAttribute($value)
+    {
+        return $value === 'pengapian' ? 'penginapan' : $value;
+    }
+
+    /**
+     * Mutator for kategori column.
+     * Maps 'penginapan' back to 'pengapian' before saving to database.
+     */
+    public function setKategoriAttribute($value)
+    {
+        $this->attributes['kategori'] = $value === 'penginapan' ? 'pengapian' : $value;
+    }
 }

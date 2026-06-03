@@ -7,9 +7,9 @@
                 $logo = \App\Models\Tentang::where('key', 'logo')->first()?->value;
             @endphp
             @if($logo)
-                <img src="{{ asset('storage/' . $logo) }}">
+                <img src="{{ filter_var($logo, FILTER_VALIDATE_URL) ? $logo : (str_starts_with($logo, 'storage/') ? asset($logo) : asset('storage/' . $logo)) }}" style="border-radius: 50%; aspect-ratio: 1; object-fit: cover; width: 34px; height: 34px;">
             @else
-                <i class="fas fa-building" style="color: #fff; font-size: 22px;"></i>
+                <i class="fas fa-hotel brand-icon"></i>
             @endif
         </div>
         <span class="brand-text">SIPRASA</span>
@@ -30,36 +30,45 @@
             <hr class="sidebar-divider">
 
             <!-- Kelola User -->
+            @if(Auth::user()->roleId == 1)
             <li class="nav-item">
                 <a href="{{ route('main.users.index') }}" class="nav-link {{ request()->routeIs('main.users.*') ? 'active' : '' }}" title="Kelola User">
                     <i class="fas fa-users menu-icon"></i>
                     <span class="menu-text">Kelola User</span>
                 </a>
             </li>
+            @endif
 
             <!-- Kelola Tamu -->
+            @if(in_array(Auth::user()->roleId, [1, 2]))
             <li class="nav-item">
                 <a href="{{ route('main.tamu.index') }}" class="nav-link {{ request()->routeIs('main.tamu.*') ? 'active' : '' }}" title="Kelola Tamu">
                     <i class="fas fa-user-tie menu-icon"></i>
                     <span class="menu-text">Kelola Tamu</span>
                 </a>
             </li>
+            @endif
 
             <!-- Divider -->
+            @if(in_array(Auth::user()->roleId, [1, 2]))
             <hr class="sidebar-divider">
+            @endif
 
             <!-- Kelola Berita -->
+            @if(in_array(Auth::user()->roleId, [1, 2, 3]))
             <li class="nav-item">
                 <a href="{{ route('main.berita.index') }}" class="nav-link {{ request()->routeIs('main.berita.*') ? 'active' : '' }}" title="Kelola Berita">
                     <i class="fas fa-newspaper menu-icon"></i>
                     <span class="menu-text">Kelola Berita</span>
                 </a>
             </li>
+            @endif
 
             <!-- Divider -->
             <hr class="sidebar-divider">
 
             <!-- Transaksi Peminjaman Dropdown -->
+            @if(in_array(Auth::user()->roleId, [2, 3]))
             <li class="nav-item">
                 <a href="#transaksiPeminjamanMenu" class="nav-link dropdown-toggle {{ request()->routeIs('main.transaksi.peminjaman.*') || request()->routeIs('main.peminjaman_sarana.*') ? 'active' : '' }}" data-bs-toggle="collapse" title="Transaksi Peminjaman">
                     <i class="fas fa-calendar-check menu-icon"></i>
@@ -82,8 +91,10 @@
                     </ul>
                 </div>
             </li>
+            @endif
 
             <!-- Divider -->
+            @if(Auth::user()->roleId == 1)
             <hr class="sidebar-divider">
 
             <!-- Landing Page Dropdown -->
@@ -91,7 +102,6 @@
                 <a href="#landingPageMenu" class="nav-link dropdown-toggle {{ request()->routeIs('main.landing.*') ? 'active' : '' }}" data-bs-toggle="collapse" title="Landing Page">
                     <i class="fas fa-desktop menu-icon"></i>
                     <span class="menu-text">Landing Page</span>
-                    <!-- <i class="fas fa-chevron-down ms-auto dropdown-indicator"></i> -->
                 </a>
                 <div class="collapse {{ request()->routeIs('main.landing.*') ? 'show' : '' }}" id="landingPageMenu">
                     <ul class="nav flex-column ps-4">
@@ -134,11 +144,13 @@
                     </ul>
                 </div>
             </li>
+            @endif
 
             <!-- Divider -->
             <hr class="sidebar-divider">
 
             <!-- Data Master Dropdown -->
+            @if(in_array(Auth::user()->roleId, [2, 3]))
             <li class="nav-item">
                 <a href="#dataMasterMenu" class="nav-link dropdown-toggle {{ request()->routeIs('main.ruangan.*') || request()->routeIs('main.sarana.*') || request()->routeIs('main.gedung.*') || request()->routeIs('main.paket_ruangan.*') ? 'active' : '' }}" data-bs-toggle="collapse" title="Data Master">
                     <i class="fas fa-database menu-icon"></i>
@@ -146,35 +158,45 @@
                 </a>
                 <div class="collapse {{ request()->routeIs('main.ruangan.*') || request()->routeIs('main.sarana.*') || request()->routeIs('main.gedung.*') || request()->routeIs('main.paket_ruangan.*') ? 'show' : '' }}" id="dataMasterMenu">
                     <ul class="nav flex-column ps-4">
+                        @if(in_array(Auth::user()->roleId, [2, 3]))
                         <li class="nav-item">
                             <a href="{{ route('main.ruangan.index') }}" class="nav-link {{ request()->routeIs('main.ruangan.*') ? 'active' : '' }}" title="Ruangan">
                                 <i class="fas fa-door-open menu-icon"></i>
                                 <span class="menu-text">Ruangan</span>
                             </a>
                         </li>
+                        @endif
+                        @if(in_array(Auth::user()->roleId, [2, 3]))
                         <li class="nav-item">
                             <a href="{{ route('main.sarana.index') }}" class="nav-link {{ request()->routeIs('main.sarana.*') ? 'active' : '' }}" title="Sarana">
                                 <i class="fas fa-tools menu-icon"></i>
                                 <span class="menu-text">Sarana</span>
                             </a>
                         </li>
+                        @endif
+                        @if(in_array(Auth::user()->roleId, [2, 3]))
                         <li class="nav-item">
                             <a href="{{ route('main.gedung.index') }}" class="nav-link {{ request()->routeIs('main.gedung.*') ? 'active' : '' }}" title="Gedung">
                                 <i class="fas fa-building menu-icon"></i>
                                 <span class="menu-text">Gedung</span>
                             </a>
                         </li>
+                        @endif
+                        @if(in_array(Auth::user()->roleId, [2, 3]))
                         <li class="nav-item">
                             <a href="{{ route('main.paket_ruangan.index') }}" class="nav-link {{ request()->routeIs('main.paket_ruangan.*') ? 'active' : '' }}" title="Paket Ruangan">
                                 <i class="fas fa-box-open menu-icon"></i>
                                 <span class="menu-text">Paket Ruangan</span>
                             </a>
                         </li>
+                        @endif
                     </ul>
                 </div>
             </li>
+            @endif
 
             <!-- Divider -->
+            @if(in_array(Auth::user()->roleId, [1, 2]))
             <hr class="sidebar-divider">
 
             <!-- Laporan -->
@@ -184,6 +206,7 @@
                     <span class="menu-text">Laporan</span>
                 </a>
             </li>
+            @endif
         </ul>
     </div>
 

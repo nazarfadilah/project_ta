@@ -14,4 +14,21 @@ a.	Kebutuhan fungsional
 12)	Admin dan Petugas dapat mengelola data berita
 13)	Admin dapat mengelola data gambar
 14)	Admin dapat mengelola data tentang.
-15) 	Check-in dan Check-out
+15) 	Check-in dan Check-out
+
+Kebutuhan Fungsional baru berdasarkan perubahan hak akses yang telah kita buat:
+1)	Pimpinan dapat menampilkan data tamu, gedung, ruangan, sarana, paket ruangan, peminjaman, dan berita secara read-only (tombol tambah, edit, hapus, dan aksi lainnya dihidden)
+2)	Pimpinan dapat memantau total pengguna di dashboard utama tanpa dapat membuka detail modul kelola pengguna
+3)	Pimpinan dapat menghasilkan laporan peminjaman dan penggunaan fasilitas
+4)	Admin dapat mengelola data pengguna berdasarkan role masing-masing secara penuh
+5)	Admin dapat mengelola data tamu secara penuh
+6)	Admin dapat mengelola data gedung secara penuh
+7)	Admin dapat mengelola data gambar secara penuh
+8)	Admin dapat mengelola data tentang secara penuh
+9)	Admin dapat mengelola data invoice secara penuh
+10)	Admin dapat menyetujui atau menolak publikasi berita yang berstatus draft
+11)	Petugas dapat mengelola data ruangan secara penuh
+12)	Petugas dapat mengelola data sarana secara penuh
+13)	Petugas dapat mengelola data paket ruangan secara penuh
+14)	Petugas dapat melakukan verifikasi peminjaman, check-in peminjaman, dan check-out peminjaman
+15)	Petugas dapat membuat berita berstatus draft (tidak dapat mempublikasikan langsung)

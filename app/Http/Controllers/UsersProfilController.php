@@ -62,8 +62,7 @@ class UsersProfilController extends Controller
             // Guest fields
             'nik' => [
                 'required',
-                'string',
-                'max:16',
+                'digits:16',
                 Rule::unique('guest', 'nik')->ignore($guestId),
             ],
             'name' => 'required|string|max:255',
@@ -73,11 +72,15 @@ class UsersProfilController extends Controller
             'notes' => 'nullable|string',
             
             // User fields
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|digits_between:9,15',
             'password' => 'nullable|string|min:6|confirmed',
         ], [
+            'nik.required' => 'NIK wajib diisi.',
+            'nik.digits' => 'NIK harus berupa angka dan berjumlah tepat 16 digit.',
             'nik.unique' => 'NIK ini sudah terdaftar oleh pengguna lain.',
             'gender.in' => 'Jenis Kelamin harus berupa Pria atau Wanita.',
+            'phone.required' => 'Nomor telepon wajib diisi.',
+            'phone.digits_between' => 'Nomor HP harus berupa angka dan berjumlah antara 9 sampai 15 digit.',
             'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
             'password.min' => 'Password baru minimal harus 6 karakter.',
         ]);

@@ -7,7 +7,7 @@
                 $logo = \App\Models\Tentang::where('key', 'logo')->first()?->value;
             @endphp
             @if($logo)
-                <img src="{{ asset('storage/' . $logo) }}">
+                <img src="{{ filter_var($logo, FILTER_VALIDATE_URL) ? $logo : (str_starts_with($logo, 'storage/') ? asset($logo) : asset('storage/' . $logo)) }}" style="border-radius: 50%; aspect-ratio: 1; object-fit: cover; width: 34px; height: 34px;">
             @else
                 <i class="fas fa-building" style="color: #fff; font-size: 22px;"></i>
             @endif

@@ -27,9 +27,11 @@
             <h6 class="mb-0 fw-semibold" style="font-size: 15px;">
                 <i class="fas fa-dolly me-2"></i>Daftar Peminjaman Sarana
             </h6>
+            @if(Auth::user()->roleId != 2)
             <a href="{{ route('main.peminjaman_sarana.create') }}" class="btn btn-sm btn-light" style="font-size: 13px; padding: 6px 12px;">
                 <i class="fas fa-plus me-1"></i> Buat Peminjaman
             </a>
+            @endif
         </div>
         <div class="card-body" style="padding: 20px;">
             <div class="table-responsive">
@@ -42,7 +44,9 @@
                             <th>Durasi</th>
                             <th>Jumlah</th>
                             <th>Status</th>
+                            @if(Auth::user()->roleId != 2)
                             <th style="width: 110px; text-align: center;">Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -66,6 +70,7 @@
                                 @endphp
                                 <span class="badge {{ $statusClass }}">{{ $peminjaman->statusPeminjaman }}</span>
                             </td>
+                            @if(Auth::user()->roleId != 2)
                             <td style="text-align: center;">
                                 <div class="d-flex justify-content-center gap-1">
                                     <a href="{{ route('main.peminjaman_sarana.edit', $peminjaman->id) }}" 
@@ -83,10 +88,11 @@
                                     </button>
                                 </div>
                             </td>
+                            @endif
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" style="text-align: center; color: #999; padding: 30px;">
+                            <td colspan="{{ Auth::user()->roleId == 2 ? 6 : 7 }}" style="text-align: center; color: #999; padding: 30px;">
                                 <i class="fas fa-inbox" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
                                 Belum ada peminjaman sarana
                             </td>

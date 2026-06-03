@@ -14,12 +14,10 @@ class GambarDashboard extends Model
         'posisi',
         'path',
         'waktu_upload',
-        'updated_at',
     ];
 
     protected $casts = [
         'posisi' => 'integer',
         'waktu_upload' => 'datetime',
-        'updated_at' => 'datetime',
     ];
 }

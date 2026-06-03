@@ -89,10 +89,10 @@ class AuthController extends Controller
             'phone' => 'nullable|string|max:20',
         ]);
 
-        // Get peminjam role
-        $peminjamRole = Role::where('name', 'peminjam')->first();
+        // Get Tamu role
+        $peminjamRole = Role::where('name', 'Tamu')->first() ?? Role::find(4);
         if (!$peminjamRole) {
-            return back()->withErrors(['error' => 'Role peminjam tidak ditemukan. Hubungi administrator.']);
+            return back()->withErrors(['error' => 'Role Tamu tidak ditemukan. Hubungi administrator.']);
         }
 
         $user = User::create([
@@ -124,10 +124,10 @@ class AuthController extends Controller
                         ->first();
 
             if (!$user) {
-                // Get peminjam role
-                $peminjamRole = Role::where('name', 'peminjam')->first();
+                // Get Tamu role
+                $peminjamRole = Role::where('name', 'Tamu')->first() ?? Role::find(4);
                 if (!$peminjamRole) {
-                    return redirect()->route('login')->withErrors(['error' => 'Role peminjam tidak ditemukan. Hubungi administrator.']);
+                    return redirect()->route('login')->withErrors(['error' => 'Role Tamu tidak ditemukan. Hubungi administrator.']);
                 }
 
                 $user = User::create([

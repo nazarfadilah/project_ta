@@ -152,7 +152,7 @@ class LaporanController extends Controller
                 'Status Peminjaman',
                 'Status Approval',
                 'Keterangan'
-            ]);
+            ], ';');
 
             foreach ($data as $index => $row) {
                 fputcsv($file, [
@@ -168,7 +168,7 @@ class LaporanController extends Controller
                     $row->statusPeminjaman,
                     $row->statusApproval,
                     $row->keterangan ?? '-'
-                ]);
+                ], ';');
             }
             
             fclose($file);

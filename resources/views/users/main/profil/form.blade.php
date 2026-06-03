@@ -374,7 +374,7 @@
                         <label for="nik" class="form-label">NIK / Nomor Identitas</label>
                         <div class="input-group">
                             <span class="input-group-text bg-white" style="border-right: none; color: #94a3b8;"><i class="fas fa-id-card"></i></span>
-                            <input type="text" class="form-control" id="nik" name="nik" value="{{ old('nik', $guest->nik ?? '') }}" placeholder="Masukkan 16 digit NIK" style="border-left: none;" required>
+                            <input type="text" class="form-control" id="nik" name="nik" value="{{ old('nik', $guest->nik ?? '') }}" placeholder="Masukkan 16 digit NIK" style="border-left: none;" maxlength="16" minlength="16" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                         </div>
                     </div>
                     
@@ -410,6 +410,7 @@
                             <span class="input-group-text bg-white" style="border-right: none; color: #94a3b8;"><i class="fas fa-tint"></i></span>
                             <select class="form-select" id="bloodType" name="bloodType" style="border-left: none;">
                                 <option value="" {{ empty(old('bloodType', $guest->bloodType ?? '')) ? 'selected' : '' }}>-- Pilih Golongan Darah --</option>
+                                <option value="-" {{ old('bloodType', $guest->bloodType ?? '') === '-' ? 'selected' : '' }}>- (Tidak Tahu)</option>
                                 <option value="A" {{ old('bloodType', $guest->bloodType ?? '') === 'A' ? 'selected' : '' }}>A</option>
                                 <option value="B" {{ old('bloodType', $guest->bloodType ?? '') === 'B' ? 'selected' : '' }}>B</option>
                                 <option value="AB" {{ old('bloodType', $guest->bloodType ?? '') === 'AB' ? 'selected' : '' }}>AB</option>
@@ -422,7 +423,7 @@
                         <label for="phone" class="form-label">Nomor Telepon / WhatsApp</label>
                         <div class="input-group">
                             <span class="input-group-text bg-white" style="border-right: none; color: #94a3b8;"><i class="fas fa-phone-alt"></i></span>
-                            <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', $user->phone ?? '') }}" placeholder="Contoh: 08123456789" style="border-left: none;" required>
+                            <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', $user->phone ?? '') }}" placeholder="Contoh: 08123456789" style="border-left: none;" maxlength="15" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                         </div>
                     </div>
 

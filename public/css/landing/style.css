@@ -201,6 +201,12 @@ input, select, textarea { font-family: inherit; outline: none; }
   box-shadow: 0 8px 25px rgba(245,200,66,0.45);
 }
 
+@media (min-width: 769px) {
+  .nav-links .btn-booking {
+    margin-left: 12px;
+  }
+}
+
 .nav-hamburger {
   display: none;
   flex-direction: column;

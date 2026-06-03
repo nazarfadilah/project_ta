@@ -24,7 +24,7 @@ class GaleriController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'kategori' => 'required|in:pengapian,moshulla,aula,gedung',
+            'kategori' => 'required|in:penginapan,moshulla,aula,gedung',
             'judul' => 'required|string|max:128',
             'isi' => 'required|string',
             'gambar' => 'required|string|max:255',
@@ -48,7 +48,7 @@ class GaleriController extends Controller
     public function update(Request $request, Galeri $galeri)
     {
         $validated = $request->validate([
-            'kategori' => 'sometimes|in:pengapian,moshulla,aula,gedung',
+            'kategori' => 'sometimes|in:penginapan,moshulla,aula,gedung',
             'judul' => 'sometimes|string|max:128',
             'isi' => 'sometimes|string',
             'gambar' => 'sometimes|string|max:255',

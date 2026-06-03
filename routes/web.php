@@ -269,8 +269,12 @@ Route::middleware(['auth:web', 'tamu'])->prefix('users')->name('users.')->group(
     });
 });
 
-// Redirect old dashboard to users dashboard
+// Redirect dashboard to appropriate panel based on user role
 Route::get('/dashboard', function () {
-    return redirect('/users/dashboard');
+    $user = auth()->user();
+    if ($user && in_array($user->roleId, [1, 2, 3])) {
+        return redirect()->route('admin.dashboard');
+    }
+    return redirect()->route('users.dashboard');
 })->name('dashboard');
 

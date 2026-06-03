@@ -41,13 +41,16 @@
                     <label for="kategori" class="form-label fw-semibold" style="font-size: 13px; color: #555;">
                         Kategori <span class="text-danger">*</span>
                     </label>
-                    <input type="text" 
-                           class="form-control @error('kategori') is-invalid @enderror" 
-                           id="kategori" 
-                           name="kategori" 
-                           value="{{ old('kategori', $galeri?->kategori ?? '') }}" 
-                           placeholder="Masukkan kategori galeri"
-                           style="font-size: 14px; padding: 10px 14px;">
+                    <select class="form-select @error('kategori') is-invalid @enderror" 
+                            id="kategori" 
+                            name="kategori" 
+                            style="font-size: 14px; padding: 10px 14px;" required>
+                        <option value="">Pilih Kategori</option>
+                        <option value="penginapan" {{ old('kategori', $galeri?->kategori ?? '') === 'penginapan' ? 'selected' : '' }}>Penginapan</option>
+                        <option value="moshulla" {{ old('kategori', $galeri?->kategori ?? '') === 'moshulla' ? 'selected' : '' }}>Musholla</option>
+                        <option value="aula" {{ old('kategori', $galeri?->kategori ?? '') === 'aula' ? 'selected' : '' }}>Aula</option>
+                        <option value="gedung" {{ old('kategori', $galeri?->kategori ?? '') === 'gedung' ? 'selected' : '' }}>Gedung</option>
+                    </select>
                     @error('kategori')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror

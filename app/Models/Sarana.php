@@ -36,7 +36,11 @@ class Sarana extends Model {
             ->with('peminjamanTransaksi')
             ->get()
             ->filter(function ($detail) use ($startDate, $endDate) {
-                if (!$detail->peminjamanTransaksi) {
+                $tx = $detail->peminjamanTransaksi;
+                if (!$tx) {
+                    return false;
+                }
+                if ($tx->statusApproval === 'REJECTED' || $tx->statusPeminjaman === 'BATAL') {
                     return false;
                 }
                 

@@ -52,7 +52,7 @@
     @foreach($galeriItems as $item)
       <div class="gallery-data-item" data-category="{{ Str::slug($item->kategori) }}">
         <div class="gallery-card">
-          <img src="{{ filter_var($item->gambar, FILTER_VALIDATE_URL) ? $item->gambar : asset(ltrim($item->gambar, '/')) }}" alt="{{ $item->judul }}">
+          <img src="{{ filter_var($item->gambar, FILTER_VALIDATE_URL) ? $item->gambar : (str_starts_with($item->gambar, 'storage/') ? asset($item->gambar) : asset('storage/' . $item->gambar)) }}" alt="{{ $item->judul }}">
         </div>
       </div>
     @endforeach

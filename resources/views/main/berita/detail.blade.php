@@ -30,8 +30,8 @@
         </div>
         <div class="card-body" style="padding: 24px;">
 
-            {{-- Tombol Approve/Reject (Hanya untuk Draft) --}}
-            @if($berita->status === 'draft')
+            {{-- Tombol Approve/Reject (Hanya untuk Draft dan Admin) --}}
+            @if($berita->status === 'draft' && Auth::user()->roleId == 1)
             <div class="mb-4 pb-3 border-bottom">
                 <h6 class="mb-3 fw-semibold" style="color: #555; font-size: 14px;">
                     <i class="fas fa-check-double me-2"></i>Publikasi Berita
@@ -147,6 +147,7 @@
 
             {{-- Tombol Aksi (Bawah) --}}
             <div class="d-flex gap-2 pt-3 border-top">
+                @if(Auth::user()->roleId != 2)
                 <a href="{{ route('main.berita.edit', $berita->id) }}" 
                    class="btn btn-sm btn-warning" 
                    style="font-size: 13px; padding: 8px 20px;">
@@ -157,6 +158,7 @@
                         style="font-size: 13px; padding: 8px 20px;">
                     <i class="fas fa-trash me-1"></i> Hapus
                 </button>
+                @endif
                 <a href="{{ route('main.berita.index') }}" 
                    class="btn btn-sm btn-secondary" 
                    style="font-size: 13px; padding: 8px 20px;">

@@ -1,0 +1,25 @@
+1 untuk upload gambar landing Admin
+SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_at' in 'SET' (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: u568987435_asramahajibdj, SQL: update `gambar_dashboard` set `path` = gambar-landing/GAJXI0FE7yZIstJwRLedu8vbm4CYKquT2kfFVP1p.jpg, `updated_at` = 2026-06-03 04:05:17 where `id` = 1)
+2. error di dashboard admin, dashboard mengarahkan ke dashboard users bukan ke dashboard admin.
+3 logo bikin bulat lingkar tidak default sesuai foto
+4. hak akses untuk kelola peminjaman diberikan penuh ke petugas, admin tidak bisa melihat peminjaamn tapi dapat melihat statistik laporannya.
+5. Kelola gedung diberikan penuh ke petugas, data master dan data peminajaman/transaksi diberikan penuh ke petugas
+6. untuk data export excel data tersimpannya disatu kolom semua tidak teprisah untuk no kode peminjaman nama tamu dll. harus dipisah kolomnya
+7. pada dashboard untuk petugas, berita yang belum publish tidak ditmpilkan/dihidden kan karena petugas hanya bisa membuat berita tidak bisa mempublish
+8. untuk berita nama users id harus ada tampilkan dikolom dan untuk petugas hanya bisa melihat/mengedit milik dia sendiri/yang oleh dia buat sendiri.
+9. untuk sarana tambahkan kolom stok hari ini disebelah stok, dihitung berdasarkan jumlah stok semua dikurang jumlah sarana yang dipinjam hari ini.
+10. untuk data peminjaman di detail peminjaman/reservasi tambahkan sarana apa saja yang dipinjamkan juga beserta jumlahnya. tampilkan data gedung, paket ruangan, dan sarana yang dipinjamkan. sarana yang dipinjam berjumlah n ya berdasarkan berapa sarana yang dipinjam berdasarkan 1 transaksi reservasi. karena untuk reservasi bisa meminjam beberpa sarana.
+11. untuk kolom nik di profil wajib 16 tidak boleh kurang atau lebih
+12. golongan darah boleh kosong atau diisi - untuk yang tidak tahu golongan darah
+12. no hp harus 9 -15
+13. nik dan no hp di form tidak boleh bbisa diisi huruf hanya bisa diisi angka
+14. Pimpinan didashboard hanya card menu saja tidak ada datatables untuk melihat status sarana dan melihat status berita. 
+15. Untuk tampilan users harus ada mode gelap dan mode terang seperti di landing page
+16. untuk form password di login tambahkan hidden or lihat password
+17. cek semua upload foto belum bisa semua
+18. login google masih tidak bisa redirect ke halaman user, tapi malah ke 404 not found
+
+Next step 
+harus bisa kirim email ketika reservasi disetujui, ditolak, dan diupdate
+Akan kirim email otomatis 24-48 jam sebelum peminjaman harus check-in untuk peminjaman yang di approved
+harus bisa kirim kode ke email untuk permintaan reset password, dan ketika di reset password otomatis kembali ke settingan default yaitu password dan bisa diganti di halaman profil users
