@@ -4,285 +4,30 @@
 
 @section('css')
 <style>
-    .btn-back {
-        background-color: #6c757d;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        font-size: 13px;
-        font-weight: 600;
-        border-radius: 4px;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 20px;
-    }
-
-    .btn-back:hover {
-        background-color: #5a6268;
-        color: white;
-        text-decoration: none;
-    }
-
-    .invoice-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        flex-wrap: wrap;
-        gap: 20px;
-    }
-
-    .invoice-header h1 {
-        color: var(--gold-primary);
-        font-weight: 700;
-        font-size: 28px;
-        margin: 0;
-    }
-
-    .invoice-number {
-        background-color: #f8f9fa;
-        padding: 8px 16px;
-        border-radius: 4px;
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--sidebar-text);
-    }
-
-    .card {
-        border: none;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        border-radius: 8px;
-        margin-bottom: 24px;
-    }
-
-    .card-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #e9ecef;
-        padding: 16px 20px;
-    }
-
-    .card-header h5 {
-        color: var(--sidebar-text);
-        font-weight: 600;
-        margin: 0;
-    }
-
-    .detail-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 24px;
-    }
-
-    .detail-item {
-        padding: 20px;
-    }
-
-    .detail-item label {
-        color: #666;
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 8px;
-        display: block;
-    }
-
-    .detail-item .value {
-        color: var(--sidebar-text);
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    .badge-unpaid {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-
-    .badge-partial {
-        background-color: #fff3cd;
-        color: #856404;
-    }
-
-    .badge-paid {
-        background-color: #d4edda;
-        color: #155724;
-    }
-
-    .badge-overdue {
-        background-color: #f5c6cb;
-        color: #721c24;
-    }
-
-    .invoice-summary {
-        background-color: #f9f9f9;
-        padding: 24px;
-        border-radius: 8px;
-        margin-top: 20px;
-    }
-
-    .summary-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 0;
-        border-bottom: 1px solid #e9ecef;
-    }
-
-    .summary-row:last-child {
-        border-bottom: none;
-    }
-
-    .summary-label {
-        color: #666;
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .summary-value {
-        color: var(--sidebar-text);
-        font-size: 14px;
-        font-weight: 700;
-    }
-
-    .summary-total {
-        padding-top: 16px !important;
-        border-top: 2px solid var(--gold-primary) !important;
-        margin-top: 12px !important;
-    }
-
-    .summary-total .summary-label {
-        font-size: 16px;
-        font-weight: 700;
-        color: var(--sidebar-text);
-    }
-
-    .summary-total .summary-value {
-        font-size: 20px;
-        color: var(--gold-primary);
-    }
-
-    .facility-info {
-        background-color: #f9f9f9;
-        padding: 16px;
-        border-radius: 4px;
-        border-left: 4px solid var(--gold-primary);
-        margin-top: 20px;
-    }
-
-    .facility-info-item {
-        margin-bottom: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .facility-info-item:last-child {
-        margin-bottom: 0;
-    }
-
-    .facility-info-label {
-        color: #666;
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    .facility-info-value {
-        color: var(--sidebar-text);
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .info-box {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 16px;
-        background-color: #e7f3ff;
-        border-left: 4px solid #0056b3;
-        border-radius: 4px;
-        margin-bottom: 20px;
-    }
-
-    .info-box i {
-        color: #0056b3;
-        font-size: 18px;
-    }
-
-    .info-box-text {
-        color: #0056b3;
-        font-size: 13px;
-        margin: 0;
-    }
-
-    .print-btn {
-        background-color: var(--gold-primary);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        font-size: 13px;
-        font-weight: 600;
-        border-radius: 4px;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-    }
-
-    .print-btn:hover {
-        background-color: #d4a017;
-        color: white;
-        text-decoration: none;
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 12px;
-        margin-top: 20px;
-    }
-
-    @media (max-width: 768px) {
-        .invoice-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .invoice-header h1 {
-            font-size: 22px;
-        }
-
-        .action-buttons {
-            flex-direction: column;
-        }
-
-        .action-buttons .btn-back,
-        .action-buttons .print-btn {
-            width: 100%;
-        }
-    }
-
     @media print {
-        .btn-back, .print-btn, .action-buttons {
-            display: none;
+        .btn-back, .print-btn, .action-buttons, #sidebar, #topNavbar, .main-footer {
+            display: none !important;
         }
-
+        .content-wrapper {
+            margin-left: 0 !important;
+            padding-top: 0 !important;
+        }
+        .main-content {
+            padding: 0 !important;
+        }
         body {
-            background-color: white;
+            background-color: white !important;
+            color: black !important;
         }
-
         .card {
-            box-shadow: none;
-            border: 1px solid #ddd;
+            box-shadow: none !important;
+            border: 1px solid #ddd !important;
+            background-color: white !important;
+        }
+        .card-header {
+            background-color: #f8f9fa !important;
+            color: black !important;
+            border-bottom: 1px solid #ddd !important;
         }
     }
 </style>
@@ -290,31 +35,35 @@
 
 @section('content')
 @if($invoice)
-    <div class="action-buttons">
-        <a href="{{ route('users.main.reservasi.show', $peminjaman->id) }}" class="btn-back">
-            <i class="fas fa-arrow-left"></i> Kembali ke Reservasi
+<div class="container-fluid py-2 col-lg-8 mx-auto">
+
+    <!-- Top Action Buttons -->
+    <div class="action-buttons d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <a href="{{ route('users.main.reservasi.show', $peminjaman->id) }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Kembali ke Reservasi
         </a>
-        <button onclick="window.print()" class="print-btn">
-            <i class="fas fa-print"></i> Cetak Invoice
+        <button onclick="window.print()" class="btn btn-sm text-white px-3" style="background-color: #C9A961; border-color: #C9A961;">
+            <i class="fas fa-print me-1"></i> Cetak Invoice
         </button>
     </div>
 
-    <div class="invoice-header">
-        <h1>Invoice</h1>
-        <span class="invoice-number">{{ $invoice->noInvoice }}</span>
-    </div>
-
     <!-- Status Invoice -->
-    <div class="card">
-        <div class="card-body">
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header d-flex align-items-center justify-content-between" style="background-color: #C9A961; color: #fff; border-radius: 8px 8px 0 0; padding: 14px 20px;">
+            <h6 class="mb-0 fw-semibold" style="font-size: 15px;">
+                <i class="fas fa-file-invoice-dollar me-2"></i>Status Invoice
+            </h6>
+            <span class="fw-bold">{{ $invoice->noInvoice }}</span>
+        </div>
+        <div class="card-body p-4">
             @php
                 $statusInvoice = $invoice->statusInvoice;
-                $badgeClass = match($statusInvoice) {
-                    'UNPAID' => 'badge-unpaid',
-                    'PARTIAL' => 'badge-partial',
-                    'PAID' => 'badge-paid',
-                    'OVERDUE' => 'badge-overdue',
-                    default => 'badge-unpaid'
+                $badgeColor = match($statusInvoice) {
+                    'UNPAID' => 'bg-danger text-white',
+                    'PARTIAL' => 'bg-warning text-dark',
+                    'PAID' => 'bg-success text-white',
+                    'OVERDUE' => 'bg-danger text-white',
+                    default => 'bg-danger text-white'
                 };
                 $statusLabel = match($statusInvoice) {
                     'UNPAID' => 'Belum Dibayar',
@@ -325,131 +74,129 @@
                 };
             @endphp
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <div>
-                    <h6 style="color: #666; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Status Pembayaran</h6>
-                    <span class="status-badge {{ $badgeClass }}">{{ $statusLabel }}</span>
+            <div class="row align-items-center">
+                <div class="col-sm-6">
+                    <h6 class="text-muted small fw-semibold text-uppercase mb-2" style="font-size: 11px;">Status Pembayaran</h6>
+                    <span class="badge {{ $badgeColor }} px-3 py-2" style="font-size: 13px;">{{ $statusLabel }}</span>
                 </div>
-                <div style="text-align: right;">
-                    <h6 style="color: #666; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Nomor Invoice</h6>
-                    <div style="color: var(--sidebar-text); font-size: 16px; font-weight: 600;">{{ $invoice->noInvoice }}</div>
+                <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+                    <h6 class="text-muted small fw-semibold text-uppercase mb-1" style="font-size: 11px;">Nomor Invoice</h6>
+                    <div class="fw-semibold text-dark" style="font-size: 16px;">{{ $invoice->noInvoice }}</div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Informasi Fasilitas/Ruangan -->
-    <div class="card">
-        <div class="card-header">
-            <h5><i class="fas fa-door-open"></i> Informasi Fasilitas</h5>
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header" style="background-color: #C9A961; color: #fff; border-radius: 8px 8px 0 0; padding: 14px 20px;">
+            <h6 class="mb-0 fw-semibold" style="font-size: 15px;"><i class="fas fa-door-open me-2"></i>Informasi Fasilitas</h6>
         </div>
-        <div class="card-body">
-            <div class="facility-info">
-                <div class="facility-info-item">
-                    <span class="facility-info-label">Nama Fasilitas</span>
-                    <span class="facility-info-value">
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3 detail-item">
+                    <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Nama Fasilitas</label>
+                    <div class="fw-semibold text-dark value" style="font-size: 14px;">
                         {{ $invoice->peminjamanTransaksi->paketRuangan->ruangan->nama_ruangan ?? 'Tidak tersedia' }}
-                    </span>
+                    </div>
                 </div>
-                <div class="facility-info-item">
-                    <span class="facility-info-label">Tipe Ruangan</span>
-                    <span class="facility-info-value">
+                <div class="col-md-6 col-lg-3 detail-item">
+                    <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Tipe Ruangan</label>
+                    <div class="fw-semibold text-dark value" style="font-size: 14px;">
                         {{ str_replace('_', ' ', $invoice->peminjamanTransaksi->paketRuangan->ruangan->tipe_ruangan ?? '-') }}
-                    </span>
+                    </div>
                 </div>
-                <div class="facility-info-item">
-                    <span class="facility-info-label">Gedung</span>
-                    <span class="facility-info-value">
+                <div class="col-md-6 col-lg-3 detail-item">
+                    <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Gedung</label>
+                    <div class="fw-semibold text-dark value" style="font-size: 14px;">
                         {{ $invoice->peminjamanTransaksi->paketRuangan->ruangan->gedung->nama_gedung ?? '-' }}
-                    </span>
+                    </div>
                 </div>
-                <div class="facility-info-item">
-                    <span class="facility-info-label">Paket</span>
-                    <span class="facility-info-value">
+                <div class="col-md-6 col-lg-3 detail-item">
+                    <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Paket</label>
+                    <div class="fw-semibold text-dark value" style="font-size: 14px;">
                         {{ $invoice->peminjamanTransaksi->paketRuangan->nama_paket ?? 'Paket Standar' }}
-                    </span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Informasi Tanggal & Durasi -->
-    <div class="card">
-        <div class="card-header">
-            <h5><i class="fas fa-calendar-alt"></i> Informasi Peminjaman</h5>
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header" style="background-color: #C9A961; color: #fff; border-radius: 8px 8px 0 0; padding: 14px 20px;">
+            <h6 class="mb-0 fw-semibold" style="font-size: 15px;"><i class="fas fa-calendar-alt me-2"></i>Informasi Peminjaman</h6>
         </div>
-        <div class="card-body">
-            <div class="detail-grid">
-                <div class="detail-item">
-                    <label>Tanggal Peminjaman</label>
-                    <div class="value">{{ \Carbon\Carbon::parse($invoice->peminjamanTransaksi->tanggal)->format('d F Y') }}</div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3 detail-item">
+                    <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Tanggal Peminjaman</label>
+                    <div class="fw-semibold text-dark value" style="font-size: 14px;">{{ \Carbon\Carbon::parse($invoice->peminjamanTransaksi->tanggal)->format('d F Y') }}</div>
                 </div>
 
-                <div class="detail-item">
-                    <label>Jam Mulai</label>
-                    <div class="value">{{ \Carbon\Carbon::parse($invoice->peminjamanTransaksi->jamMulai)->format('H:i') }} WIB</div>
+                <div class="col-md-6 col-lg-3 detail-item">
+                    <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Jam Mulai</label>
+                    <div class="fw-semibold text-dark value" style="font-size: 14px;">{{ \Carbon\Carbon::parse($invoice->peminjamanTransaksi->jamMulai)->format('H:i') }} WIB</div>
                 </div>
 
-                <div class="detail-item">
-                    <label>Durasi Peminjaman</label>
-                    <div class="value">{{ $invoice->peminjamanTransaksi->durasi }} jam</div>
+                <div class="col-md-6 col-lg-3 detail-item">
+                    <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Durasi Peminjaman</label>
+                    <div class="fw-semibold text-dark value" style="font-size: 14px;">{{ $invoice->peminjamanTransaksi->durasi }} jam</div>
                 </div>
 
-                <div class="detail-item">
-                    <label>Kode Peminjaman</label>
-                    <div class="value">{{ $invoice->peminjamanTransaksi->kodePeminjaman }}</div>
+                <div class="col-md-6 col-lg-3 detail-item">
+                    <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Kode Peminjaman</label>
+                    <div class="fw-semibold text-dark value" style="font-size: 14px;">{{ $invoice->peminjamanTransaksi->kodePeminjaman }}</div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Detail Biaya -->
-    <div class="card">
-        <div class="card-header">
-            <h5><i class="fas fa-receipt"></i> Detail Biaya</h5>
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header" style="background-color: #C9A961; color: #fff; border-radius: 8px 8px 0 0; padding: 14px 20px;">
+            <h6 class="mb-0 fw-semibold" style="font-size: 15px;"><i class="fas fa-receipt me-2"></i>Detail Biaya</h6>
         </div>
-        <div class="card-body">
-            <div class="invoice-summary">
-                <div class="summary-row">
-                    <span class="summary-label">Subtotal</span>
-                    <span class="summary-value">Rp {{ number_format($invoice->subtotal, 0, ',', '.') }}</span>
+        <div class="card-body p-4">
+            <div class="list-group list-group-flush rounded border mb-3">
+                <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                    <span class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">Subtotal</span>
+                    <span class="fw-bold text-dark">Rp {{ number_format($invoice->subtotal, 0, ',', '.') }}</span>
                 </div>
-
-                <div class="summary-row">
-                    <span class="summary-label">Biaya Tambahan</span>
-                    <span class="summary-value" style="color: #dc3545;">{{ $invoice->biayaTambahan > 0 ? '+' : '' }} Rp {{ number_format($invoice->biayaTambahan, 0, ',', '.') }}</span>
+                <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                    <span class="text-muted fw-semibold text-uppercase" style="font-size: 11px;">Biaya Tambahan</span>
+                    <span class="fw-bold text-danger">{{ $invoice->biayaTambahan > 0 ? '+' : '' }} Rp {{ number_format($invoice->biayaTambahan, 0, ',', '.') }}</span>
                 </div>
-
-                <div class="summary-row summary-total">
-                    <span class="summary-label">Total Harga</span>
-                    <span class="summary-value">Rp {{ number_format($invoice->totalHarga, 0, ',', '.') }}</span>
+                <div class="list-group-item d-flex justify-content-between align-items-center py-3 bg-light">
+                    <span class="text-dark fw-bold text-uppercase" style="font-size: 12px;">Total Harga</span>
+                    <span class="fw-bold text-success fs-4">Rp {{ number_format($invoice->totalHarga, 0, ',', '.') }}</span>
                 </div>
             </div>
 
             @if($invoice->notes)
-            <div style="margin-top: 20px; padding: 16px; background-color: #f9f9f9; border-radius: 4px;">
-                <h6 style="color: #666; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Catatan</h6>
-                <p style="color: var(--sidebar-text); font-size: 14px; margin: 0; line-height: 1.6;">{{ $invoice->notes }}</p>
+            <div class="p-3 bg-light rounded border-start border-warning border-4 mt-3">
+                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Catatan</label>
+                <p class="text-dark mb-0" style="line-height: 1.6; font-size: 14px;">{{ $invoice->notes }}</p>
             </div>
             @endif
         </div>
     </div>
 
-    <!-- Informasi Tanggal Invoice -->
-    <div class="card">
-        <div class="card-header">
-            <h5><i class="fas fa-info-circle"></i> Informasi Sistem</h5>
+    <!-- Informasi Tanggal Invoice / Informasi Sistem -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header" style="background-color: #C9A961; color: #fff; border-radius: 8px 8px 0 0; padding: 14px 20px;">
+            <h6 class="mb-0 fw-semibold" style="font-size: 15px;"><i class="fas fa-info-circle me-2"></i>Informasi Sistem</h6>
         </div>
-        <div class="card-body">
-            <div class="detail-grid">
-                <div class="detail-item">
-                    <label>Tanggal Invoice</label>
-                    <div class="value">{{ \Carbon\Carbon::parse($invoice->tglInvoice)->format('d F Y H:i') }}</div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-4 detail-item">
+                    <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Tanggal Invoice</label>
+                    <div class="fw-semibold text-dark value" style="font-size: 14px;">{{ \Carbon\Carbon::parse($invoice->tglInvoice)->format('d F Y H:i') }}</div>
                 </div>
 
-                <div class="detail-item">
-                    <label>Jatuh Tempo</label>
-                    <div class="value">
+                <div class="col-md-6 col-lg-4 detail-item">
+                    <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Jatuh Tempo</label>
+                    <div class="fw-semibold text-dark value" style="font-size: 14px;">
                         @if($invoice->tglDueDate)
                             {{ \Carbon\Carbon::parse($invoice->tglDueDate)->format('d F Y H:i') }}
                         @else
@@ -458,9 +205,9 @@
                     </div>
                 </div>
 
-                <div class="detail-item">
-                    <label>Tanggal Pembayaran</label>
-                    <div class="value">
+                <div class="col-md-6 col-lg-4 detail-item">
+                    <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Tanggal Pembayaran</label>
+                    <div class="fw-semibold text-dark value" style="font-size: 14px;">
                         @if($invoice->tglPaid)
                             {{ \Carbon\Carbon::parse($invoice->tglPaid)->format('d F Y H:i') }}
                         @else
@@ -472,17 +219,19 @@
         </div>
     </div>
 
+</div>
 @else
-    <div class="card">
-        <div class="card-body text-center" style="padding: 40px;">
-            <i class="fas fa-file-invoice" style="font-size: 48px; color: #dc3545; margin-bottom: 16px;"></i>
+<div class="container-fluid py-2 col-lg-8 mx-auto">
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body text-center py-5 text-muted">
+            <i class="fas fa-file-invoice fa-3x text-danger mb-3"></i>
             <h5>Invoice Tidak Ditemukan</h5>
             <p>Invoice untuk reservasi ini belum tersedia.</p>
-            <a href="{{ route('users.main.reservasi.index') }}" class="btn-back" style="margin-top: 16px;">
-                <i class="fas fa-arrow-left"></i> Kembali ke Reservasi
+            <a href="{{ route('users.main.reservasi.index') }}" class="btn btn-secondary mt-3">
+                <i class="fas fa-arrow-left me-1"></i> Kembali ke Reservasi
             </a>
         </div>
     </div>
+</div>
 @endif
-
 @endsection

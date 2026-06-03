@@ -82,12 +82,14 @@
                                 <span class="menu-text">Peminjaman Ruangan</span>
                             </a>
                         </li>
+                        {{-- 
                         <li class="nav-item">
                             <a href="{{ route('main.peminjaman_sarana.index') }}" class="nav-link {{ request()->routeIs('main.peminjaman_sarana.*') ? 'active' : '' }}" title="Peminjaman Sarana">
                                 <i class="fas fa-tools menu-icon"></i>
                                 <span class="menu-text">Peminjaman Sarana</span>
                             </a>
                         </li>
+                        --}}
                     </ul>
                 </div>
             </li>

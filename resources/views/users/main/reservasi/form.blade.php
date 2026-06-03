@@ -2,618 +2,301 @@
 
 @section('title', 'Form Reservasi Ruangan')
 
-@section('css')
-<style>
-    .form-header {
-        margin-bottom: 30px;
-    }
-
-    .form-header h1 {
-        color: var(--gold-primary);
-        font-weight: 700;
-        font-size: 30px;
-        margin-bottom: 8px;
-    }
-
-    .form-header p {
-        color: #666;
-        font-size: 14px;
-    }
-
-    .btn-back {
-        background-color: #6c757d;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        font-size: 13px;
-        font-weight: 600;
-        border-radius: 6px;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 20px;
-        text-decoration: none;
-    }
-
-    .btn-back:hover {
-        background-color: #5a6268;
-        color: white;
-        text-decoration: none;
-    }
-
-    .card {
-        border: none;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        border-radius: 12px;
-        margin-bottom: 25px;
-        background-color: #ffffff;
-        overflow: hidden;
-    }
-
-    .card-header {
-        background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-dark) 100%);
-        color: #ffffff;
-        padding: 18px 24px;
-        border-bottom: none;
-    }
-
-    .card-header h5 {
-        font-weight: 600;
-        margin: 0;
-        font-size: 16px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-label {
-        color: #475569;
-        font-weight: 600;
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 8px;
-        display: block;
-    }
-
-    .form-control, .form-select {
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        padding: 11px 14px;
-        font-size: 14px;
-        transition: all 0.3s ease;
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: var(--gold-primary);
-        box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15);
-        outline: none;
-    }
-
-    .form-control:disabled,
-    .form-control[readonly],
-    .form-select:disabled {
-        background-color: #f8fafc;
-        color: #64748b;
-        cursor: not-allowed;
-    }
-
-    .form-text {
-        color: #64748b;
-        font-size: 12px;
-        margin-top: 6px;
-        display: block;
-    }
-
-    .error-message {
-        color: #dc3545;
-        font-size: 12px;
-        margin-top: 6px;
-        display: block;
-        font-weight: 600;
-    }
-
-    .info-box {
-        background-color: #f0f7ff;
-        border-left: 4px solid #0284c7;
-        padding: 16px 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    .info-box i {
-        color: #0284c7;
-        font-size: 18px;
-        margin-top: 2px;
-    }
-
-    .info-box p {
-        color: #0369a1;
-        font-size: 13px;
-        margin: 0;
-        line-height: 1.5;
-    }
-
-    .form-row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
-    }
-
-    .btn-submit {
-        background: linear-gradient(135deg, #28a745 0%, #218838 100%);
-        color: white;
-        border: none;
-        padding: 14px 28px;
-        font-size: 15px;
-        font-weight: 600;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-    }
-
-    .btn-submit:hover {
-        background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
-    }
-
-    .btn-submit:disabled {
-        background-color: #cbd5e1;
-        cursor: not-allowed;
-        transform: none;
-    }
-
-    .ruangan-details-card {
-        background-color: #f8fafc;
-        border-radius: 8px;
-        border-left: 4px solid var(--gold-primary);
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-
-    .detail-item-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-    }
-
-    .detail-item {
-        margin-bottom: 8px;
-    }
-
-    .detail-label {
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: #64748b;
-        letter-spacing: 0.5px;
-        margin-bottom: 4px;
-    }
-
-    .detail-val {
-        font-size: 14px;
-        font-weight: 600;
-        color: #1e293b;
-    }
-
-    .media-gallery {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-        gap: 12px;
-        margin-top: 15px;
-    }
-
-    .media-item {
-        border-radius: 6px;
-        overflow: hidden;
-        aspect-ratio: 4/3;
-        background-color: #e2e8f0;
-        border: 1px solid #cbd5e1;
-    }
-
-    .media-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .booked-badge {
-        background-color: #ffe4e6;
-        color: #be123c;
-        border: 1px solid #fecdd3;
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        margin-bottom: 8px;
-        margin-right: 8px;
-    }
-
-    .sarana-row {
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 12px;
-        position: relative;
-    }
-
-    .btn-remove-sarana {
-        background: none;
-        border: none;
-        color: #ef4444;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        padding: 0;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .btn-remove-sarana:hover {
-        color: #dc2626;
-        text-decoration: underline;
-    }
-
-    .btn-add-sarana {
-        background-color: #f1f5f9;
-        color: #334155;
-        border: 1px dashed #cbd5e1;
-        border-radius: 8px;
-        padding: 10px 16px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.2s;
-    }
-
-    .btn-add-sarana:hover {
-        background-color: #e2e8f0;
-        color: #1e293b;
-    }
-
-    .estimasi-box {
-        background-color: #fcf8f2;
-        border: 1px solid rgba(201, 169, 97, 0.25);
-        border-radius: 8px;
-        padding: 20px;
-        margin-top: 15px;
-    }
-
-    .estimasi-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px dashed rgba(201, 169, 97, 0.15);
-    }
-
-    .estimasi-item:last-child {
-        border-bottom: none;
-    }
-
-    .estimasi-label {
-        font-size: 13px;
-        color: #64748b;
-        font-weight: 500;
-    }
-
-    .estimasi-val {
-        font-size: 14px;
-        font-weight: 700;
-        color: #1e293b;
-    }
-
-    .estimasi-val.price {
-        color: #b45309;
-        font-size: 18px;
-    }
-</style>
-@endsection
-
 @section('content')
-<a href="{{ route('users.main.reservasi.index') }}" class="btn-back">
-    <i class="fas fa-arrow-left"></i> Kembali ke Daftar Reservasi Saya
-</a>
+<div class="container-fluid" style="padding-left: 20px; padding-right: 20px; margin-top: 20px;">
 
-<div class="form-header">
-    <h1><i class="fas fa-calendar-check"></i> Form Reservasi Ruangan</h1>
-    <p>Silakan isi formulir di bawah ini untuk mengajukan peminjaman ruangan beserta sarana tambahan.</p>
-</div>
+    <a href="{{ route('users.main.reservasi.index') }}" class="btn btn-secondary btn-sm mb-3">
+        <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar Reservasi Saya
+    </a>
 
-@if($errors->any())
-<div class="card border-0 mb-4" style="border-left: 4px solid #dc3545 !important;">
-    <div class="card-body bg-danger bg-opacity-10 py-3">
-        <div style="color: #b91c1c; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-            <i class="fas fa-exclamation-circle" style="font-size: 18px;"></i>
-            <span>Gagal mengirim formulir. Harap periksa beberapa kesalahan di bawah:</span>
+    @if($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" style="font-size: 14px;">
+        <div class="fw-bold mb-1">
+            <i class="fas fa-exclamation-circle me-2"></i>Gagal mengirim formulir. Harap periksa beberapa kesalahan di bawah:
         </div>
-        <ul style="margin: 0; padding-left: 20px; color: #b91c1c; font-size: 13px; font-weight: 500;">
+        <ul class="mb-0 ps-3">
             @foreach($errors->all() as $error)
             <li>{{ $error }}</li>
             @endforeach
         </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
-</div>
-@endif
+    @endif
 
-<form action="{{ route('users.main.reservasi.store') }}" method="POST" id="reservasiForm">
-    @csrf
+    <form action="{{ route('users.main.reservasi.store') }}" method="POST" id="reservasiForm">
+        @csrf
 
-    <!-- SECTION 1: PEMILIHAN RUANGAN -->
-    <div class="card">
-        <div class="card-header">
-            <h5><i class="fas fa-door-open"></i> 1. Pilih Ruangan & Fasilitas</h5>
-        </div>
-        <div class="card-body p-4">
-            
-            @if($ruanganId)
-                <!-- Skenario Pre-selected Room -->
-                <div class="form-group mb-3">
-                    <label class="form-label">Ruangan Terpilih</label>
-                    <input type="text" class="form-control fw-bold" value="{{ $ruangan->nama_ruangan }}" readonly>
-                    <input type="hidden" name="ruangan_id" id="ruangan_id" value="{{ $ruangan->id_ruangan }}">
+        <!-- SECTION 1: PEMILIHAN RUANGAN -->
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-header" style="background-color: #C9A961; color: #fff; border-radius: 8px 8px 0 0; padding: 14px 20px;">
+                <h6 class="mb-0 fw-semibold" style="font-size: 15px;">
+                    <i class="fas fa-door-open me-2"></i>1. Pilih Ruangan & Fasilitas
+                </h6>
+            </div>
+            <div class="card-body p-4">
+                
+                @if($ruanganId)
+                    <!-- Skenario Pre-selected Room -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Ruangan Terpilih</label>
+                        <input type="text" class="form-control fw-bold" value="{{ $ruangan->nama_ruangan }}" readonly>
+                        <input type="hidden" name="ruangan_id" id="ruangan_id" value="{{ $ruangan->id_ruangan }}">
+                    </div>
+                @else
+                    <!-- Skenario Pilihan Bebas / Direct Access -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label for="filter_kategori" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Filter Kategori Ruangan</label>
+                            <select id="filter_kategori" class="form-select">
+                                <option value="ALL">Semua Kategori</option>
+                                <option value="KAMAR">Kamar Penginapan (Standar, VIP, Premium)</option>
+                                <option value="AULA">Aula Pertemuan</option>
+                                <option value="RUANG_MEETING">Ruang Rapat / Meeting</option>
+                                <option value="LAINNYA">Lainnya</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-8">
+                            <label for="ruangan_id" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Pilih Ruangan *</label>
+                            <select name="ruangan_id" id="ruangan_id" class="form-select @error('ruangan_id') is-invalid @enderror" required>
+                                <option value="">-- Pilih Ruangan --</option>
+                                @php
+                                    $grouped = $ruangans->groupBy(function($item) {
+                                        if (str_contains($item->tipe_ruangan, 'KAMAR')) return 'Kamar Penginapan';
+                                        if ($item->tipe_ruangan === 'AULA') return 'Aula Pertemuan';
+                                        if ($item->tipe_ruangan === 'RUANG_MEETING') return 'Ruang Rapat';
+                                        return 'Lainnya';
+                                    });
+                                @endphp
+                                @foreach($grouped as $groupName => $items)
+                                    <optgroup label="{{ $groupName }}">
+                                        @foreach($items as $item)
+                                            <option value="{{ $item->id_ruangan }}" data-tipe="{{ $item->tipe_ruangan }}">
+                                                {{ $item->nama_ruangan }} - {{ $item->gedung->nama_gedung ?? '-' }} (Lantai {{ $item->lantai ?? '1' }}, Kapasitas: {{ $item->kapasitas }} Orang)
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                            </select>
+                            @error('ruangan_id')
+                            <div class="text-danger small mt-1 fw-semibold">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                @endif
+
+                <!-- AJAX LOADER BOX (INFO DETAIL RUANGAN) -->
+                <div id="ajax_details_section" style="display: none;">
+                    <div class="p-3 bg-light rounded border-start border-warning border-4 mb-3">
+                        <div class="row g-3">
+                            <div class="col-md-6 col-lg-3">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Nama Ruangan</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;" id="detail_nama_ruangan">-</div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Kategori / Tipe</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;" id="detail_tipe_ruangan">-</div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Gedung</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;" id="detail_gedung">-</div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Kapasitas Maksimal</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;" id="detail_kapasitas">-</div>
+                            </div>
+                        </div>
+
+                        <!-- Booked Dates Warning -->
+                        <div class="mt-3" id="booked_dates_container" style="display: none;">
+                            <label class="text-danger small fw-semibold text-uppercase d-block mb-2" style="font-size: 11px;">
+                                <i class="fas fa-calendar-times"></i> Jadwal Terbooking (Sudah Dipesan):
+                            </label>
+                            <div id="booked_dates_list" class="d-flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <!-- Room Gallery -->
+                        <div id="room_gallery_container" style="display: none;">
+                            <label class="text-muted small fw-semibold text-uppercase d-block mt-3 mb-2" style="font-size: 11px;">
+                                <i class="fas fa-images"></i> Galeri Foto Ruangan:
+                            </label>
+                            <div class="row g-2" id="room_gallery_list"></div>
+                        </div>
+                    </div>
                 </div>
-            @else
-                <!-- Skenario Pilihan Bebas / Direct Access -->
-                <div class="row g-3 mb-4">
+
+            </div>
+        </div>
+
+        <!-- SECTION 2: DETAIL PENYEWAAN & WAKTU -->
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-header" style="background-color: #C9A961; color: #fff; border-radius: 8px 8px 0 0; padding: 14px 20px;">
+                <h6 class="mb-0 fw-semibold" style="font-size: 15px;">
+                    <i class="fas fa-calendar-days"></i> 2. Tanggal, Waktu & Paket Sewa
+                </h6>
+            </div>
+            <div class="card-body p-4">
+                
+                <div class="row g-3 mb-3">
                     <div class="col-md-4">
-                        <label for="filter_kategori" class="form-label">Filter Kategori Ruangan</label>
-                        <select id="filter_kategori" class="form-select">
-                            <option value="ALL">Semua Kategori</option>
-                            <option value="KAMAR">Kamar Penginapan (Standar, VIP, Premium)</option>
-                            <option value="AULA">Aula Pertemuan</option>
-                            <option value="RUANG_MEETING">Ruang Rapat / Meeting</option>
-                            <option value="LAINNYA">Lainnya</option>
-                        </select>
+                        <label for="tanggal" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Tanggal Mulai Peminjaman *</label>
+                        <input type="date" name="tanggal" id="tanggal" class="form-control @error('tanggal') is-invalid @enderror" value="{{ old('tanggal') }}" required disabled>
+                        @error('tanggal')
+                        <div class="text-danger small mt-1 fw-semibold">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    <div class="col-md-8">
-                        <label for="ruangan_id" class="form-label">Pilih Ruangan *</label>
-                        <select name="ruangan_id" id="ruangan_id" class="form-select @error('ruangan_id') is-invalid @enderror" required>
-                            <option value="">-- Pilih Ruangan --</option>
-                            @php
-                                $grouped = $ruangans->groupBy(function($item) {
-                                    if (str_contains($item->tipe_ruangan, 'KAMAR')) return 'Kamar Penginapan';
-                                    if ($item->tipe_ruangan === 'AULA') return 'Aula Pertemuan';
-                                    if ($item->tipe_ruangan === 'RUANG_MEETING') return 'Ruang Rapat';
-                                    return 'Lainnya';
-                                });
-                            @endphp
-                            @foreach($grouped as $groupName => $items)
-                                <optgroup label="{{ $groupName }}">
-                                    @foreach($items as $item)
-                                        <option value="{{ $item->id_ruangan }}" data-tipe="{{ $item->tipe_ruangan }}">
-                                            {{ $item->nama_ruangan }} - {{ $item->gedung->nama_gedung ?? '-' }} (Lantai {{ $item->lantai ?? '1' }}, Kapasitas: {{ $item->kapasitas }} Orang)
-                                        </option>
-                                    @endforeach
-                                </optgroup>
-                            @endforeach
+                    <div class="col-md-4">
+                        <label for="jam_mulai" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Waktu Mulai *</label>
+                        <select name="jam_mulai" id="jam_mulai" class="form-select @error('jam_mulai') is-invalid @enderror" required disabled>
+                            <option value="">-- Pilih Jam Mulai --</option>
+                            @for($hour = 7; $hour <= 21; $hour++)
+                                @php
+                                    $timeStr = sprintf('%02d', $hour) . ':00';
+                                @endphp
+                                <option value="{{ $timeStr }}" {{ old('jam_mulai') === $timeStr ? 'selected' : '' }}>{{ $timeStr }}</option>
+                                @php
+                                    $timeStrHalf = sprintf('%02d', $hour) . ':30';
+                                @endphp
+                                @if($hour < 21)
+                                    <option value="{{ $timeStrHalf }}" {{ old('jam_mulai') === $timeStrHalf ? 'selected' : '' }}>{{ $timeStrHalf }}</option>
+                                @endif
+                            @endfor
                         </select>
-                        @error('ruangan_id')
-                        <span class="error-message">{{ $message }}</span>
+                        @error('jam_mulai')
+                        <div class="text-danger small mt-1 fw-semibold">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="paket_id" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Pilih Paket Sewa *</label>
+                        <select name="paket_id" id="paket_id" class="form-select @error('paket_id') is-invalid @enderror" required disabled>
+                            <option value="">-- Pilih Paket (Pilih Ruangan Terlebih Dahulu) --</option>
+                        </select>
+                        @error('paket_id')
+                        <div class="text-danger small mt-1 fw-semibold">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
-            @endif
 
-            <!-- AJAX LOADER BOX (INFO DETAIL RUANGAN) -->
-            <div id="ajax_details_section" style="display: none;">
-                <div class="ruangan-details-card">
-                    <div class="detail-item-grid">
-                        <div class="detail-item">
-                            <div class="detail-label">Nama Ruangan</div>
-                            <div class="detail-val" id="detail_nama_ruangan">-</div>
+                <!-- Estimasi Durasi, Selesai, & Biaya -->
+                <div id="estimasi_section" style="display: none;">
+                    <div class="p-3 bg-light rounded border-start border-info border-4 mt-3">
+                        <h6 class="fw-bold mb-3" style="color: #B8953F;">
+                            <i class="fas fa-calculator me-1"></i>Kalkulasi Estimasi Reservasi:
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-sm-6 col-md-3">
+                                <span class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Paket Sewa Dipilih:</span>
+                                <span class="fw-bold text-dark" id="est_nama_paket">-</span>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <span class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Durasi Sewa:</span>
+                                <span class="fw-bold text-dark" id="est_durasi">-</span>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <span class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Waktu Selesai (Sistem):</span>
+                                <span class="fw-bold text-primary" id="est_selesai">-</span>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <span class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Estimasi Biaya Ruangan:</span>
+                                <span class="fw-bold text-success fs-5" id="est_harga">-</span>
+                            </div>
                         </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Kategori / Tipe</div>
-                            <div class="detail-val" id="detail_tipe_ruangan">-</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Gedung</div>
-                            <div class="detail-val" id="detail_gedung">-</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Kapasitas Maksimal</div>
-                            <div class="detail-val" id="detail_kapasitas">-</div>
-                        </div>
-                    </div>
-
-                    <!-- Booked Dates Warning -->
-                    <div class="mt-4" id="booked_dates_container" style="display: none;">
-                        <div class="detail-label text-danger mb-2"><i class="fas fa-calendar-times"></i> Jadwal Terbooking (Sudah Dipesan):</div>
-                        <div id="booked_dates_list"></div>
-                    </div>
-
-                    <!-- Room Gallery -->
-                    <div id="room_gallery_container" style="display: none;">
-                        <div class="detail-label mt-3"><i class="fas fa-images"></i> Galeri Foto Ruangan:</div>
-                        <div class="media-gallery" id="room_gallery_list"></div>
                     </div>
                 </div>
+
             </div>
-
         </div>
-    </div>
 
-    <!-- SECTION 2: DETAIL PENYEWAAN & WAKTU -->
-    <div class="card">
-        <div class="card-header">
-            <h5><i class="fas fa-calendar-days"></i> 2. Tanggal, Waktu & Paket Sewa</h5>
+        <!-- SECTION 3: SARANA TAMBAHAN -->
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-header" style="background-color: #C9A961; color: #fff; border-radius: 8px 8px 0 0; padding: 14px 20px;">
+                <h6 class="mb-0 fw-semibold" style="font-size: 15px;">
+                    <i class="fas fa-tools me-2"></i>3. Peminjaman Sarana Tambahan (Opsional)
+                </h6>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-info border-0 shadow-sm d-flex align-items-center gap-2 mb-3" style="font-size: 14px;">
+                    <i class="fas fa-circle-info"></i>
+                    <span>
+                        Anda dapat meminjam sarana pendukung (seperti kursi lipat, meja, mikrofon, proyektor) yang tersedia. Jumlah peminjaman akan dibatasi oleh sistem sesuai jumlah stok yang ada di gudang.
+                    </span>
+                </div>
+
+                <div id="sarana_rows_container">
+                    <!-- Dinamis baris sewa sarana akan dirender di sini via JS -->
+                </div>
+
+                <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold mt-2" id="addSaranaBtn">
+                    <i class="fas fa-plus me-1"></i> Pinjam Sarana Tambahan
+                </button>
+            </div>
         </div>
-        <div class="card-body p-4">
-            
-            <div class="row g-3 mb-3">
-                <div class="col-md-4">
-                    <label for="tanggal" class="form-label">Tanggal Mulai Peminjaman *</label>
-                    <input type="date" name="tanggal" id="tanggal" class="form-control @error('tanggal') is-invalid @enderror" value="{{ old('tanggal') }}" required disabled>
-                    @error('tanggal')
-                    <span class="error-message">{{ $message }}</span>
+
+        <!-- SECTION 4: DATA KONTAK & KEPERLUAN -->
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-header" style="background-color: #C9A961; color: #fff; border-radius: 8px 8px 0 0; padding: 14px 20px;">
+                <h6 class="mb-0 fw-semibold" style="font-size: 15px;">
+                    <i class="fas fa-file-invoice me-2"></i>4. Detail Kegiatan & Data Kontak
+                </h6>
+            </div>
+            <div class="card-body p-4">
+                
+                <div class="mb-3">
+                    <label for="keperluan" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Keperluan / Tujuan Penggunaan *</label>
+                    <textarea id="keperluan" name="keperluan" class="form-control @error('keperluan') is-invalid @enderror" rows="4" placeholder="Jelaskan keperluan penggunaan ruangan secara jelas (misalnya: Rapat koordinasi dinas, Diklat pengawas sekolah, dsb.)" required minlength="10" maxlength="500">{{ old('keperluan') }}</textarea>
+                    <span class="form-text text-muted small d-block mt-1">Minimal 10 karakter, maksimal 500 karakter.</span>
+                    @error('keperluan')
+                    <div class="text-danger small mt-1 fw-semibold">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="col-md-4">
-                    <label for="jam_mulai" class="form-label">Waktu Mulai *</label>
-                    <select name="jam_mulai" id="jam_mulai" class="form-select @error('jam_mulai') is-invalid @enderror" required disabled>
-                        <option value="">-- Pilih Jam Mulai --</option>
-                        @for($hour = 7; $hour <= 21; $hour++)
-                            @php
-                                $timeStr = sprintf('%02d', $hour) . ':00';
-                            @endphp
-                            <option value="{{ $timeStr }}" {{ old('jam_mulai') === $timeStr ? 'selected' : '' }}>{{ $timeStr }}</option>
-                            @php
-                                $timeStrHalf = sprintf('%02d', $hour) . ':30';
-                            @endphp
-                            @if($hour < 21)
-                                <option value="{{ $timeStrHalf }}" {{ old('jam_mulai') === $timeStrHalf ? 'selected' : '' }}>{{ $timeStrHalf }}</option>
-                            @endif
-                        @endfor
-                    </select>
-                    @error('jam_mulai')
-                    <span class="error-message">{{ $message }}</span>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="estimasi_peserta" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Estimasi Jumlah Peserta *</label>
+                        <input type="number" name="estimasi_peserta" id="estimasi_peserta" class="form-control @error('estimasi_peserta') is-invalid @enderror" value="{{ old('estimasi_peserta') }}" min="1" placeholder="Contoh: 30" required disabled>
+                        <span class="form-text text-muted small d-block mt-1" id="estimasi_peserta_hint">Masukkan jumlah perkiraan peserta.</span>
+                        @error('estimasi_peserta')
+                        <div class="text-danger small mt-1 fw-semibold">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="kontak_person" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Nama Penanggung Jawab / Kontak Person *</label>
+                        <input type="text" name="kontak_person" id="kontak_person" class="form-control @error('kontak_person') is-invalid @enderror" value="{{ old('kontak_person', auth()->user()->guest->name ?? auth()->user()->name) }}" placeholder="Nama lengkap penanggung jawab" required>
+                        @error('kontak_person')
+                        <div class="text-danger small mt-1 fw-semibold">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="no_telepon" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Nomor WhatsApp / HP Aktif *</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="fas fa-phone-alt"></i></span>
+                        <input type="text" name="no_telepon" id="no_telepon" class="form-control @error('no_telepon') is-invalid @enderror" value="{{ old('no_telepon', auth()->user()->phone) }}" placeholder="Contoh: 081234567890" required>
+                    </div>
+                    <span class="form-text text-muted small d-block mt-1">Nomor kontak yang dapat dihubungi oleh admin untuk proses verifikasi lanjutan.</span>
+                    @error('no_telepon')
+                    <div class="text-danger small mt-1 fw-semibold">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="col-md-4">
-                    <label for="paket_id" class="form-label">Pilih Paket Sewa *</label>
-                    <select name="paket_id" id="paket_id" class="form-select @error('paket_id') is-invalid @enderror" required disabled>
-                        <option value="">-- Pilih Paket (Pilih Ruangan Terlebih Dahulu) --</option>
-                    </select>
-                    @error('paket_id')
-                    <span class="error-message">{{ $message }}</span>
-                    @enderror
-                </div>
             </div>
-
-            <!-- Estimasi Durasi, Selesai, & Biaya -->
-            <div id="estimasi_section" style="display: none;">
-                <div class="estimasi-box">
-                    <h6 class="fw-bold mb-3" style="color: var(--gold-dark);"><i class="fas fa-calculator"></i> Kalkulasi Estimasi Reservasi:</h6>
-                    <div class="estimasi-item">
-                        <span class="estimasi-label">Paket Sewa Dipilih:</span>
-                        <span class="estimasi-val" id="est_nama_paket">-</span>
-                    </div>
-                    <div class="estimasi-item">
-                        <span class="estimasi-label">Durasi Sewa:</span>
-                        <span class="estimasi-val" id="est_durasi">-</span>
-                    </div>
-                    <div class="estimasi-item">
-                        <span class="estimasi-label">Waktu Selesai (Sistem):</span>
-                        <span class="estimasi-val text-primary" id="est_selesai">-</span>
-                    </div>
-                    <div class="estimasi-item pt-3 border-top mt-2">
-                        <span class="estimasi-label fw-bold">Estimasi Biaya Sewa Ruangan:</span>
-                        <span class="estimasi-val price" id="est_harga">-</span>
-                    </div>
-                </div>
-            </div>
-
         </div>
-    </div>
 
-    <!-- SECTION 3: SARANA TAMBAHAN (Dinamis) -->
-    <div class="card">
-        <div class="card-header">
-            <h5><i class="fas fa-tools"></i> 3. Peminjaman Sarana Tambahan (Opsional)</h5>
-        </div>
-        <div class="card-body p-4">
-            <div class="info-box">
-                <i class="fas fa-circle-info"></i>
-                <p>
-                    Anda dapat meminjam sarana pendukung (seperti kursi lipat, meja, mikrofon, proyektor) yang tersedia. Jumlah peminjaman akan dibatasi oleh sistem sesuai jumlah stok yang ada di gudang.
-                </p>
+        <!-- SUBMIT BUTTON -->
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-body p-4 text-end">
+                <button type="submit" class="btn btn-success btn-lg px-5 fw-bold" id="submitBtn" disabled>
+                    <i class="fas fa-check-circle me-1"></i> Kirim Pengajuan Reservasi Ruangan
+                </button>
             </div>
-
-            <div id="sarana_rows_container">
-                <!-- Dinamis baris sewa sarana akan dirender di sini via JS -->
-            </div>
-
-            <button type="button" class="btn-add-sarana" id="addSaranaBtn">
-                <i class="fas fa-plus"></i> Pinjam Sarana Tambahan
-            </button>
         </div>
-    </div>
 
-    <!-- SECTION 4: DATA KONTAK & KEPERLUAN -->
-    <div class="card">
-        <div class="card-header">
-            <h5><i class="fas fa-file-invoice"></i> 4. Detail Kegiatan & Data Kontak</h5>
-        </div>
-        <div class="card-body p-4">
-            
-            <div class="form-group">
-                <label for="keperluan" class="form-label">Keperluan / Tujuan Penggunaan *</label>
-                <textarea id="keperluan" name="keperluan" class="form-control @error('keperluan') is-invalid @enderror" rows="4" placeholder="Jelaskan keperluan penggunaan ruangan secara jelas (misalnya: Rapat koordinasi dinas, Diklat pengawas sekolah, dsb.)" required minlength="10" maxlength="500">{{ old('keperluan') }}</textarea>
-                <span class="form-text">Minimal 10 karakter, maksimal 500 karakter.</span>
-                @error('keperluan')
-                <span class="error-message">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <label for="estimasi_peserta" class="form-label">Estimasi Jumlah Peserta *</label>
-                    <input type="number" name="estimasi_peserta" id="estimasi_peserta" class="form-control @error('estimasi_peserta') is-invalid @enderror" value="{{ old('estimasi_peserta') }}" min="1" placeholder="Contoh: 30" required disabled>
-                    <span class="form-text" id="estimasi_peserta_hint">Masukkan jumlah perkiraan peserta.</span>
-                    @error('estimasi_peserta')
-                    <span class="error-message">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label for="kontak_person" class="form-label">Nama Penanggung Jawab / Kontak Person *</label>
-                    <input type="text" name="kontak_person" id="kontak_person" class="form-control @error('kontak_person') is-invalid @enderror" value="{{ old('kontak_person', auth()->user()->guest->name ?? auth()->user()->name) }}" placeholder="Nama lengkap penanggung jawab" required>
-                    @error('kontak_person')
-                    <span class="error-message">{{ $message }}</span>
-                    @enderror
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="no_telepon" class="form-label">Nomor WhatsApp / HP Aktif *</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light text-muted"><i class="fas fa-phone-alt"></i></span>
-                    <input type="text" name="no_telepon" id="no_telepon" class="form-control @error('no_telepon') is-invalid @enderror" value="{{ old('no_telepon', auth()->user()->phone) }}" placeholder="Contoh: 081234567890" required>
-                </div>
-                <span class="form-text">Nomor kontak yang dapat dihubungi oleh admin untuk proses verifikasi lanjutan.</span>
-                @error('no_telepon')
-                <span class="error-message">{{ $message }}</span>
-                @enderror
-            </div>
-
-        </div>
-    </div>
-
-    <!-- SUBMIT BUTTON -->
-    <div class="card">
-        <div class="card-body p-4 text-end">
-            <button type="submit" class="btn-submit" id="submitBtn" disabled>
-                <i class="fas fa-check-circle"></i> Kirim Pengajuan Reservasi Ruangan
-            </button>
-        </div>
-    </div>
-
-</form>
+    </form>
+</div>
 @endsection
 
 @section('js')
@@ -756,8 +439,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.booked && data.booked.length > 0) {
                     data.booked.forEach(range => {
                         const badge = document.createElement('span');
-                        badge.className = 'booked-badge';
-                        badge.innerHTML = `<i class="fas fa-user-lock"></i> ${range.label}`;
+                        badge.className = 'badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1';
+                        badge.innerHTML = `<i class="fas fa-user-lock me-1"></i> ${range.label}`;
                         bookedList.appendChild(badge);
                     });
                     bookedContainer.style.display = 'block';
@@ -770,8 +453,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.photos && data.photos.length > 0) {
                     data.photos.forEach(photo => {
                         const item = document.createElement('div');
-                        item.className = 'media-item';
-                        item.innerHTML = `<img src="/${photo.path}" alt="Foto Ruangan">`;
+                        item.className = 'col-4 col-sm-3 col-md-2';
+                        item.innerHTML = `<div class="rounded overflow-hidden border" style="aspect-ratio: 4/3;"><img src="/${photo.path}" class="w-100 h-100 object-fit-cover" alt="Foto Ruangan"></div>`;
                         galleryList.appendChild(item);
                     });
                     galleryContainer.style.display = 'block';
@@ -907,7 +590,7 @@ document.addEventListener('DOMContentLoaded', function() {
         saranaCounter++;
         
         const row = document.createElement('div');
-        row.className = 'sarana-row';
+        row.className = 'p-3 bg-light rounded border border-secondary border-opacity-10 mb-3';
         row.id = `sarana_row_${saranaCounter}`;
 
         let selectOptions = '<option value="">-- Pilih Sarana --</option>';
@@ -918,19 +601,19 @@ document.addEventListener('DOMContentLoaded', function() {
         row.innerHTML = `
             <div class="row g-3 align-items-end">
                 <div class="col-md-6">
-                    <label class="form-label">Pilih Sarana *</label>
+                    <label class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Pilih Sarana *</label>
                     <select name="sarana[${saranaCounter}][sarana_id]" class="form-select sarana-id-select" required>
                         ${selectOptions}
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Jumlah Sewa *</label>
+                    <label class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Jumlah Sewa *</label>
                     <input type="number" name="sarana[${saranaCounter}][jumlah]" class="form-control sarana-jumlah-input" min="1" placeholder="Jumlah sewa" required disabled>
-                    <span class="form-text sarana-stok-hint">Pilih sarana terlebih dahulu.</span>
+                    <span class="form-text text-muted small sarana-stok-hint">Pilih sarana terlebih dahulu.</span>
                 </div>
                 <div class="col-md-2 text-end">
-                    <button type="button" class="btn-remove-sarana" onclick="removeSaranaRow(${saranaCounter})">
-                        <i class="fas fa-trash"></i> Hapus
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeSaranaRow(${saranaCounter})">
+                        <i class="fas fa-trash me-1"></i> Hapus
                     </button>
                 </div>
             </div>

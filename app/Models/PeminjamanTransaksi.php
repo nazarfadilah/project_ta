@@ -11,6 +11,14 @@ class PeminjamanTransaksi extends Model {
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
 
+    protected $casts = [
+        'tanggal' => 'date',
+        'jamMulai' => 'datetime',
+        'checkIn' => 'datetime',
+        'checkOut' => 'datetime',
+        'tanggalApproval' => 'datetime',
+    ];
+
     public function guest() {
         return $this->belongsTo(Guest::class, 'guestId', 'id');
     }

@@ -47,7 +47,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($beritas as $index => $berita)
+                        @foreach($beritas as $index => $berita)
                         <tr>
                             <td style="text-align: center;">{{ $index + 1 }}</td>
                             <td>
@@ -73,16 +73,24 @@
                                    style="padding: 4px 10px; font-size: 13px; color: #fff;">
                                     <i class="fas fa-eye"></i>
                                 </a>
+                                @if(Auth::user()->roleId == 1 || (Auth::user()->roleId == 3 && $berita->userId === Auth::id()))
+                                <a href="{{ route('main.berita.edit', $berita->id) }}" 
+                                   class="btn btn-sm btn-warning" 
+                                   title="Edit"
+                                   style="padding: 4px 10px; font-size: 13px; color: #fff; margin-left: 2px;">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" 
+                                        onclick="hapusData('{{ route('main.berita.destroy', $berita->id) }}')" 
+                                        class="btn btn-sm btn-danger" 
+                                        title="Hapus"
+                                        style="padding: 4px 10px; font-size: 13px; margin-left: 2px;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                @endif
                             </td>
                         </tr>
-                        @empty
-                        <tr>
-                            <td colspan="6" style="text-align: center; color: #999; padding: 30px;">
-                                <i class="fas fa-inbox" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
-                                Belum ada berita
-                            </td>
-                        </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
