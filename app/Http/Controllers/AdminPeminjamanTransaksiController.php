@@ -90,6 +90,14 @@ class AdminPeminjamanTransaksiController extends Controller
             return redirect()->back()->with('error', 'Check-in hanya dapat dilakukan untuk peminjaman yang disetujui.');
         }
 
+        $now = Carbon::now();
+        $jamMulai = Carbon::parse($peminjaman->jamMulai);
+        $minCheckInTime = $jamMulai->copy()->subHour();
+
+        if ($now->lt($minCheckInTime)) {
+            return redirect()->back()->with('error', 'Check-in baru bisa dilakukan paling cepat 1 jam sebelum tanggal dan jam mulai peminjaman (mulai pukul ' . $minCheckInTime->format('d M Y H:i') . ' WIB).');
+        }
+
         $peminjaman->update([
             'statusPeminjaman' => 'CHECK_IN',
             'checkIn' => Carbon::now(),
@@ -126,7 +134,196 @@ class AdminPeminjamanTransaksiController extends Controller
             'biayaTambahan' => $validated['biayaTambahan'] ?? 0.00,
         ]);
 
+        // Update associated invoice if exists
+        $invoice = Invoice::where('peminjamanId', $peminjaman->id)->first();
+        if ($invoice) {
+            $biayaTambahanTotal = ($validated['biayaTambahan'] ?? 0.00) + ($validated['estimasiDamage'] ?? 0.00);
+            $invoice->update([
+                'biayaTambahan' => $biayaTambahanTotal,
+                'totalHarga' => $invoice->subtotal + $biayaTambahanTotal
+            ]);
+        }
+
         return redirect()->route('main.transaksi.peminjaman.show', $id)
             ->with('success', 'Check-out berhasil diproses. Peminjaman telah selesai.');
+    }
+
+    /**
+     * Show form to create a new reservation
+     */
+    public function create()
+    {
+        $ruangans = \App\Models\Ruangan::with('gedung')->orderBy('nama_ruangan', 'asc')->get();
+        $saranas = \App\Models\Sarana::orderBy('nama', 'asc')->get();
+        return view('main.transaksi.peminjaman.create', compact('ruangans', 'saranas'));
+    }
+
+    /**
+     * Check guest by NIK (AJAX Helper)
+     */
+    public function checkGuest($nik)
+    {
+        $guest = \App\Models\Guest::where('nik', $nik)->first();
+        if ($guest) {
+            return response()->json([
+                'success' => true,
+                'guest' => $guest
+            ]);
+        }
+        return response()->json([
+            'success' => false,
+            'message' => 'Tamu dengan NIK ini belum terdaftar. Silakan daftarkan tamu terlebih dahulu.'
+        ]);
+    }
+
+    /**
+     * Get details of a specific room for AJAX (similar to UsersRuanganController)
+     */
+    public function getRuanganDetails($id)
+    {
+        $ruangan = \App\Models\Ruangan::with(['gedung', 'mediaFiles', 'paketRuangans' => function($q) {
+            $q->where('status', 'ACTIVE');
+        }])->findOrFail($id);
+
+        $bookedRanges = PeminjamanTransaksi::whereHas('paketRuangan', function ($query) use ($id) {
+                $query->where('ruangan_id', $id);
+            })
+            ->whereIn('statusApproval', ['APPROVED'])
+            ->whereIn('statusPeminjaman', ['RESERVASI', 'CHECK_IN', 'SELESAI'])
+            ->where('tanggal', '>=', Carbon::today()->toDateString())
+            ->orderBy('tanggal', 'asc')
+            ->get()
+            ->map(function($item) {
+                $start = Carbon::parse($item->jamMulai);
+                $end = $start->copy()->addHours($item->durasi);
+                return [
+                    'start' => $start->format('Y-m-d H:i'),
+                    'end' => $end->format('Y-m-d H:i'),
+                    'label' => $start->format('d M Y H:i') . ' s/d ' . $end->format('d M Y H:i')
+                ];
+            });
+
+        return response()->json([
+            'id_ruangan' => $ruangan->id_ruangan,
+            'nama_ruangan' => $ruangan->nama_ruangan,
+            'tipe_ruangan' => str_replace('_', ' ', $ruangan->tipe_ruangan),
+            'gedung' => $ruangan->gedung->nama_gedung ?? '-',
+            'kapasitas' => $ruangan->kapasitas,
+            'packages' => $ruangan->paketRuangans,
+            'photos' => $ruangan->mediaFiles,
+            'booked' => $bookedRanges
+        ]);
+    }
+
+    /**
+     * Store new reservation
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'nik' => 'required|string|max:16',
+            'ruangan_id' => 'required|exists:ruangan,id_ruangan',
+            'paket_id' => 'required|exists:paket_ruangan,id',
+            'tanggal' => 'required|date|after_or_equal:today',
+            'jam_mulai' => 'required',
+            'keperluan' => 'required|string|min:10|max:500',
+            'estimasi_peserta' => 'required|integer|min:1',
+            'sarana' => 'nullable|array',
+            'sarana.*.sarana_id' => 'required|exists:sarana,id',
+            'sarana.*.jumlah' => 'required|integer|min:1',
+        ]);
+
+        $guest = \App\Models\Guest::where('nik', $validated['nik'])->first();
+        if (!$guest) {
+            return back()->withErrors(['nik' => 'Tamu dengan NIK ini belum terdaftar. Silakan daftarkan tamu terlebih dahulu.'])->withInput();
+        }
+
+        $ruangan = \App\Models\Ruangan::findOrFail($validated['ruangan_id']);
+        $paket = \App\Models\PaketRuangan::findOrFail($validated['paket_id']);
+
+        // 1. Verifikasi kapasitas ruangan
+        if ($validated['estimasi_peserta'] > $ruangan->kapasitas) {
+            return back()->withErrors(['estimasi_peserta' => 'Estimasi peserta tidak boleh melebihi kapasitas ruangan (' . $ruangan->kapasitas . ' orang).'])->withInput();
+        }
+
+        // 2. Hitung waktu mulai dan selesai berdasarkan paket ruangan
+        $startDateTime = Carbon::parse($validated['tanggal'] . ' ' . $validated['jam_mulai']);
+        $endDateTime = $startDateTime->copy()->addHours($paket->durasi);
+
+        // 3. Verifikasi bentrok jadwal dengan pesanan ter-approve milik user lain
+        $overlapping = PeminjamanTransaksi::whereHas('paketRuangan', function ($q) use ($validated) {
+                $q->where('ruangan_id', $validated['ruangan_id']);
+            })
+            ->whereIn('statusApproval', ['APPROVED'])
+            ->whereIn('statusPeminjaman', ['RESERVASI', 'CHECK_IN', 'SELESAI'])
+            ->get()
+            ->filter(function ($item) use ($startDateTime, $endDateTime) {
+                $itemStart = Carbon::parse($item->jamMulai);
+                $itemEnd = $itemStart->copy()->addHours($item->durasi);
+                return $itemEnd->greaterThan($startDateTime) && $itemStart->lessThan($endDateTime);
+            })
+            ->first();
+
+        if ($overlapping) {
+            return back()->withErrors(['tanggal' => 'Ruangan ini sudah dipesan oleh pengguna lain untuk rentang waktu tersebut (jadwal terbooking). Silakan pilih tanggal atau jam mulai lainnya.'])->withInput();
+        }
+
+        // 4. Verifikasi ketersediaan stok sarana
+        if (!empty($validated['sarana'])) {
+            foreach ($validated['sarana'] as $item) {
+                $saranaModel = \App\Models\Sarana::findOrFail($item['sarana_id']);
+                if ($item['jumlah'] > $saranaModel->stok) {
+                    return back()->withErrors(['sarana' => 'Stok sarana "' . $saranaModel->nama . '" tidak mencukupi. Tersedia: ' . $saranaModel->stok . ' unit.'])->withInput();
+                }
+            }
+        }
+
+        // Cek jika guest punya user account
+        $userAccount = \App\Models\User::where('guestId', $guest->id)->first();
+        $userId = $userAccount ? $userAccount->id : null;
+
+        // 5. Simpan transaksi peminjaman baru (Otomatis APPROVED)
+        $peminjaman = PeminjamanTransaksi::create([
+            'kodePeminjaman' => 'PJM/' . Carbon::parse($validated['tanggal'])->format('Ymd') . '/' . sprintf('%04d', rand(1, 9999)),
+            'guestId' => $guest->id,
+            'facilityId' => $validated['paket_id'],
+            'tanggal' => $validated['tanggal'],
+            'jamMulai' => $startDateTime->format('Y-m-d H:i:s'),
+            'durasi' => $paket->durasi,
+            'statusPeminjaman' => 'RESERVASI',
+            'statusApproval' => 'APPROVED',
+            'catatanApproval' => 'Dibuat langsung oleh Petugas.',
+            'tanggalApproval' => Carbon::now(),
+            'keterangan' => $validated['keperluan'],
+            'biayaTambahan' => 0.00,
+            'userId' => $userId
+        ]);
+
+        // 6. Buat invoice tagihan non-paid
+        Invoice::create([
+            'noInvoice' => 'INV/' . Carbon::parse($validated['tanggal'])->format('Ymd') . '/' . sprintf('%04d', $peminjaman->id),
+            'peminjamanId' => $peminjaman->id,
+            'subtotal' => $paket->harga,
+            'biayaTambahan' => 0.00,
+            'totalHarga' => $paket->harga,
+            'statusInvoice' => 'UNPAID',
+            'status_pembayaran' => 'BELUM_BAYAR',
+            'tglInvoice' => now(),
+            'tglDueDate' => now()->addDays(7),
+        ]);
+
+        // 7. Simpan detail sewa sarana tambahan jika diinput
+        if (!empty($validated['sarana'])) {
+            foreach ($validated['sarana'] as $item) {
+                \App\Models\DetailPeminjamanSarana::create([
+                    'sarana_id' => $item['sarana_id'],
+                    'peminjaman_id' => $peminjaman->id,
+                    'jumlah' => (string)$item['jumlah'],
+                ]);
+            }
+        }
+
+        return redirect()->route('main.transaksi.peminjaman.index')
+            ->with('success', 'Reservasi tamu berhasil dibuat dengan status APPROVED.');
     }
 }

@@ -28,7 +28,9 @@ use App\Http\Controllers\AdminPeminjamanTransaksiController;
 use App\Http\Controllers\AdminInvoiceController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PaketRuanganController;
+use App\Http\Controllers\StorageController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 // ─── PUBLIC PAGE ROUTES ───────────────────────────────────────────
 Route::get('/', [LandingPageController::class, 'beranda'])->name('home');
@@ -53,6 +55,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.pr
 Route::get('/captcha/generate', [AuthController::class, 'generateCaptcha'])->name('captcha.generate');
 Route::get('/login/google', [AuthController::class, 'redirectToGoogle'])->name('login.google');
 Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('login.google.callback');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
 
 Route::post('/logout', [AuthController::class, 'logoutUser'])->name('logout')->middleware('auth:web');
@@ -175,6 +178,10 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->group(function () {
     // Transaksi - Peminjaman Routes
     Route::prefix('transaksi/peminjaman')->name('main.transaksi.peminjaman.')->group(function () {
         Route::get('/', [AdminPeminjamanTransaksiController::class, 'index'])->name('index');
+        Route::get('/create', [AdminPeminjamanTransaksiController::class, 'create'])->name('create');
+        Route::post('/', [AdminPeminjamanTransaksiController::class, 'store'])->name('store');
+        Route::get('/guest/check/{nik}', [AdminPeminjamanTransaksiController::class, 'checkGuest'])->name('guest.check');
+        Route::get('/ruangan/{id}/details', [AdminPeminjamanTransaksiController::class, 'getRuanganDetails'])->name('ruangan.details');
         Route::get('/{id}', [AdminPeminjamanTransaksiController::class, 'show'])->name('show');
         Route::post('/{id}/approve', [AdminPeminjamanTransaksiController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [AdminPeminjamanTransaksiController::class, 'reject'])->name('reject');
@@ -185,6 +192,7 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->group(function () {
     // Transaksi - Invoice Routes
     Route::prefix('transaksi/invoice')->name('main.transaksi.invoice.')->group(function () {
         Route::get('/{peminjaman_id}', [AdminInvoiceController::class, 'show'])->name('show');
+        Route::post('/{id}/update-status', [AdminInvoiceController::class, 'updateStatus'])->name('updateStatus');
     });
 
     Route::prefix('data-master/gedung')->name('main.gedung.')->group(function () {
@@ -269,9 +277,14 @@ Route::middleware(['auth:web', 'tamu'])->prefix('users')->name('users.')->group(
     });
 });
 
+// ─── STORAGE FALLBACK ROUTE ──────────────────────────────────────
+Route::get('/storage/{folder}/{filename}', [StorageController::class, 'serveFile'])
+    ->where('folder', '[a-zA-Z0-9_-]+')
+    ->where('filename', '[a-zA-Z0-9_\.-]+');
+
 // Redirect dashboard to appropriate panel based on user role
 Route::get('/dashboard', function () {
-    $user = auth()->user();
+    $user = Auth::user();
     if ($user && in_array($user->roleId, [1, 2, 3])) {
         return redirect()->route('admin.dashboard');
     }

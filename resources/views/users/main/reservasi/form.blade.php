@@ -35,55 +35,46 @@
             </div>
             <div class="card-body p-4">
                 
-                @if($ruanganId)
-                    <!-- Skenario Pre-selected Room -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Ruangan Terpilih</label>
-                        <input type="text" class="form-control fw-bold" value="{{ $ruangan->nama_ruangan }}" readonly>
-                        <input type="hidden" name="ruangan_id" id="ruangan_id" value="{{ $ruangan->id_ruangan }}">
+                <!-- Pemilihan Ruangan & Filter Kategori -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label for="filter_kategori" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Filter Kategori Ruangan</label>
+                        <select id="filter_kategori" class="form-select">
+                            <option value="ALL">Semua Kategori</option>
+                            <option value="KAMAR">Kamar Penginapan (Standar, VIP, Premium)</option>
+                            <option value="AULA">Aula Pertemuan</option>
+                            <option value="RUANG_MEETING">Ruang Rapat / Meeting</option>
+                            <option value="LAINNYA">Lainnya</option>
+                        </select>
                     </div>
-                @else
-                    <!-- Skenario Pilihan Bebas / Direct Access -->
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label for="filter_kategori" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Filter Kategori Ruangan</label>
-                            <select id="filter_kategori" class="form-select">
-                                <option value="ALL">Semua Kategori</option>
-                                <option value="KAMAR">Kamar Penginapan (Standar, VIP, Premium)</option>
-                                <option value="AULA">Aula Pertemuan</option>
-                                <option value="RUANG_MEETING">Ruang Rapat / Meeting</option>
-                                <option value="LAINNYA">Lainnya</option>
-                            </select>
-                        </div>
 
-                        <div class="col-md-8">
-                            <label for="ruangan_id" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Pilih Ruangan *</label>
-                            <select name="ruangan_id" id="ruangan_id" class="form-select @error('ruangan_id') is-invalid @enderror" required>
-                                <option value="">-- Pilih Ruangan --</option>
-                                @php
-                                    $grouped = $ruangans->groupBy(function($item) {
-                                        if (str_contains($item->tipe_ruangan, 'KAMAR')) return 'Kamar Penginapan';
-                                        if ($item->tipe_ruangan === 'AULA') return 'Aula Pertemuan';
-                                        if ($item->tipe_ruangan === 'RUANG_MEETING') return 'Ruang Rapat';
-                                        return 'Lainnya';
-                                    });
-                                @endphp
-                                @foreach($grouped as $groupName => $items)
-                                    <optgroup label="{{ $groupName }}">
-                                        @foreach($items as $item)
-                                            <option value="{{ $item->id_ruangan }}" data-tipe="{{ $item->tipe_ruangan }}">
-                                                {{ $item->nama_ruangan }} - {{ $item->gedung->nama_gedung ?? '-' }} (Lantai {{ $item->lantai ?? '1' }}, Kapasitas: {{ $item->kapasitas }} Orang)
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
-                                @endforeach
-                            </select>
-                            @error('ruangan_id')
-                            <div class="text-danger small mt-1 fw-semibold">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    <div class="col-md-8">
+                        <label for="ruangan_id" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Pilih Ruangan *</label>
+                        <select name="ruangan_id" id="ruangan_id" class="form-select @error('ruangan_id') is-invalid @enderror" required>
+                            <option value="">-- Pilih Ruangan --</option>
+                            @php
+                                $grouped = $ruangans->groupBy(function($item) {
+                                    if (str_contains($item->tipe_ruangan, 'KAMAR')) return 'Kamar Penginapan';
+                                    if ($item->tipe_ruangan === 'AULA') return 'Aula Pertemuan';
+                                    if ($item->tipe_ruangan === 'RUANG_MEETING') return 'Ruang Rapat';
+                                    return 'Lainnya';
+                                });
+                            @endphp
+                            @foreach($grouped as $groupName => $items)
+                                <optgroup label="{{ $groupName }}">
+                                    @foreach($items as $item)
+                                        <option value="{{ $item->id_ruangan }}" data-tipe="{{ $item->tipe_ruangan }}" {{ (old('ruangan_id') ?? $ruanganId) == $item->id_ruangan ? 'selected' : '' }}>
+                                            {{ $item->nama_ruangan }} - {{ $item->gedung->nama_gedung ?? '-' }} (Lantai {{ $item->lantai ?? '1' }}, Kapasitas: {{ $item->kapasitas }} Orang)
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            @endforeach
+                        </select>
+                        @error('ruangan_id')
+                        <div class="text-danger small mt-1 fw-semibold">{{ $message }}</div>
+                        @enderror
                     </div>
-                @endif
+                </div>
 
                 <!-- AJAX LOADER BOX (INFO DETAIL RUANGAN) -->
                 <div id="ajax_details_section" style="display: none;">

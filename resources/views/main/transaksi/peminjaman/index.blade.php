@@ -27,6 +27,11 @@
             <h6 class="mb-0 fw-semibold" style="font-size: 15px;">
                 <i class="fas fa-book me-2"></i>Daftar Peminjaman/Reservasi
             </h6>
+            @if(Auth::user()->roleId != 2)
+            <a href="{{ route('main.transaksi.peminjaman.create') }}" class="btn btn-sm btn-light" style="font-size: 13px; padding: 6px 12px;">
+                <i class="fas fa-plus me-1"></i> Tambah Reservasi
+            </a>
+            @endif
         </div>
         <div class="card-body" style="padding: 20px;">
             <div class="table-responsive">

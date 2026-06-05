@@ -88,10 +88,9 @@ class AdminMiddleware
             }
         }
 
-        // 3. Petugas (Role 3) - Tidak boleh kelola Users, Tamu, Landing Page, Laporan, dan tidak boleh publish berita
+        // 3. Petugas (Role 3) - Tidak boleh kelola Users, Landing Page, Laporan, dan tidak boleh publish berita
         if ($user->roleId == 3) {
             if (str_starts_with($routeName, 'main.users.') || 
-                str_starts_with($routeName, 'main.tamu.') || 
                 str_starts_with($routeName, 'main.landing.') || 
                 str_starts_with($routeName, 'main.laporan.')) {
                 abort(403, 'Akses ditolak. Petugas tidak memiliki hak akses ke modul ini.');

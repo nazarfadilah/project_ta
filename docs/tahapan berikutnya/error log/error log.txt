@@ -19,6 +19,27 @@ SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_at' in 'SET' (Co
 17. cek semua upload foto belum bisa semua
 18. login google masih tidak bisa redirect ke halaman user, tapi malah ke 404 not found
 
+Step saat ini
+Pada form register/daftar di form nomor telepon harus angka dan dengan rentang 12-15
+form password bisa dibuka dan dihiddenkan untuk lihat passwordnya
+form email harus ada @gmail.com dibelakangnya
+card dashboard di admin dan di user gunakan mb3 biar untuk satu lebar diisi oleh 3 ard bukan 4
+untuk link upload dan ambil gambar apakah kita bisa gunakan pakai route saja? jadi folder tersimpan tetap di public/storage/nama_folder/nama_file
+jadi untuk media_file di public/storage/media_file/nama_file
+untuk galeri di public/storage/galeri/nama_file
+untuk logo di public/storage/logo/nama_file
+untuk berita di public/storage/berita/nama_file
+
+Pada dashboard admin untuk datatables berita hapus kolom tanggal publish
+yang statusnya masih draft  tombol aksinya bukan edit tapi mengarahkan kehalaman detail untuk menolak atau mempublish berita
+Pada bagian profil kolom yang wajib diisi diberi bintang biar lebih mudah
+pada landingpage utama corussel gambar_dashboard hanya bisa tampil 1 tidak bisa digeser seharusnya bisa berdasarkan jumlah gambar yang di upload.
+Untuk card berita di beranda landing page masih salah urlnya disituh menggunkana id sedangkan seharusnya di route menggunakan slug
+untuk card bagian fasiliats kami yang ada beberapa ketika di klik tombol reservasi sekarang masuk ke halaman login
+Untuk check-in peminjaman baru bisa minimal 1 jam sebelum tanggal dan jam mulai, baru bisa check-in
+untuk check-out dan invoice biaya tambahan tidak tertambahkan ke total biaya, jadi biaya sama tetap segitu walupun ada biaya tambahan
+icon dibagian atas web browser yang diambil logonya harus bulat (bukan kotak sesuai default gambar). 
+
 
 Next step 
 harus bisa kirim email ketika reservasi disetujui, ditolak, dan diupdate

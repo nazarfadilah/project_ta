@@ -44,7 +44,7 @@ class RuanganController extends Controller
         // Handle file uploads
         if ($request->hasFile('media_files')) {
             foreach ($request->file('media_files') as $file) {
-                $path = $file->store('ruangan', 'public');
+                $path = $file->store('media_file', 'public');
                 $mediaPath = 'storage/' . $path;
 
                 MediaFile::create([
@@ -91,7 +91,7 @@ class RuanganController extends Controller
         // Handle file uploads
         if ($request->hasFile('media_files')) {
             foreach ($request->file('media_files') as $file) {
-                $path = $file->store('ruangan', 'public');
+                $path = $file->store('media_file', 'public');
                 $mediaPath = 'storage/' . $path;
 
                 MediaFile::create([

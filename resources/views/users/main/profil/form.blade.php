@@ -112,7 +112,7 @@
                         
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label for="nik" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">NIK / Nomor Identitas</label>
+                                <label for="nik" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">NIK / Nomor Identitas <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-id-card"></i></span>
                                     <input type="text" class="form-control ps-2 border-start-0" id="nik" name="nik" value="{{ old('nik', $guest->nik ?? '') }}" placeholder="Masukkan 16 digit NIK" maxlength="16" minlength="16" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required style="font-size: 14px; padding: 10px 14px;">
@@ -120,7 +120,7 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <label for="name" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Nama Lengkap</label>
+                                <label for="name" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Nama Lengkap <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-user"></i></span>
                                     <input type="text" class="form-control ps-2 border-start-0" id="name" name="name" value="{{ old('name', $guest->name ?? '') }}" placeholder="Nama sesuai identitas" required style="font-size: 14px; padding: 10px 14px;">
@@ -128,7 +128,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Jenis Kelamin</label>
+                                <label class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Jenis Kelamin <span class="text-danger">*</span></label>
                                 <div class="d-flex gap-3 mt-2">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="gender" id="gender_male" value="MALE" {{ old('gender', $guest->gender ?? '') === 'MALE' ? 'checked' : '' }} required>
@@ -161,7 +161,7 @@
                             </div>
 
                             <div class="col-12">
-                                <label for="phone" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Nomor Telepon / WhatsApp</label>
+                                <label for="phone" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Nomor Telepon / WhatsApp <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-phone-alt"></i></span>
                                     <input type="text" class="form-control ps-2 border-start-0" id="phone" name="phone" value="{{ old('phone', $user->phone ?? '') }}" placeholder="Contoh: 08123456789" maxlength="15" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required style="font-size: 14px; padding: 10px 14px;">

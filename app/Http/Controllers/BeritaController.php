@@ -82,9 +82,8 @@ class BeritaController extends Controller
         // Upload gambar
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/berita'), $filename);
-            $validated['gambar'] = 'uploads/berita/' . $filename;
+            $path = $file->store('berita', 'public');
+            $validated['gambar'] = 'storage/' . $path;
         }
 
         // Generate slug
@@ -158,14 +157,20 @@ class BeritaController extends Controller
         // Handle gambar upload
         if ($request->hasFile('gambar')) {
             // Hapus gambar lama
-            if ($berita->gambar && file_exists(public_path($berita->gambar))) {
-                unlink(public_path($berita->gambar));
+            if ($berita->gambar) {
+                if (str_starts_with($berita->gambar, 'storage/')) {
+                    $oldPath = str_replace('storage/', '', $berita->gambar);
+                    if (\Illuminate\Support\Facades\Storage::disk('public')->exists($oldPath)) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+                    }
+                } elseif (file_exists(public_path($berita->gambar))) {
+                    unlink(public_path($berita->gambar));
+                }
             }
 
             $file = $request->file('gambar');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/berita'), $filename);
-            $validated['gambar'] = 'uploads/berita/' . $filename;
+            $path = $file->store('berita', 'public');
+            $validated['gambar'] = 'storage/' . $path;
         }
 
         // Update slug
@@ -189,8 +194,15 @@ class BeritaController extends Controller
         }
 
         // Hapus gambar
-        if ($berita->gambar && file_exists(public_path($berita->gambar))) {
-            unlink(public_path($berita->gambar));
+        if ($berita->gambar) {
+            if (str_starts_with($berita->gambar, 'storage/')) {
+                $oldPath = str_replace('storage/', '', $berita->gambar);
+                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($oldPath)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+                }
+            } elseif (file_exists(public_path($berita->gambar))) {
+                unlink(public_path($berita->gambar));
+            }
         }
 
         $berita->delete();

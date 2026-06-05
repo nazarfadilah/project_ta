@@ -84,9 +84,21 @@ class AuthController extends Controller
     {
         $request->validate([
             'username' => 'required|string|max:100|unique:users,username',
-            'email' => 'required|email|unique:users,email|max:255',
+            'email' => 'required|email|unique:users,email|max:255|ends_with:@gmail.com',
             'password' => 'required|min:6|confirmed',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|numeric|digits_between:12,15',
+        ], [
+            'username.required' => 'Username harus diisi.',
+            'username.unique' => 'Username sudah terdaftar.',
+            'email.required' => 'Alamat email harus diisi.',
+            'email.email' => 'Format alamat email tidak valid.',
+            'email.unique' => 'Alamat email sudah terdaftar.',
+            'email.ends_with' => 'Email harus menggunakan domain @gmail.com.',
+            'password.required' => 'Password harus diisi.',
+            'password.min' => 'Password minimal harus 6 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'phone.numeric' => 'Nomor telepon harus berupa angka saja.',
+            'phone.digits_between' => 'Nomor telepon harus terdiri dari 12 sampai 15 digit.',
         ]);
 
         // Get Tamu role
@@ -150,7 +162,12 @@ class AuthController extends Controller
             session()->regenerate();
             session()->forget('captcha');
 
-            return redirect()->route('users.dashboard'); // Assuming dashboard is the default route after login
+            // Role-based redirection
+            if (in_array($user->roleId, [1, 2, 3])) {
+                return redirect()->route('admin.dashboard');
+            } else {
+                return redirect()->route('users.dashboard');
+            }
 
         } catch (\Exception $e) {
             return redirect()->route('login')->withErrors(['error' => 'Gagal login menggunakan Google. Silakan coba lagi.']);

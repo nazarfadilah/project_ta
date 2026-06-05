@@ -40,7 +40,7 @@
             @endif
 
             <!-- Kelola Tamu -->
-            @if(in_array(Auth::user()->roleId, [1, 2]))
+            @if(in_array(Auth::user()->roleId, [1, 2, 3]))
             <li class="nav-item">
                 <a href="{{ route('main.tamu.index') }}" class="nav-link {{ request()->routeIs('main.tamu.*') ? 'active' : '' }}" title="Kelola Tamu">
                     <i class="fas fa-user-tie menu-icon"></i>
@@ -50,7 +50,7 @@
             @endif
 
             <!-- Divider -->
-            @if(in_array(Auth::user()->roleId, [1, 2]))
+            @if(in_array(Auth::user()->roleId, [1, 2, 3]))
             <hr class="sidebar-divider">
             @endif
 

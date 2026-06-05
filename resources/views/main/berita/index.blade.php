@@ -40,7 +40,6 @@
                         <tr>
                             <th style="width: 50px; text-align: center;">No</th>
                             <th>Judul</th>
-                            <th style="width: 120px;">Tanggal</th>
                             <th style="width: 150px;">Pembuat</th>
                             <th style="width: 100px; text-align: center;">Status</th>
                             <th style="width: 110px; text-align: center;">Aksi</th>
@@ -55,7 +54,6 @@
                                 <br>
                                 <small class="text-muted">{{ Str::limit($berita->isi, 60) }}</small>
                             </td>
-                            <td>{{ $berita->tanggal_publish->format('d M Y') }}</td>
                             <td>{{ $berita->user->name ?? 'N/A' }}</td>
                             <td style="text-align: center;">
                                 @if($berita->status === 'approved')
@@ -74,12 +72,14 @@
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 @if(Auth::user()->roleId == 1 || (Auth::user()->roleId == 3 && $berita->userId === Auth::id()))
-                                <a href="{{ route('main.berita.edit', $berita->id) }}" 
-                                   class="btn btn-sm btn-warning" 
-                                   title="Edit"
-                                   style="padding: 4px 10px; font-size: 13px; color: #fff; margin-left: 2px;">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+                                    @if($berita->status !== 'draft')
+                                    <a href="{{ route('main.berita.edit', $berita->id) }}" 
+                                       class="btn btn-sm btn-warning" 
+                                       title="Edit"
+                                       style="padding: 4px 10px; font-size: 13px; color: #fff; margin-left: 2px;">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    @endif
                                 <button type="button" 
                                         onclick="hapusData('{{ route('main.berita.destroy', $berita->id) }}')" 
                                         class="btn btn-sm btn-danger" 
@@ -206,8 +206,8 @@
             ordering: true,
             responsive: true,
             columnDefs: [
-                { orderable: false, targets: [0, 5] },
-                { searchable: false, targets: [0, 5] }
+                { orderable: false, targets: [0, 4] },
+                { searchable: false, targets: [0, 4] }
             ]
         });
     });

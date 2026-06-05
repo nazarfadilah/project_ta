@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - SIPRASA</title>
-    <link rel="icon" type="image/jpeg" href="{{ asset('assets/image/icon.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('assets/image/icon.png') }}">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -235,7 +237,7 @@
 
                     <div class="form-group">
                         <label for="email">Alamat Email</label>
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="contoh@email.com" required>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="contoh@gmail.com" pattern="[a-zA-Z0-9._%+-]+@gmail\.com" title="Email harus menggunakan domain @gmail.com" required>
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -243,7 +245,7 @@
 
                     <div class="form-group">
                         <label for="phone">Nomor Telepon (Opsional)</label>
-                        <input type="tel" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone') }}" placeholder="Contoh: 081234567890">
+                        <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone') }}" placeholder="Contoh: 081234567890" inputmode="numeric" pattern="[0-9]{12,15}" title="Nomor telepon harus berupa angka 12-15 digit">
                         @error('phone')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -251,15 +253,25 @@
 
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Minimal 6 karakter" required>
+                        <div class="input-group">
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Minimal 6 karakter" style="border-right: none;" required>
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword" style="border-left: none; border-color: #ddd; background: white; color: #555; display: flex; align-items: center; justify-content: center; padding: 0 15px;">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
                         @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="form-group">
                         <label for="password_confirmation">Konfirmasi Password</label>
-                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Konfirmasi password Anda" required>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Konfirmasi password Anda" style="border-right: none;" required>
+                            <button class="btn btn-outline-secondary" type="button" id="togglePasswordConfirm" style="border-left: none; border-color: #ddd; background: white; color: #555; display: flex; align-items: center; justify-content: center; padding: 0 15px;">
+                                <i class="fas fa-eye" id="eyeIconConfirm"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn-login">Daftar</button>
@@ -291,5 +303,48 @@
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Restrict phone input to numbers only and max 15 digits
+        const phoneInput = document.getElementById('phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                // Replace non-digits
+                this.value = this.value.replace(/[^0-9]/g, '');
+                // Limit to 15 characters
+                if (this.value.length > 15) {
+                    this.value = this.value.slice(0, 15);
+                }
+            });
+        }
+
+        // Toggle password visibility
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        if (togglePassword && passwordInput && eyeIcon) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                eyeIcon.classList.toggle('fa-eye');
+                eyeIcon.classList.toggle('fa-eye-slash');
+            });
+        }
+
+        // Toggle password confirmation visibility
+        const togglePasswordConfirm = document.getElementById('togglePasswordConfirm');
+        const passwordConfirmInput = document.getElementById('password_confirmation');
+        const eyeIconConfirm = document.getElementById('eyeIconConfirm');
+
+        if (togglePasswordConfirm && passwordConfirmInput && eyeIconConfirm) {
+            togglePasswordConfirm.addEventListener('click', function() {
+                const type = passwordConfirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordConfirmInput.setAttribute('type', type);
+                eyeIconConfirm.classList.toggle('fa-eye');
+                eyeIconConfirm.classList.toggle('fa-eye-slash');
+            });
+        }
+    </script>
 </body>
 </html>

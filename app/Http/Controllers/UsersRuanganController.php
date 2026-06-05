@@ -48,6 +48,7 @@ class UsersRuanganController extends Controller
             })
             ->whereIn('statusApproval', ['APPROVED'])
             ->whereIn('statusPeminjaman', ['RESERVASI', 'CHECK_IN', 'SELESAI'])
+            ->where('tanggal', '>=', Carbon::today()->toDateString())
             ->orderBy('tanggal', 'asc')
             ->get()
             ->map(function($item) {

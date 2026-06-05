@@ -23,6 +23,22 @@
 <div class="container py-4">
     <div class="row">
         <div class="col-lg-8 mx-auto">
+            {{-- Alert Success --}}
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show mb-3" role="alert" style="font-size: 14px;">
+                    <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            {{-- Alert Error --}}
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert" style="font-size: 14px;">
+                    <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
             @if($invoice)
                 <!-- Action Buttons -->
                 <div class="d-flex justify-content-between align-items-center mb-3 action-buttons">
@@ -71,6 +87,32 @@
                                 <div class="fw-bold text-dark" style="font-size: 16px;">{{ $invoice->noInvoice }}</div>
                             </div>
                         </div>
+
+                        @if(Auth::user()->roleId != 2)
+                        <hr class="my-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <span class="text-muted small fw-semibold" style="font-size: 12px; color: #555;">Ubah Status Pembayaran:</span>
+                            <div>
+                                @if($invoice->statusInvoice === 'UNPAID')
+                                    <form action="{{ route('main.transaksi.invoice.updateStatus', $invoice->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menandai invoice ini sebagai LUNAS?')">
+                                        @csrf
+                                        <input type="hidden" name="statusInvoice" value="PAID">
+                                        <button type="submit" class="btn btn-sm btn-success px-3 py-1 fw-semibold" style="font-size: 13px;">
+                                            <i class="fas fa-check me-1"></i> Tandai Lunas (PAID)
+                                        </button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('main.transaksi.invoice.updateStatus', $invoice->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menandai invoice ini sebagai BELUM DIBAYAR?')">
+                                        @csrf
+                                        <input type="hidden" name="statusInvoice" value="UNPAID">
+                                        <button type="submit" class="btn btn-sm btn-danger px-3 py-1 fw-semibold" style="font-size: 13px;">
+                                            <i class="fas fa-times me-1"></i> Tandai Belum Bayar (UNPAID)
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
 

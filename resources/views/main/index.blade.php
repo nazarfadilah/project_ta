@@ -7,7 +7,7 @@
     <div class="row mb-2">
         <!-- Card Pengguna -->
         @if(in_array(Auth::user()->roleId, [1, 2]))
-        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
             @if(Auth::user()->roleId == 2)
                 <div class="card border-0 rounded-3 shadow-sm" style="background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%); min-height: 150px; cursor: default;">
                     <div class="card-body d-flex flex-column justify-content-between h-100">
@@ -43,8 +43,8 @@
         @endif
 
         <!-- Card Tamu -->
-        @if(in_array(Auth::user()->roleId, [1, 2]))
-        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+        @if(in_array(Auth::user()->roleId, [1, 2, 3]))
+        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
             <a href="{{ route('main.tamu.index') }}" class="text-decoration-none">
                 <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #17A2B8 0%, #138496 100%); min-height: 150px;">
                     <div class="card-body d-flex flex-column justify-content-between h-100">
@@ -65,7 +65,7 @@
 
         <!-- Card Gedung -->
         @if(in_array(Auth::user()->roleId, [2, 3]))
-        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
             <a href="{{ route('main.gedung.index') }}" class="text-decoration-none">
                 <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #6C757D 0%, #5A6268 100%); min-height: 150px;">
                     <div class="card-body d-flex flex-column justify-content-between h-100">
@@ -86,7 +86,7 @@
 
         <!-- Card Ruangan -->
         @if(in_array(Auth::user()->roleId, [2, 3]))
-        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
             <a href="{{ route('main.ruangan.index') }}" class="text-decoration-none">
                 <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #4E73DF 0%, #224ABE 100%); min-height: 150px;">
                     <div class="card-body d-flex flex-column justify-content-between h-100">
@@ -107,7 +107,7 @@
 
         <!-- Card Sarana & Prasarana -->
         @if(in_array(Auth::user()->roleId, [2, 3]))
-        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
             <a href="{{ route('main.sarana.index') }}" class="text-decoration-none">
                 <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #20C997 0%, #17A2B8 100%); min-height: 150px;">
                     <div class="card-body d-flex flex-column justify-content-between h-100">
@@ -128,7 +128,7 @@
 
         <!-- Card Paket Ruangan -->
         @if(in_array(Auth::user()->roleId, [2, 3]))
-        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
             <a href="{{ route('main.paket_ruangan.index') }}" class="text-decoration-none">
                 <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #E83E8C 0%, #D81B60 100%); min-height: 150px;">
                     <div class="card-body d-flex flex-column justify-content-between h-100">
@@ -149,7 +149,7 @@
 
         <!-- Card Peminjaman Ruangan -->
         @if(in_array(Auth::user()->roleId, [2, 3]))
-        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
             <a href="{{ route('main.transaksi.peminjaman.index') }}" class="text-decoration-none">
                 <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #6F42C1 0%, #593196 100%); min-height: 150px;">
                     <div class="card-body d-flex flex-column justify-content-between h-100">
@@ -170,7 +170,7 @@
 
         <!-- Card Berita -->
         @if(in_array(Auth::user()->roleId, [1, 2, 3]))
-        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
             <a href="{{ route('main.berita.index') }}" class="text-decoration-none">
                 <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #28A745 0%, #218838 100%); min-height: 150px;">
                     <div class="card-body d-flex flex-column justify-content-between h-100">
