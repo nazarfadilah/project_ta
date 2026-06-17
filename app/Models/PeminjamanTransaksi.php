@@ -3,6 +3,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReservationStatusMail;
 
 class PeminjamanTransaksi extends Model {
     use HasFactory;
@@ -18,6 +20,46 @@ class PeminjamanTransaksi extends Model {
         'checkOut' => 'datetime',
         'tanggalApproval' => 'datetime',
     ];
+
+    protected static function booted()
+    {
+        static::created(function ($peminjaman) {
+            if ($peminjaman->statusApproval === 'APPROVED') {
+                $user = $peminjaman->user ?? User::where('guestId', $peminjaman->guestId)->first();
+                if ($user && $user->email) {
+                    try {
+                        Mail::to($user->email)->send(new ReservationStatusMail($peminjaman, 'APPROVED'));
+                    } catch (\Exception $e) {
+                        \Log::error('Gagal kirim email status reservasi (created): ' . $e->getMessage());
+                    }
+                }
+            }
+        });
+
+        static::updated(function ($peminjaman) {
+            $user = $peminjaman->user ?? User::where('guestId', $peminjaman->guestId)->first();
+            if ($user && $user->email) {
+                // Only monitor details changes (email for status change is handled directly in the Controller)
+                if (!$peminjaman->wasChanged('statusApproval')) {
+                    $monitored = ['tanggal', 'jamMulai', 'durasi', 'facilityId', 'biayaTambahan', 'keterangan'];
+                    $changed = false;
+                    foreach ($monitored as $field) {
+                        if ($peminjaman->wasChanged($field)) {
+                            $changed = true;
+                            break;
+                        }
+                    }
+                    if ($changed) {
+                        try {
+                            Mail::to($user->email)->send(new ReservationStatusMail($peminjaman, 'UPDATED'));
+                        } catch (\Exception $e) {
+                            \Log::error('Gagal kirim email status reservasi (updated details): ' . $e->getMessage());
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     public function guest() {
         return $this->belongsTo(Guest::class, 'guestId', 'id');

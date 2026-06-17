@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\PeminjamanTransaksi;
 use App\Models\Invoice;
+use App\Models\User;
+use App\Mail\ReservationStatusMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -42,16 +45,38 @@ class AdminPeminjamanTransaksiController extends Controller
     {
         $validated = $request->validate([
             'catatanApproval' => 'nullable|string|max:1000',
+            'biayaTambahan' => 'nullable|numeric|min:0',
         ]);
 
         $peminjaman = PeminjamanTransaksi::findOrFail($id);
+        $biayaTambahan = $validated['biayaTambahan'] ?? 0.00;
         
-        // Update approval status
+        // Update approval status and biayaTambahan
         $peminjaman->update([
             'statusApproval' => 'APPROVED',
             'catatanApproval' => $validated['catatanApproval'] ?? null,
+            'biayaTambahan' => $biayaTambahan,
             'tanggalApproval' => Carbon::now(),
         ]);
+
+        // Sync with invoice
+        $invoice = Invoice::where('peminjamanId', $peminjaman->id)->first();
+        if ($invoice) {
+            $invoice->update([
+                'biayaTambahan' => $biayaTambahan,
+                'totalHarga' => $invoice->subtotal + $biayaTambahan,
+            ]);
+        }
+
+        // Kirim email notification
+        $user = $peminjaman->user ?? User::where('guestId', $peminjaman->guestId)->first();
+        if ($user && $user->email) {
+            try {
+                Mail::to($user->email)->send(new ReservationStatusMail($peminjaman, 'APPROVED'));
+            } catch (\Exception $e) {
+                \Log::error('Gagal kirim email status reservasi (approve): ' . $e->getMessage());
+            }
+        }
 
         return redirect()->route('main.transaksi.peminjaman.show', $id)
             ->with('success', 'Peminjaman telah disetujui.');
@@ -74,6 +99,16 @@ class AdminPeminjamanTransaksiController extends Controller
             'catatanApproval' => $validated['catatanApproval'],
             'tanggalApproval' => Carbon::now(),
         ]);
+
+        // Kirim email notification
+        $user = $peminjaman->user ?? User::where('guestId', $peminjaman->guestId)->first();
+        if ($user && $user->email) {
+            try {
+                Mail::to($user->email)->send(new ReservationStatusMail($peminjaman, 'REJECTED'));
+            } catch (\Exception $e) {
+                \Log::error('Gagal kirim email status reservasi (reject): ' . $e->getMessage());
+            }
+        }
 
         return redirect()->route('main.transaksi.peminjaman.show', $id)
             ->with('success', 'Peminjaman telah ditolak.');

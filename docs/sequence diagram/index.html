@@ -412,8 +412,8 @@
         <button class="theme-toggle" id="themeBtn" title="Ubah Tema">
           <i class="fas fa-moon"></i>
         </button>
-        <button class="btn btn-primary" id="downloadBtn" title="Unduh File SVG">
-          <i class="fas fa-download"></i> Unduh SVG
+        <button class="btn btn-primary" id="downloadBtn" title="Unduh File PNG">
+          <i class="fas fa-download"></i> Unduh PNG
         </button>
       </div>
     </div>
@@ -485,75 +485,80 @@
         "title": "1. Autentikasi (Login & Logout)",
         "description": "Alur masuk (login) dan keluar (logout) sistem untuk seluruh pengguna.",
         "roles": ["Admin", "Petugas", "Pimpinan", "Guest"],
-        "participants": ["Actor", "View", "Controller", "Database"],
+        "participants": ["Actor", "Halaman Autentikasi", "Auth Controller", "User Model"],
         "steps": [
-          ["msg", "Actor", "View", "Input username & password, klik Login", "call"],
-          ["msg", "View", "Controller", "Kirim data login (POST)", "call"],
-          ["msg", "Controller", "Database", "Cari user berdasarkan email/username", "call"],
-          ["msg", "Database", "Controller", "Kembalikan data user & password hash", "reply"],
-          ["self", "Controller", "Verifikasi password & session"],
+          ["msg", "Actor", "Halaman Autentikasi", "1: Input username & password, klik Login", "call"],
+          ["msg", "Halaman Autentikasi", "Auth Controller", "1.1: Kirim data login (POST)", "call"],
+          ["msg", "Auth Controller", "User Model", "1.1.1: Cari user berdasarkan email/username", "call"],
+          ["msg", "User Model", "Auth Controller", "1.1.2: Kembalikan data user & password hash", "reply"],
+          ["self", "Auth Controller", "1.1.3: Verifikasi password & session"],
           ["alt_start", "Password Valid"],
-          ["msg", "Controller", "View", "Redirect ke Dashboard (Session Aktif)", "reply"],
+          ["msg", "Auth Controller", "Halaman Autentikasi", "1.1.4: Redirect ke Dashboard (Session Aktif)", "reply"],
           ["alt_else", "Password Salah"],
-          ["msg", "Controller", "View", "Kembalikan pesan error (401)", "reply"],
+          ["msg", "Auth Controller", "Halaman Autentikasi", "1.1.5: Kembalikan pesan error (401)", "reply"],
           ["alt_end"],
-          ["msg", "Actor", "View", "Klik Logout", "call"],
-          ["msg", "View", "Controller", "Request logout (POST)", "call"],
-          ["msg", "Controller", "View", "Destroy session, redirect ke Login", "reply"]
+          ["msg", "Actor", "Halaman Autentikasi", "2: Klik Logout", "call"],
+          ["msg", "Halaman Autentikasi", "Auth Controller", "2.1: Request logout (POST)", "call"],
+          ["msg", "Auth Controller", "Halaman Autentikasi", "2.2: Destroy session, redirect ke Login", "reply"]
         ]
       },
       "2_kelola_pengguna": {
         "title": "2. Kelola Pengguna (User Management)",
         "description": "Pengelolaan data pengguna sistem (Admin memiliki akses penuh, Pimpinan & Petugas diblokir).",
         "roles": ["Admin"],
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
+        "participants": ["Admin", "Halaman Utama", "User Controller", "User Model", "Halaman Manajemen Pengguna"],
         "steps": [
-          ["msg", "Actor", "View", "Buka Halaman Kelola Pengguna", "call"],
-          ["msg", "View", "Middleware", "GET /admin/users", "call"],
-          ["alt_start", "Role == Petugas (3) / Pimpinan (2)"],
-          ["msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"],
-          ["alt_else", "Role == Admin (1)"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Get all users", "call"],
-          ["msg", "Database", "Controller", "Users list data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan index users dengan tombol Aksi", "reply"],
-          ["alt_end"],
-          ["msg", "Actor", "View", "Klik tombol Hapus Pengguna (Admin)", "call"],
-          ["msg", "View", "Middleware", "DELETE /admin/users/{email}", "call"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Delete user record", "call"],
-          ["msg", "Database", "Controller", "Success", "reply"],
-          ["msg", "Controller", "View", "Refresh & tampilkan pesan sukses", "reply"]
+          ["msg", "Admin", "Halaman Utama", "1: Membuka menu Pengguna()", "call"],
+          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
+          ["msg", "Admin", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
+          ["msg", "Halaman Utama", "User Controller", "2.1: Request halaman Manajemen()", "call"],
+          ["msg", "User Controller", "User Model", "2.1.1: Query data pengguna()", "call"],
+          ["msg", "User Model", "User Controller", "2.1.2: Return query()", "reply"],
+          ["msg", "User Controller", "Halaman Manajemen Pengguna", "2.1.3: Menampilkan halaman Halaman Manajemen Pengguna()", "reply"],
+          ["msg", "Admin", "Halaman Manajemen Pengguna", "3: Memilih menu Tambah Pengguna()", "call"],
+          ["self", "Halaman Manajemen Pengguna", "3.1: Menampilkan form tambah pengguna()"],
+          ["msg", "Admin", "Halaman Manajemen Pengguna", "4: Menekan tombol Simpan()", "call"],
+          ["self", "Halaman Manajemen Pengguna", "4.1: Menampilkan form input"],
+          ["alt_start", "Input data benar"],
+          ["msg", "Admin", "Halaman Manajemen Pengguna", "5: Menginputkan data pengguna dan menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Pengguna", "User Controller", "5.1: Request tambah pengguna()", "call"],
+          ["msg", "User Controller", "User Model", "5.1.1: Query tambah pengguna()", "call"],
+          ["msg", "User Model", "User Controller", "5.1.2: Return query()", "reply"],
+          ["msg", "User Controller", "Halaman Manajemen Pengguna", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
+          ["alt_else", "Input data salah atau kosong"],
+          ["msg", "Admin", "Halaman Manajemen Pengguna", "6: Menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Pengguna", "User Controller", "6.1: Request tambah pengguna()", "call"],
+          ["msg", "User Controller", "Halaman Manajemen Pengguna", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
+          ["alt_end"]
         ]
       },
       "3_kelola_tamu": {
         "title": "3. Kelola Tamu (Guest Management)",
         "description": "Pengelolaan data tamu (Guest) penyewa (Admin kelola penuh, Pimpinan read-only, Petugas diblokir).",
         "roles": ["Admin", "Pimpinan"],
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
+        "participants": ["Admin", "Halaman Utama", "Tamu Controller", "Tamu Model", "Halaman Manajemen Tamu"],
         "steps": [
-          ["msg", "Actor", "View", "Buka Halaman Kelola Tamu", "call"],
-          ["msg", "View", "Middleware", "GET /admin/tamu-management", "call"],
-          ["alt_start", "Role == Pimpinan (2)"],
-          ["msg", "Middleware", "Controller", "Forward request (Read-only)", "call"],
-          ["msg", "Controller", "Database", "Get guest list", "call"],
-          ["msg", "Database", "Controller", "Return data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi hidden)", "reply"],
-          ["alt_else", "Role == Admin (1)"],
-          ["msg", "Middleware", "Controller", "Forward request (Full Access)", "call"],
-          ["msg", "Controller", "Database", "Get guest list", "call"],
-          ["msg", "Database", "Controller", "Return data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi visible)", "reply"],
-          ["alt_end"],
-          ["msg", "Actor", "View", "Klik Tambah Tamu (Admin)", "call"],
-          ["msg", "View", "Middleware", "POST /admin/tamu-management", "call"],
-          ["alt_start", "Role == Pimpinan (2)"],
-          ["msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"],
-          ["alt_else", "Role == Admin (1)"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Simpan data tamu", "call"],
-          ["msg", "Database", "Controller", "Success", "reply"],
-          ["msg", "Controller", "View", "Refresh list tamu", "reply"],
+          ["msg", "Admin", "Halaman Utama", "1: Membuka menu Tamu()", "call"],
+          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
+          ["msg", "Admin", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
+          ["msg", "Halaman Utama", "Tamu Controller", "2.1: Request halaman Manajemen()", "call"],
+          ["msg", "Tamu Controller", "Tamu Model", "2.1.1: Query data tamu()", "call"],
+          ["msg", "Tamu Model", "Tamu Controller", "2.1.2: Return query()", "reply"],
+          ["msg", "Tamu Controller", "Halaman Manajemen Tamu", "2.1.3: Menampilkan halaman Halaman Manajemen Tamu()", "reply"],
+          ["msg", "Admin", "Halaman Manajemen Tamu", "3: Memilih menu Tambah Tamu()", "call"],
+          ["self", "Halaman Manajemen Tamu", "3.1: Menampilkan form tambah tamu()"],
+          ["msg", "Admin", "Halaman Manajemen Tamu", "4: Menekan tombol Simpan()", "call"],
+          ["self", "Halaman Manajemen Tamu", "4.1: Menampilkan form input"],
+          ["alt_start", "Input data benar"],
+          ["msg", "Admin", "Halaman Manajemen Tamu", "5: Menginputkan data tamu dan menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Tamu", "Tamu Controller", "5.1: Request tambah tamu()", "call"],
+          ["msg", "Tamu Controller", "Tamu Model", "5.1.1: Query tambah tamu()", "call"],
+          ["msg", "Tamu Model", "Tamu Controller", "5.1.2: Return query()", "reply"],
+          ["msg", "Tamu Controller", "Halaman Manajemen Tamu", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
+          ["alt_else", "Input data salah atau kosong"],
+          ["msg", "Admin", "Halaman Manajemen Tamu", "6: Menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Tamu", "Tamu Controller", "6.1: Request tambah tamu()", "call"],
+          ["msg", "Tamu Controller", "Halaman Manajemen Tamu", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
           ["alt_end"]
         ]
       },
@@ -561,30 +566,29 @@
         "title": "4. Kelola Gedung",
         "description": "Pengelolaan master data gedung (Admin kelola penuh, Pimpinan read-only, Petugas diblokir).",
         "roles": ["Admin", "Pimpinan"],
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
+        "participants": ["Admin", "Halaman Utama", "Gedung Controller", "Gedung Model", "Halaman Manajemen Gedung"],
         "steps": [
-          ["msg", "Actor", "View", "Buka Halaman Kelola Gedung", "call"],
-          ["msg", "View", "Middleware", "GET /admin/gedung", "call"],
-          ["alt_start", "Role == Pimpinan (2)"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Get gedung list", "call"],
-          ["msg", "Database", "Controller", "Return data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi hidden)", "reply"],
-          ["alt_else", "Role == Admin (1)"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Get gedung list", "call"],
-          ["msg", "Database", "Controller", "Return data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi visible)", "reply"],
-          ["alt_end"],
-          ["msg", "Actor", "View", "Klik Tambah Gedung (Admin)", "call"],
-          ["msg", "View", "Middleware", "POST /admin/gedung", "call"],
-          ["alt_start", "Role == Pimpinan (2)"],
-          ["msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"],
-          ["alt_else", "Role == Admin (1)"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Simpan data gedung", "call"],
-          ["msg", "Database", "Controller", "Success", "reply"],
-          ["msg", "Controller", "View", "Refresh list gedung", "reply"],
+          ["msg", "Admin", "Halaman Utama", "1: Membuka menu Gedung()", "call"],
+          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
+          ["msg", "Admin", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
+          ["msg", "Halaman Utama", "Gedung Controller", "2.1: Request halaman Manajemen()", "call"],
+          ["msg", "Gedung Controller", "Gedung Model", "2.1.1: Query data gedung()", "call"],
+          ["msg", "Gedung Model", "Gedung Controller", "2.1.2: Return query()", "reply"],
+          ["msg", "Gedung Controller", "Halaman Manajemen Gedung", "2.1.3: Menampilkan halaman Halaman Manajemen Gedung()", "reply"],
+          ["msg", "Admin", "Halaman Manajemen Gedung", "3: Memilih menu Tambah Gedung()", "call"],
+          ["self", "Halaman Manajemen Gedung", "3.1: Menampilkan form tambah gedung()"],
+          ["msg", "Admin", "Halaman Manajemen Gedung", "4: Menekan tombol Simpan()", "call"],
+          ["self", "Halaman Manajemen Gedung", "4.1: Menampilkan form input"],
+          ["alt_start", "Input data benar"],
+          ["msg", "Admin", "Halaman Manajemen Gedung", "5: Menginputkan data gedung dan menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Gedung", "Gedung Controller", "5.1: Request tambah gedung()", "call"],
+          ["msg", "Gedung Controller", "Gedung Model", "5.1.1: Query tambah gedung()", "call"],
+          ["msg", "Gedung Model", "Gedung Controller", "5.1.2: Return query()", "reply"],
+          ["msg", "Gedung Controller", "Halaman Manajemen Gedung", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
+          ["alt_else", "Input data salah atau kosong"],
+          ["msg", "Admin", "Halaman Manajemen Gedung", "6: Menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Gedung", "Gedung Controller", "6.1: Request tambah gedung()", "call"],
+          ["msg", "Gedung Controller", "Halaman Manajemen Gedung", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
           ["alt_end"]
         ]
       },
@@ -592,22 +596,29 @@
         "title": "5. Kelola Ruangan",
         "description": "Pengelolaan master data ruangan (Petugas kelola penuh, Pimpinan read-only, Admin diblokir).",
         "roles": ["Petugas", "Pimpinan"],
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
+        "participants": ["Petugas", "Halaman Utama", "Ruangan Controller", "Ruangan Model", "Halaman Manajemen Ruangan"],
         "steps": [
-          ["msg", "Actor", "View", "Buka Halaman Kelola Ruangan", "call"],
-          ["msg", "View", "Middleware", "GET /admin/ruangan", "call"],
-          ["alt_start", "Role == Admin (1)"],
-          ["msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"],
-          ["alt_else", "Role == Pimpinan (2)"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Get ruangan list", "call"],
-          ["msg", "Database", "Controller", "Return data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi hidden)", "reply"],
-          ["alt_else", "Role == Petugas (3)"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Get ruangan list", "call"],
-          ["msg", "Database", "Controller", "Return data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi visible)", "reply"],
+          ["msg", "Petugas", "Halaman Utama", "1: Membuka menu Ruangan()", "call"],
+          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
+          ["msg", "Petugas", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
+          ["msg", "Halaman Utama", "Ruangan Controller", "2.1: Request halaman Manajemen()", "call"],
+          ["msg", "Ruangan Controller", "Ruangan Model", "2.1.1: Query data ruangan()", "call"],
+          ["msg", "Ruangan Model", "Ruangan Controller", "2.1.2: Return query()", "reply"],
+          ["msg", "Ruangan Controller", "Halaman Manajemen Ruangan", "2.1.3: Menampilkan halaman Halaman Manajemen Ruangan()", "reply"],
+          ["msg", "Petugas", "Halaman Manajemen Ruangan", "3: Memilih menu Tambah Ruangan()", "call"],
+          ["self", "Halaman Manajemen Ruangan", "3.1: Menampilkan form tambah ruangan()"],
+          ["msg", "Petugas", "Halaman Manajemen Ruangan", "4: Menekan tombol Simpan()", "call"],
+          ["self", "Halaman Manajemen Ruangan", "4.1: Menampilkan form input"],
+          ["alt_start", "Input data benar"],
+          ["msg", "Petugas", "Halaman Manajemen Ruangan", "5: Menginputkan data ruangan dan menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Ruangan", "Ruangan Controller", "5.1: Request tambah ruangan()", "call"],
+          ["msg", "Ruangan Controller", "Ruangan Model", "5.1.1: Query tambah ruangan()", "call"],
+          ["msg", "Ruangan Model", "Ruangan Controller", "5.1.2: Return query()", "reply"],
+          ["msg", "Ruangan Controller", "Halaman Manajemen Ruangan", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
+          ["alt_else", "Input data salah atau kosong"],
+          ["msg", "Petugas", "Halaman Manajemen Ruangan", "6: Menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Ruangan", "Ruangan Controller", "6.1: Request tambah ruangan()", "call"],
+          ["msg", "Ruangan Controller", "Halaman Manajemen Ruangan", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
           ["alt_end"]
         ]
       },
@@ -615,22 +626,29 @@
         "title": "6. Kelola Sarana & Prasarana",
         "description": "Pengelolaan master data sarana (Petugas kelola penuh, Pimpinan read-only, Admin diblokir).",
         "roles": ["Petugas", "Pimpinan"],
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
+        "participants": ["Petugas", "Halaman Utama", "Sarana Controller", "Sarana Model", "Halaman Manajemen Sarana"],
         "steps": [
-          ["msg", "Actor", "View", "Buka Halaman Kelola Sarana", "call"],
-          ["msg", "View", "Middleware", "GET /admin/sarana", "call"],
-          ["alt_start", "Role == Admin (1)"],
-          ["msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"],
-          ["alt_else", "Role == Pimpinan (2)"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Get sarana list", "call"],
-          ["msg", "Database", "Controller", "Return data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi hidden)", "reply"],
-          ["alt_else", "Role == Petugas (3)"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Get sarana list", "call"],
-          ["msg", "Database", "Controller", "Return data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi visible)", "reply"],
+          ["msg", "Petugas", "Halaman Utama", "1: Membuka menu Sarana()", "call"],
+          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
+          ["msg", "Petugas", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
+          ["msg", "Halaman Utama", "Sarana Controller", "2.1: Request halaman Manajemen()", "call"],
+          ["msg", "Sarana Controller", "Sarana Model", "2.1.1: Query data sarana()", "call"],
+          ["msg", "Sarana Model", "Sarana Controller", "2.1.2: Return query()", "reply"],
+          ["msg", "Sarana Controller", "Halaman Manajemen Sarana", "2.1.3: Menampilkan halaman Halaman Manajemen Sarana()", "reply"],
+          ["msg", "Petugas", "Halaman Manajemen Sarana", "3: Memilih menu Tambah Sarana()", "call"],
+          ["self", "Halaman Manajemen Sarana", "3.1: Menampilkan form tambah sarana()"],
+          ["msg", "Petugas", "Halaman Manajemen Sarana", "4: Menekan tombol Simpan()", "call"],
+          ["self", "Halaman Manajemen Sarana", "4.1: Menampilkan form input"],
+          ["alt_start", "Input data benar"],
+          ["msg", "Petugas", "Halaman Manajemen Sarana", "5: Menginputkan data sarana dan menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Sarana", "Sarana Controller", "5.1: Request tambah sarana()", "call"],
+          ["msg", "Sarana Controller", "Sarana Model", "5.1.1: Query tambah sarana()", "call"],
+          ["msg", "Sarana Model", "Sarana Controller", "5.1.2: Return query()", "reply"],
+          ["msg", "Sarana Controller", "Halaman Manajemen Sarana", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
+          ["alt_else", "Input data salah atau kosong"],
+          ["msg", "Petugas", "Halaman Manajemen Sarana", "6: Menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Sarana", "Sarana Controller", "6.1: Request tambah sarana()", "call"],
+          ["msg", "Sarana Controller", "Halaman Manajemen Sarana", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
           ["alt_end"]
         ]
       },
@@ -638,22 +656,29 @@
         "title": "7. Kelola Paket Ruangan",
         "description": "Pengelolaan paket sewa dan durasi sewa ruangan (Petugas kelola penuh, Pimpinan read-only, Admin diblokir).",
         "roles": ["Petugas", "Pimpinan"],
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
+        "participants": ["Petugas", "Halaman Utama", "Paket Controller", "Paket Model", "Halaman Manajemen Paket"],
         "steps": [
-          ["msg", "Actor", "View", "Buka Halaman Kelola Paket", "call"],
-          ["msg", "View", "Middleware", "GET /admin/paket-ruangan", "call"],
-          ["alt_start", "Role == Admin (1)"],
-          ["msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"],
-          ["alt_else", "Role == Pimpinan (2)"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Get paket list", "call"],
-          ["msg", "Database", "Controller", "Return data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi hidden)", "reply"],
-          ["alt_else", "Role == Petugas (3)"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Get paket list", "call"],
-          ["msg", "Database", "Controller", "Return data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi visible)", "reply"],
+          ["msg", "Petugas", "Halaman Utama", "1: Membuka menu Paket()", "call"],
+          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
+          ["msg", "Petugas", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
+          ["msg", "Halaman Utama", "Paket Controller", "2.1: Request halaman Manajemen()", "call"],
+          ["msg", "Paket Controller", "Paket Model", "2.1.1: Query data paket()", "call"],
+          ["msg", "Paket Model", "Paket Controller", "2.1.2: Return query()", "reply"],
+          ["msg", "Paket Controller", "Halaman Manajemen Paket", "2.1.3: Menampilkan halaman Halaman Manajemen Paket()", "reply"],
+          ["msg", "Petugas", "Halaman Manajemen Paket", "3: Memilih menu Tambah Paket()", "call"],
+          ["self", "Halaman Manajemen Paket", "3.1: Menampilkan form tambah paket()"],
+          ["msg", "Petugas", "Halaman Manajemen Paket", "4: Menekan tombol Simpan()", "call"],
+          ["self", "Halaman Manajemen Paket", "4.1: Menampilkan form input"],
+          ["alt_start", "Input data benar"],
+          ["msg", "Petugas", "Halaman Manajemen Paket", "5: Menginputkan data paket dan menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Paket", "Paket Controller", "5.1: Request tambah paket()", "call"],
+          ["msg", "Paket Controller", "Paket Model", "5.1.1: Query tambah paket()", "call"],
+          ["msg", "Paket Model", "Paket Controller", "5.1.2: Return query()", "reply"],
+          ["msg", "Paket Controller", "Halaman Manajemen Paket", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
+          ["alt_else", "Input data salah atau kosong"],
+          ["msg", "Petugas", "Halaman Manajemen Paket", "6: Menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Paket", "Paket Controller", "6.1: Request tambah paket()", "call"],
+          ["msg", "Paket Controller", "Halaman Manajemen Paket", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
           ["alt_end"]
         ]
       },
@@ -661,44 +686,42 @@
         "title": "8. Pengajuan Peminjaman (Reservasi)",
         "description": "Alur pengajuan sewa ruangan dan sarana pendukung oleh Guest (Peminjam).",
         "roles": ["Guest"],
-        "participants": ["Actor (Peminjam)", "View", "Controller", "Database"],
+        "participants": ["Actor (Peminjam)", "Halaman Pengajuan", "Peminjaman Controller", "Peminjaman Model"],
         "steps": [
-          ["msg", "Actor (Peminjam)", "View", "Isi Form Permohonan Peminjaman", "call"],
-          ["msg", "View", "Controller", "Kirim Permohonan Peminjaman (POST)", "call"],
-          ["msg", "Controller", "Database", "Cek ketersediaan Ruangan & Sarana", "call"],
-          ["msg", "Database", "Controller", "Return status ketersediaan", "reply"],
+          ["msg", "Actor (Peminjam)", "Halaman Pengajuan", "1: Isi Form Permohonan Peminjaman", "call"],
+          ["msg", "Halaman Pengajuan", "Peminjaman Controller", "1.1: Kirim Permohonan Peminjaman (POST)", "call"],
+          ["msg", "Peminjaman Controller", "Peminjaman Model", "1.1.1: Cek ketersediaan Ruangan & Sarana", "call"],
+          ["msg", "Peminjaman Model", "Peminjaman Controller", "1.1.2: Return status ketersediaan", "reply"],
           ["alt_start", "Fasilitas Tersedia"],
-          ["msg", "Controller", "Database", "Simpan data peminjaman (status=PENDING)", "call"],
-          ["msg", "Controller", "Database", "Simpan detail sarana yang dipinjam", "call"],
-          ["msg", "Database", "Controller", "Success", "reply"],
-          ["msg", "Controller", "View", "Tampilkan sukses (Menunggu Verifikasi)", "reply"],
+          ["msg", "Peminjaman Controller", "Peminjaman Model", "1.1.3: Simpan data peminjaman (status=PENDING)", "call"],
+          ["msg", "Peminjaman Controller", "Peminjaman Model", "1.1.4: Simpan detail sarana yang dipinjam", "call"],
+          ["msg", "Peminjaman Model", "Peminjaman Controller", "1.1.5: Success", "reply"],
+          ["msg", "Peminjaman Controller", "Halaman Pengajuan", "1.1.6: Tampilkan sukses (Menunggu Verifikasi)", "reply"],
           ["alt_else", "Fasilitas Terbooking / Stok Habis"],
-          ["msg", "Controller", "View", "Tampilkan pesan error ketersediaan", "reply"],
+          ["msg", "Peminjaman Controller", "Halaman Pengajuan", "1.1.7: Tampilkan pesan error ketersediaan", "reply"],
           ["alt_end"]
         ]
       },
       "9_verifikasi_approval": {
         "title": "9. Verifikasi & Approval Peminjaman",
-        "description": "Proses persetujuan atau penolakan pengajuan sewa oleh Admin atau Petugas.",
+        "description": "Proses persetujuan or penolakan pengajuan sewa oleh Admin or Petugas.",
         "roles": ["Admin", "Petugas", "Pimpinan (View-only)"],
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
+        "participants": ["Actor", "Halaman Detail Peminjaman", "Approval Controller", "Peminjaman Model"],
         "steps": [
-          ["msg", "Actor", "View", "Buka detail peminjaman pending", "call"],
-          ["msg", "View", "Middleware", "GET /admin/transaksi/peminjaman/{id}", "call"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Get peminjaman & detail sarana", "call"],
-          ["msg", "Database", "Controller", "Return data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan detail peminjaman", "reply"],
-          ["alt_start", "Role == Pimpinan (2)"],
-          ["self", "View", "Sembunyikan tombol Setujui/Tolak"],
-          ["alt_else", "Role == Admin (1) atau Petugas (3)"],
-          ["msg", "Actor", "View", "Klik tombol Setujui", "call"],
-          ["msg", "View", "Middleware", "POST /admin/transaksi/peminjaman/{id}/approve", "call"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Update statusApproval=APPROVED & set tglApproval", "call"],
-          ["msg", "Controller", "Database", "Auto-generate Invoice record (status=UNPAID)", "call"],
-          ["msg", "Database", "Controller", "Success", "reply"],
-          ["msg", "Controller", "View", "Redirect & tampilkan status APPROVED", "reply"],
+          ["msg", "Actor", "Halaman Detail Peminjaman", "1: Buka detail peminjaman pending", "call"],
+          ["msg", "Halaman Detail Peminjaman", "Approval Controller", "1.1: GET /admin/transaksi/peminjaman/{id}", "call"],
+          ["msg", "Approval Controller", "Peminjaman Model", "1.1.1: Get peminjaman & detail sarana", "call"],
+          ["msg", "Peminjaman Model", "Approval Controller", "1.1.2: Return data", "reply"],
+          ["msg", "Approval Controller", "Halaman Detail Peminjaman", "1.1.3: Tampilkan detail peminjaman", "reply"],
+          ["alt_start", "Role == Pimpinan"],
+          ["self", "Halaman Detail Peminjaman", "1.1.4: Sembunyikan tombol Setujui/Tolak"],
+          ["alt_else", "Role == Admin atau Petugas"],
+          ["msg", "Actor", "Halaman Detail Peminjaman", "2: Klik tombol Setujui", "call"],
+          ["msg", "Halaman Detail Peminjaman", "Approval Controller", "2.1: POST /admin/transaksi/peminjaman/{id}/approve", "call"],
+          ["msg", "Approval Controller", "Peminjaman Model", "2.1.1: Update statusApproval=APPROVED & set tglApproval", "call"],
+          ["msg", "Approval Controller", "Peminjaman Model", "2.1.2: Auto-generate Invoice record (status=UNPAID)", "call"],
+          ["msg", "Peminjaman Model", "Approval Controller", "2.1.3: Success", "reply"],
+          ["msg", "Approval Controller", "Halaman Detail Peminjaman", "2.1.4: Redirect & tampilkan status APPROVED", "reply"],
           ["alt_end"]
         ]
       },
@@ -706,45 +729,41 @@
         "title": "10. Proses Check-In & Check-Out",
         "description": "Pemberian check-in tamu pada hari H dan check-out saat masa sewa berakhir.",
         "roles": ["Petugas", "Admin"],
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
+        "participants": ["Actor (Petugas)", "Halaman Transaksi", "Peminjaman Controller", "Peminjaman Model"],
         "steps": [
-          ["msg", "Actor (Petugas)", "View", "Klik tombol Proses Check-In", "call"],
-          ["msg", "View", "Middleware", "POST /admin/transaksi/peminjaman/{id}/check-in", "call"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Update statusPeminjaman=CHECK_IN, checkIn=now()", "call"],
-          ["msg", "Database", "Controller", "Success", "reply"],
-          ["msg", "Controller", "View", "Refresh page & status menjadi CHECK_IN", "reply"],
-          ["msg", "Actor (Petugas)", "View", "Tamu selesai, klik Check-Out & isi form kerusakan", "call"],
-          ["msg", "View", "Middleware", "POST /admin/transaksi/peminjaman/{id}/check-out", "call"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Update statusPeminjaman=CHECK_OUT, checkOut=now()", "call"],
-          ["msg", "Controller", "Database", "Simpan kondisiReturn, denda, & biayaTambahan", "call"],
-          ["msg", "Controller", "Database", "Update Invoice (tambah biaya denda ke totalHarga)", "call"],
-          ["msg", "Database", "Controller", "Success", "reply"],
-          ["msg", "Controller", "View", "Redirect & status menjadi CHECK_OUT", "reply"]
+          ["msg", "Actor (Petugas)", "Halaman Transaksi", "1: Klik tombol Proses Check-In", "call"],
+          ["msg", "Halaman Transaksi", "Peminjaman Controller", "1.1: POST /admin/transaksi/peminjaman/{id}/check-in", "call"],
+          ["msg", "Peminjaman Controller", "Peminjaman Model", "1.1.1: Update statusPeminjaman=CHECK_IN, checkIn=now()", "call"],
+          ["msg", "Peminjaman Model", "Peminjaman Controller", "1.1.2: Success", "reply"],
+          ["msg", "Peminjaman Controller", "Halaman Transaksi", "1.1.3: Refresh page & status menjadi CHECK_IN", "reply"],
+          ["msg", "Actor (Petugas)", "Halaman Transaksi", "2: Tamu selesai, klik Check-Out & isi form kerusakan", "call"],
+          ["msg", "Halaman Transaksi", "Peminjaman Controller", "2.1: POST /admin/transaksi/peminjaman/{id}/check-out", "call"],
+          ["msg", "Peminjaman Controller", "Peminjaman Model", "2.1.1: Update statusPeminjaman=CHECK_OUT, checkOut=now()", "call"],
+          ["msg", "Peminjaman Controller", "Peminjaman Model", "2.1.2: Simpan kondisiReturn, denda, & biayaTambahan", "call"],
+          ["msg", "Peminjaman Controller", "Peminjaman Model", "2.1.3: Update Invoice (tambah biaya denda ke totalHarga)", "call"],
+          ["msg", "Peminjaman Model", "Peminjaman Controller", "2.1.4: Success", "reply"],
+          ["msg", "Peminjaman Controller", "Halaman Transaksi", "2.1.5: Redirect & status menjadi CHECK_OUT", "reply"]
         ]
       },
       "11_kelola_invoice": {
         "title": "11. Kelola & Cetak Invoice",
         "description": "Pembuatan invoice tagihan sewa dan update status pembayaran oleh Admin.",
         "roles": ["Admin"],
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
+        "participants": ["Actor", "Halaman Detail Invoice", "Invoice Controller", "Invoice Model"],
         "steps": [
-          ["msg", "Actor", "View", "Buka halaman kelola invoice", "call"],
-          ["msg", "View", "Middleware", "GET /admin/transaksi/invoice/{id}", "call"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Get invoice & peminjaman details", "call"],
-          ["msg", "Database", "Controller", "Return data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan Invoice Detail", "reply"],
-          ["msg", "Actor (Admin)", "View", "Konfirmasi Pembayaran Lunas", "call"],
-          ["msg", "View", "Middleware", "POST /admin/transaksi/invoice/{id}/pay", "call"],
-          ["alt_start", "Role == Pimpinan (2)"],
-          ["msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"],
-          ["alt_else", "Role == Admin (1)"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Update statusInvoice=PAID, status_pembayaran=LUNAS", "call"],
-          ["msg", "Database", "Controller", "Success", "reply"],
-          ["msg", "Controller", "View", "Tampilkan status PAID", "reply"],
+          ["msg", "Actor", "Halaman Detail Invoice", "1: Buka halaman kelola invoice", "call"],
+          ["msg", "Halaman Detail Invoice", "Invoice Controller", "1.1: GET /admin/transaksi/invoice/{id}", "call"],
+          ["msg", "Invoice Controller", "Invoice Model", "1.1.1: Get invoice & peminjaman details", "call"],
+          ["msg", "Invoice Model", "Invoice Controller", "1.1.2: Return data", "reply"],
+          ["msg", "Invoice Controller", "Halaman Detail Invoice", "1.1.3: Tampilkan Invoice Detail", "reply"],
+          ["msg", "Actor", "Halaman Detail Invoice", "2: Konfirmasi Pembayaran Lunas", "call"],
+          ["msg", "Halaman Detail Invoice", "Invoice Controller", "2.1: POST /admin/transaksi/invoice/{id}/pay", "call"],
+          ["alt_start", "Role == Pimpinan"],
+          ["msg", "Invoice Controller", "Halaman Detail Invoice", "2.1.1: 403 Forbidden (Blocked)", "reply"],
+          ["alt_else", "Role == Admin"],
+          ["msg", "Invoice Controller", "Invoice Model", "2.1.2: Update statusInvoice=PAID, status_pembayaran=LUNAS", "call"],
+          ["msg", "Invoice Model", "Invoice Controller", "2.1.3: Success", "reply"],
+          ["msg", "Invoice Controller", "Halaman Detail Invoice", "2.1.4: Tampilkan status PAID", "reply"],
           ["alt_end"]
         ]
       },
@@ -752,37 +771,59 @@
         "title": "12. Kelola Berita",
         "description": "Penyusunan berita oleh Petugas (sebagai draft) dan penerbitan oleh Admin.",
         "roles": ["Petugas", "Admin"],
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
+        "participants": ["Petugas", "Halaman Utama", "Berita Controller", "Berita Model", "Halaman Manajemen Berita"],
         "steps": [
-          ["msg", "Actor (Petugas)", "View", "Submit berita baru", "call"],
-          ["msg", "View", "Middleware", "POST /admin/berita", "call"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Simpan berita dengan status=draft", "call"],
-          ["msg", "Database", "Controller", "Success", "reply"],
-          ["msg", "Controller", "View", "Tampilkan sukses (Disimpan sebagai Draft)", "reply"],
-          ["msg", "Actor (Admin)", "View", "Review berita draft, klik Publikasikan", "call"],
-          ["msg", "View", "Middleware", "POST /admin/berita/{id}/approve", "call"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Update status=approved & set tanggal_publish", "call"],
-          ["msg", "Database", "Controller", "Success", "reply"],
-          ["msg", "Controller", "View", "Tampilkan status APPROVED (Terbit)", "reply"]
+          ["msg", "Petugas", "Halaman Utama", "1: Membuka menu Berita()", "call"],
+          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
+          ["msg", "Petugas", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
+          ["msg", "Halaman Utama", "Berita Controller", "2.1: Request halaman Manajemen()", "call"],
+          ["msg", "Berita Controller", "Berita Model", "2.1.1: Query data berita()", "call"],
+          ["msg", "Berita Model", "Berita Controller", "2.1.2: Return query()", "reply"],
+          ["msg", "Berita Controller", "Halaman Manajemen Berita", "2.1.3: Menampilkan halaman Halaman Manajemen Berita()", "reply"],
+          ["msg", "Petugas", "Halaman Manajemen Berita", "3: Memilih menu Tambah Berita()", "call"],
+          ["self", "Halaman Manajemen Berita", "3.1: Menampilkan form tambah berita()"],
+          ["msg", "Petugas", "Halaman Manajemen Berita", "4: Menekan tombol Simpan()", "call"],
+          ["self", "Halaman Manajemen Berita", "4.1: Menampilkan form input"],
+          ["alt_start", "Input data benar"],
+          ["msg", "Petugas", "Halaman Manajemen Berita", "5: Menginputkan data berita dan menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Berita", "Berita Controller", "5.1: Request tambah berita()", "call"],
+          ["msg", "Berita Controller", "Berita Model", "5.1.1: Query tambah berita()", "call"],
+          ["msg", "Berita Model", "Berita Controller", "5.1.2: Return query()", "reply"],
+          ["msg", "Berita Controller", "Halaman Manajemen Berita", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
+          ["alt_else", "Input data salah atau kosong"],
+          ["msg", "Petugas", "Halaman Manajemen Berita", "6: Menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Berita", "Berita Controller", "6.1: Request tambah berita()", "call"],
+          ["msg", "Berita Controller", "Halaman Manajemen Berita", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
+          ["alt_end"]
         ]
       },
       "13_kelola_landing_page": {
         "title": "13. Kelola Landing Page",
         "description": "Pengaturan informasi profil, FAQ, dan galeri web publik (Hanya untuk Admin).",
         "roles": ["Admin"],
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
+        "participants": ["Admin", "Halaman Utama", "Landing Page Controller", "Landing Page Model", "Halaman Manajemen Landing Page"],
         "steps": [
-          ["msg", "Actor", "View", "Buka kelola Landing Page", "call"],
-          ["msg", "View", "Middleware", "GET /admin/landing-page/tentang", "call"],
-          ["alt_start", "Role != Admin (1)"],
-          ["msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"],
-          ["alt_else", "Role == Admin (1)"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Get landing page data", "call"],
-          ["msg", "Database", "Controller", "Return data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan form edit landing page", "reply"],
+          ["msg", "Admin", "Halaman Utama", "1: Membuka menu Landing Page()", "call"],
+          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
+          ["msg", "Admin", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
+          ["msg", "Halaman Utama", "Landing Page Controller", "2.1: Request halaman Manajemen()", "call"],
+          ["msg", "Landing Page Controller", "Landing Page Model", "2.1.1: Query data landing page()", "call"],
+          ["msg", "Landing Page Model", "Landing Page Controller", "2.1.2: Return query()", "reply"],
+          ["msg", "Landing Page Controller", "Halaman Manajemen Landing Page", "2.1.3: Menampilkan halaman Halaman Manajemen Landing Page()", "reply"],
+          ["msg", "Admin", "Halaman Manajemen Landing Page", "3: Memilih menu Edit Landing Page()", "call"],
+          ["self", "Halaman Manajemen Landing Page", "3.1: Menampilkan form edit landing page()"],
+          ["msg", "Admin", "Halaman Manajemen Landing Page", "4: Menekan tombol Simpan()", "call"],
+          ["self", "Halaman Manajemen Landing Page", "4.1: Menampilkan form input"],
+          ["alt_start", "Input data benar"],
+          ["msg", "Admin", "Halaman Manajemen Landing Page", "5: Menginputkan data baru dan menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Landing Page", "Landing Page Controller", "5.1: Request edit landing page()", "call"],
+          ["msg", "Landing Page Controller", "Landing Page Model", "5.1.1: Query edit landing page()", "call"],
+          ["msg", "Landing Page Model", "Landing Page Controller", "5.1.2: Return query()", "reply"],
+          ["msg", "Landing Page Controller", "Halaman Manajemen Landing Page", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
+          ["alt_else", "Input data salah or kosong"],
+          ["msg", "Admin", "Halaman Manajemen Landing Page", "6: Menekan tombol Kirim()", "call"],
+          ["msg", "Halaman Manajemen Landing Page", "Landing Page Controller", "6.1: Request edit landing page()", "call"],
+          ["msg", "Landing Page Controller", "Halaman Manajemen Landing Page", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
           ["alt_end"]
         ]
       },
@@ -790,38 +831,20 @@
         "title": "14. Cetak Laporan",
         "description": "Cetak dan ekspor laporan peminjaman & penggunaan fasilitas (Admin & Pimpinan).",
         "roles": ["Admin", "Pimpinan"],
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
+        "participants": ["Actor", "Halaman Laporan", "Laporan Controller", "Peminjaman Model"],
         "steps": [
-          ["msg", "Actor", "View", "Buka Halaman Laporan & pilih filter tanggal", "call"],
-          ["msg", "View", "Middleware", "GET /admin/laporan", "call"],
-          ["alt_start", "Role == Petugas (3)"],
-          ["msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"],
+          ["msg", "Actor", "Halaman Laporan", "1: Buka Halaman Laporan & pilih filter tanggal", "call"],
+          ["msg", "Halaman Laporan", "Laporan Controller", "1.1: GET /admin/laporan", "call"],
+          ["alt_start", "Role == Petugas"],
+          ["msg", "Laporan Controller", "Halaman Laporan", "1.1.1: 403 Forbidden (Blocked)", "reply"],
           ["alt_else", "Role in [Admin, Pimpinan]"],
-          ["msg", "Middleware", "Controller", "Forward request", "call"],
-          ["msg", "Controller", "Database", "Query aggregated peminjaman & usage data", "call"],
-          ["msg", "Database", "Controller", "Return data", "reply"],
-          ["msg", "Controller", "View", "Tampilkan Halaman Laporan dengan data & tombol Cetak", "reply"],
+          ["msg", "Laporan Controller", "Peminjaman Model", "1.1.2: Query aggregated data", "call"],
+          ["msg", "Peminjaman Model", "Laporan Controller", "1.1.3: Return data", "reply"],
+          ["msg", "Laporan Controller", "Halaman Laporan", "1.1.4: Tampilkan Halaman Laporan dengan data & tombol Cetak", "reply"],
           ["alt_end"]
         ]
       }
     };
-
-    const participantColors = {
-      "Actor": "#C9A961",
-      "Actor (Peminjam)": "#C9A961",
-      "Actor (Petugas)": "#C9A961",
-      "View": "#17A2B8",
-      "Middleware": "#6C757D",
-      "Controller": "#007BFF",
-      "Database": "#28A745"
-    };
-
-    function getParticipantColor(p) {
-      for (const [key, val] of Object.entries(participantColors)) {
-        if (p.includes(key)) return val;
-      }
-      return "#333333";
-    }
 
     // Populate Sidebar Navigation
     const diagramList = document.getElementById('diagramList');
@@ -841,175 +864,6 @@
       diagramList.appendChild(li);
     });
 
-    // Drawing/Rendering SVG live on the page
-    function drawSequenceSVG(data) {
-      const title = data.title;
-      const participants = data.participants;
-      const steps = data.steps;
-
-      const width = 960;
-      const margin_x = 100;
-      const n_part = participants.length;
-      const spacing_x = n_part > 1 ? (width - 2 * margin_x) / (n_part - 1) : 0;
-
-      function getX(p) {
-        let idx = participants.indexOf(p);
-        if (idx === -1) {
-          idx = 0;
-          for (let i = 0; i < participants.length; i++) {
-            if (p.split(' ')[0].includes(participants[i].split(' ')[0]) || participants[i].split(' ')[0].includes(p.split(' ')[0])) {
-              idx = i;
-              break;
-            }
-          }
-        }
-        return margin_x + idx * spacing_x;
-      }
-
-      // Step coordinates calculation
-      let y = 120;
-      const renderedSteps = [];
-      const altStack = [];
-
-      steps.forEach((step, index) => {
-        const stype = step[0];
-        if (stype === "msg") {
-          const [_, p_from, p_to, label, mtype] = step;
-          const x1 = getX(p_from);
-          const x2 = getX(p_to);
-          renderedSteps.push({
-            type: "msg",
-            from: p_from, to: p_to,
-            x1, x2,
-            y,
-            label,
-            mtype
-          });
-          y += 50;
-        } else if (stype === "self") {
-          const [_, p, label] = step;
-          const x = getX(p);
-          renderedSteps.push({
-            type: "self",
-            x,
-            y,
-            label
-          });
-          y += 65;
-        } else if (stype === "alt_start") {
-          const [_, cond] = step;
-          altStack.push({
-            y_start: y - 10,
-            cond,
-            splits: [],
-            idx: renderedSteps.length
-          });
-          y += 25;
-        } else if (stype === "alt_else") {
-          const [_, cond] = step;
-          if (altStack.length > 0) {
-            altStack[altStack.length - 1].splits.push([y - 10, cond]);
-          }
-          y += 25;
-        } else if (stype === "alt_end") {
-          if (altStack.length > 0) {
-            const alt = altStack.pop();
-            renderedSteps.push({
-              type: "alt_block",
-              y_start: alt.y_start,
-              y_end: y,
-              cond: alt.cond,
-              splits: alt.splits
-            });
-            y += 15;
-          }
-        }
-      });
-
-      const total_height = y + 80;
-
-      // Construct SVG Elements String
-      let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${total_height}" width="100%" height="100%">
-  <defs>
-    <style>
-      .title { font-family: 'Outfit', sans-serif; font-weight: bold; font-size: 20px; fill: #1e293b; }
-      .participant-box { rx: 6px; ry: 6px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.06)); }
-      .participant-text { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; fill: #ffffff; text-anchor: middle; }
-      .lifeline { stroke: #cbd5e1; stroke-width: 1.5; stroke-dasharray: 6,4; }
-      .message-line { stroke-width: 2; transition: stroke 0.2s; }
-      .message-line:hover { stroke: #C9A961; }
-      .message-text { font-family: 'Inter', sans-serif; font-size: 12px; fill: #334155; }
-      .self-msg-text { font-family: 'Inter', sans-serif; font-size: 11px; fill: #334155; }
-      .alt-box { fill: #f8fafc; fill-opacity: 0.6; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 4,4; rx: 4px; ry: 4px; }
-      .alt-cond { font-family: 'Inter', sans-serif; font-style: italic; font-size: 11px; fill: #64748b; }
-    </style>
-    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#334155" />
-    </marker>
-    <marker id="reply-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 1 L 8 5 L 0 9" fill="none" stroke="#475569" stroke-width="2" />
-    </marker>
-  </defs>
-  
-  <rect width="100%" height="100%" fill="#ffffff" />
-  
-  <!-- Lifelines -->`;
-
-      participants.forEach(p => {
-        const x = getX(p);
-        svg += `\n  <line x1="${x}" y1="80" x2="${x}" y2="${total_height - 60}" class="lifeline" />`;
-      });
-
-      svg += `\n\n  <!-- Top Headers -->`;
-      participants.forEach(p => {
-        const x = getX(p);
-        const color = getParticipantColor(p);
-        svg += `\n  <g transform="translate(${x - 80}, 70)">
-    <rect x="0" y="0" width="160" height="36" class="participant-box" fill="${color}" />
-    <text x="80" y="22" class="participant-text">${p}</text>
-  </g>`;
-      });
-
-      svg += `\n\n  <!-- Bottom Footers -->`;
-      participants.forEach(p => {
-        const x = getX(p);
-        const color = getParticipantColor(p);
-        svg += `\n  <g transform="translate(${x - 80}, ${total_height - 48})">
-    <rect x="0" y="0" width="160" height="36" class="participant-box" fill="${color}" />
-    <text x="80" y="22" class="participant-text">${p}</text>
-  </g>`;
-      });
-
-      svg += `\n\n  <!-- Steps Drawing -->`;
-      renderedSteps.forEach(s => {
-        if (s.type === "msg") {
-          const stroke = s.mtype === "call" ? 'stroke="#334155"' : 'stroke="#475569" stroke-dasharray="5,5"';
-          const marker = s.mtype === "call" ? 'marker-end="url(#arrow)"' : 'marker-end="url(#reply-arrow)"';
-          svg += `\n  <line x1="${s.x1}" y1="${s.y}" x2="${s.x2}" y2="${s.y}" class="message-line" ${stroke} ${marker} />
-  <text x="${(s.x1 + s.x2)/2}" y="${s.y - 8}" text-anchor="middle" class="message-text">${s.label}</text>`;
-        } else if (s.type === "self") {
-          svg += `\n  <path d="M ${s.x} ${s.y} L ${s.x+35} ${s.y} L ${s.x+35} ${s.y+40} L ${s.x+10} ${s.y+40}" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#arrow)" />
-  <text x="${s.x + 42}" y="${s.y + 24}" text-anchor="start" class="self-msg-text">${s.label}</text>`;
-        } else if (s.type === "alt_block") {
-          const x_min = margin_x - 30;
-          const x_max = width - margin_x + 30;
-          svg += `\n  <!-- Alt Block [${s.cond}] -->
-  <rect x="${x_min}" y="${s.y_start}" width="${x_max - x_min}" height="${s.y_end - s.y_start}" class="alt-box" />
-  <rect x="${x_min}" y="${s.y_start}" width="42" height="18" fill="#94a3b8" rx="2" ry="2" />
-  <text x="${x_min + 21}" y="${s.y_start + 13}" fill="#ffffff" font-family="Inter" font-weight="bold" font-size="10" text-anchor="middle">alt</text>
-  <text x="${x_min + 50}" y="${s.y_start + 13}" class="alt-cond">[${s.cond}]</text>`;
-          
-          s.splits.forEach(([split_y, split_cond]) => {
-            svg += `\n  <line x1="${x_min}" y1="${split_y}" x2="${x_max}" y2="${split_y}" stroke="#94a3b8" stroke-dasharray="3,3" />
-  <text x="${x_min + 15}" y="${split_y + 16}" class="alt-cond">[${split_cond}]</text>`;
-          });
-        }
-      });
-
-      svg += `\n</svg>`;
-      return svg;
-    }
-
     // Populate metadata & description table
     function loadDiagram(key) {
       const data = diagrams[key];
@@ -1026,9 +880,9 @@
         rolesContainer.appendChild(span);
       });
 
-      // Draw SVG
+      // Display PNG Image
       const container = document.getElementById('svgContainer');
-      container.innerHTML = drawSequenceSVG(data);
+      container.innerHTML = `<img src="${key}.png" alt="${data.title}" style="max-width: 100%; height: auto; display: block; margin: 0 auto; box-shadow: var(--shadow-md); border-radius: 8px;" />`;
 
       // Write descriptive action table
       const tbody = document.getElementById('stepsTableBody');
@@ -1085,16 +939,9 @@
 
     // Download action
     document.getElementById('downloadBtn').addEventListener('click', () => {
-      const svgEl = document.getElementById('svgContainer').querySelector('svg');
-      if (!svgEl) return;
-      
-      const svgString = new XMLSerializer().serializeToString(svgEl);
-      const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
-      const svgUrl = URL.createObjectURL(svgBlob);
-      
       const downloadLink = document.createElement("a");
-      downloadLink.href = svgUrl;
-      downloadLink.download = `${activeKey}.svg`;
+      downloadLink.href = `${activeKey}.png`;
+      downloadLink.download = `${activeKey}.png`;
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);

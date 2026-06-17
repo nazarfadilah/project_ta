@@ -26,40 +26,40 @@
             </h6>
         </div>
         <div class="card-body" style="padding: 24px;">
-            <form action="{{ route('main.users.update', $user->email_users) }}" method="POST">
+            <form action="{{ route('main.users.update', $user->email) }}" method="POST">
                 @csrf
                 @method('PUT')
 
                 {{-- Nama Pengguna --}}
                 <div class="mb-3">
-                    <label for="name_users" class="form-label fw-semibold" style="font-size: 13px; color: #555;">
+                    <label for="username" class="form-label fw-semibold" style="font-size: 13px; color: #555;">
                         Nama Pengguna
                     </label>
                     <input type="text" 
-                           class="form-control @error('name_users') is-invalid @enderror" 
-                           id="name_users" 
-                           name="name_users" 
-                           value="{{ old('name_users', $user->name_users) }}" 
+                           class="form-control @error('username') is-invalid @enderror" 
+                           id="username" 
+                           name="username" 
+                           value="{{ old('username', $user->username) }}" 
                            placeholder="Masukkan nama pengguna"
                            style="font-size: 14px; padding: 10px 14px;">
-                    @error('name_users')
+                    @error('username')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
                 {{-- Alamat Email --}}
                 <div class="mb-4">
-                    <label for="email_users" class="form-label fw-semibold" style="font-size: 13px; color: #555;">
+                    <label for="email" class="form-label fw-semibold" style="font-size: 13px; color: #555;">
                         Alamat Email
                     </label>
                     <input type="email" 
-                           class="form-control @error('email_users') is-invalid @enderror" 
-                           id="email_users" 
-                           name="email_users" 
-                           value="{{ old('email_users', $user->email_users) }}" 
+                           class="form-control @error('email') is-invalid @enderror" 
+                           id="email" 
+                           name="email" 
+                           value="{{ old('email', $user->email) }}" 
                            placeholder="Masukkan alamat email"
                            style="font-size: 14px; padding: 10px 14px;">
-                    @error('email_users')
+                    @error('email')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>

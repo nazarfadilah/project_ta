@@ -1,0 +1,18 @@
+5.2 Saran
+
+Meskipun Sistem Informasi Peminjaman Ruangan & Sarana (SIPRASA) 
+telah berjalan dengan baik, terdapat beberapa saran pengembangan 
+yang dapat diterapkan demi keberlanjutan dan penyempurnaan sistem 
+di masa yang akan datang. Langkah pengembangan pertama yang disarankan
+ adalah mengintegrasikan layanan notifikasi email otomatis ke dalam 
+ sistem. Melalui fitur ini, tamu dapat menerima pemberitahuan secara 
+ real-time saat pengajuan reservasi mereka disetujui, ditolak, atau 
+ mengalami pembaruan status oleh Petugas. Sejalan dengan hal tersebut,
+  sistem juga sebaiknya dilengkapi dengan fitur pengingat (reminder) 
+  check-in otomatis yang dikirimkan melalui email dalam kurun waktu 24
+   hingga 48 jam sebelum jadwal sewa dimulai untuk memastikan 
+   kedatangan tamu. Selanjutnya, disarankan untuk menambahkan modul 
+   pemulihan akun yang mandiri, seperti fitur reset password 
+   menggunakan pengiriman kode OTP atau tautan verifikasi ke email 
+   pengguna untuk meningkatkan perlindungan data. Untuk mempermudah 
+   aspek transaksi finansial, integrasi dengan payment gateway pihak ketiga seperti Midtrans juga sangat dianjurkan agar tamu dapat menyelesaikan pembayaran invoice secara online melalui berbagai metode pembayaran dan sistem dapat memperbarui status tagihan secara otomatis. Di samping itu, pengembangan platform ke arah aplikasi mobile native atau Progressive Web App (PWA) akan memberikan pengalaman pengguna yang lebih ramah gawai bagi para tamu. Terakhir, penyediaan kalender jadwal interaktif secara real-time yang dapat diakses langsung oleh publik di halaman utama tanpa perlu login terlebih dahulu akan sangat membantu calon tamu dalam memeriksa ketersediaan ruangan dengan cepat.

@@ -1,0 +1,57 @@
+1. Tamu (Pengguna / Users) — `roleId = 4`
+Deskripsi: Pengguna eksternal atau masyarakat umum yang ingin meminjam fasilitas Asrama Haji.
+	Penelusuran Fasilitas:
+		Melihat daftar gedung yang tersedia.
+		Melihat daftar ruangan beserta detail informasi, kapasitas, galeri gambar, ketersediaan jadwal, dan paket harga sewa yang ditawarkan.
+		Melihat daftar sarana/peralatan pendukung yang bisa disewa.
+	Pengajuan & Manajemen Reservasi:
+		Mengajukan peminjaman ruangan baru (memilih paket ruangan, tanggal, jam mulai, estimasi peserta, serta menambahkan sarana/alat yang ingin dipinjam).
+		Melihat riwayat pengajuan reservasi milik sendiri beserta status persetujuannya (*Pending, Approved, Rejected, Completed*).
+		Melihat detail reservasi dan rincian invoice tagihan pembayaran (Paid / Unpaid).
+		Manajemen Profil:
+		Melengkapi atau memperbarui profil pribadi tamu (nomor NIK 16-digit, Nama Lengkap, Jenis Kelamin, Alamat, Golongan Darah, dan Catatan Tambahan).
+		Memperbarui nomor telepon dan mengubah kata sandi (*password*) akun.
+
+2. Petugas (Staff Operasional) — `roleId = 3`
+Deskripsi: Petugas lapangan yang mengelola operasional harian fasilitas fisik dan melayani proses check-in/out.
+	Pengelolaan Data Master Fasilitas (Full CRUD):
+		Mengelola data Gedung (tambah, edit, hapus, lihat).
+		Mengelola data Ruangan (tambah, edit, hapus, lihat).
+		Mengelola data Paket Ruangan beserta durasi dan harganya.
+		Mengelola data Sarana / peralatan pendukung beserta jumlah stok dan kondisinya.
+	Pemrosesan Transaksi Peminjaman:
+		Melakukan verifikasi, menyetujui (*Approve*), atau menolak (*Reject*) pengajuan reservasi dari tamu.
+		Memproses *Check-In* tamu (minimal 1 jam sebelum jadwal) dan *Check-Out* setelah peminjaman selesai.
+		Mencatat dan memperbarui status pembayaran invoice transaksi.
+		Mengelola transaksi peminjaman sarana terpisah.
+	Manajemen Profil Tamu: Melakukan pendaftaran atau pembaruan data tamu (*Guest*) secara langsung di sistem.
+	Kelola Berita: Membuat draft berita dan mengedit berita yang ia buat sendiri (tidak bisa mempublikasikannya langsung).
+
+3. Admin (Administrator Sistem) — `roleId = 1`
+Deskripsi: Pengelola konfigurasi sistem, akun pengguna, konten landing page/informasi publik, dan verifikator berita.
+	Manajemen Pengguna (User Management):
+		Melihat daftar semua akun pengguna di sistem (Staff & Tamu).
+		Mengedit info dan mengaktifkan/menonaktifkan status akun pengguna (*Active, Inactive, Suspended*).
+		Manajemen Informasi Portal (Landing Page Content):
+		Mengedit profil instansi ("Tentang Kami").
+		Mengelola Galeri foto dokumentasi.
+		Mengelola Gambar Dashboard utama (*carousel slider*).
+		Mengelola daftar FAQ (Tanya Jawab), Syarat & Ketentuan, serta Kebijakan Privasi.
+	Penerbitan Berita (News Editor & Publisher):
+		Membuat, mengedit, dan menghapus berita.
+		Menyetujui (*Approve* / Publish) atau menolak (*Reject*) draf berita yang dibuat oleh Petugas agar tayang di beranda publik.
+	Manajemen Data Tamu: Melakukan penambahan, pengeditan, atau penghapusan data tamu terdaftar.
+	Akses Laporan: Mengakses ringkasan laporan transaksi peminjaman dan mengekspornya ke format Excel.
+	Batasan: Admin sistem tidak mengelola inventaris fisik (Gedung, Ruangan, Sarana) dan tidak memproses reservasi/check-in/out harian.
+
+4. Pimpinan — `roleId = 2`
+Deskripsi: Pemantau sistem secara keseluruhan dan pengambil keputusan berdasarkan data laporan.
+	Akses Laporan Keuangan & Peminjaman: Melihat ringkasan data transaksi serta mengekspor seluruh laporan peminjaman ke format Excel secara penuh.
+	Dashboard Statistik: Memantau performa dan ringkasan data (jumlah pengguna, total tamu, total gedung, berita terbit, total reservasi, dsb.).
+	Akses Lihat Data (Read-Only / Hanya Melihat):
+  	Pimpinan memiliki akses untuk membuka dan memeriksa detail data pada hampir seluruh modul sistem (tanpa izin untuk menambah, mengedit, atau menghapus):
+		Data Tamu (*Guest*)
+		Data master Gedung, Ruangan, Sarana, dan Paket Ruangan
+		Transaksi Reservasi Peminjaman Ruangan & Sarana
+		Daftar Berita
+	Batasan: Dilarang keras melakukan perubahan data (POST, PUT, DELETE) di luar menu Laporan, serta tidak memiliki akses ke manajemen User dan konfigurasi konten Landing Page.

@@ -21,7 +21,7 @@ class ManageUserController extends Controller
      */
     public function edit($email)
     {
-        $user = User::where('email_users', $email)->firstOrFail();
+        $user = User::where('email', $email)->firstOrFail();
         return view('main.user.form', compact('user'));
     }
 
@@ -30,16 +30,16 @@ class ManageUserController extends Controller
      */
     public function update(Request $request, $email)
     {
-        $user = User::where('email_users', $email)->firstOrFail();
+        $user = User::where('email', $email)->firstOrFail();
 
         $request->validate([
-            'name_users' => 'required|string|max:128',
-            'email_users' => 'required|email|max:128|unique:users,email_users,' . $email . ',email_users',
+            'username' => 'required|string|max:128|unique:users,username,' . $user->id,
+            'email' => 'required|email|max:128|unique:users,email,' . $user->id,
         ]);
 
         $user->update([
-            'name_users' => $request->name_users,
-            'email_users' => $request->email_users,
+            'username' => $request->username,
+            'email' => $request->email,
         ]);
 
         return redirect()->route('main.users.index')->with('success', 'Data pengguna berhasil diperbarui.');

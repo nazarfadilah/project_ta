@@ -1,538 +1,705 @@
 import os
+import math
+from PIL import Image, ImageDraw, ImageFont
 
 # Define the sequence diagrams data
-diagrams = {
-    "1_autentikasi": {
-        "title": "1. Autentikasi (Login & Logout)",
-        "description": "Alur masuk (login) dan keluar (logout) sistem untuk seluruh pengguna.",
-        "participants": ["Actor", "View", "Controller", "Database"],
-        "steps": [
-            ("msg", "Actor", "View", "Input username & password, klik Login", "call"),
-            ("msg", "View", "Controller", "Kirim data login (POST)", "call"),
-            ("msg", "Controller", "Database", "Cari user berdasarkan email/username", "call"),
-            ("msg", "Database", "Controller", "Kembalikan data user & password hash", "reply"),
-            ("self", "Controller", "Verifikasi password & session"),
-            ("alt_start", "Password Valid"),
-            ("msg", "Controller", "View", "Redirect ke Dashboard (Session Aktif)", "reply"),
-            ("alt_else", "Password Salah"),
-            ("msg", "Controller", "View", "Kembalikan pesan error (401)", "reply"),
-            ("alt_end",),
-            ("msg", "Actor", "View", "Klik Logout", "call"),
-            ("msg", "View", "Controller", "Request logout (POST)", "call"),
-            ("msg", "Controller", "View", "Destroy session, redirect ke Login", "reply")
-        ]
-    },
+# Group A: "Kelola Data" CRUD diagrams
+kelola_templates = {
     "2_kelola_pengguna": {
         "title": "2. Kelola Pengguna (User Management)",
         "description": "Pengelolaan data pengguna sistem (Admin memiliki akses penuh, Pimpinan & Petugas diblokir).",
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
-        "steps": [
-            ("msg", "Actor", "View", "Buka Halaman Kelola Pengguna", "call"),
-            ("msg", "View", "Middleware", "GET /admin/users", "call"),
-            ("alt_start", "Role == Petugas (3) / Pimpinan (2)"),
-            ("msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"),
-            ("alt_else", "Role == Admin (1)"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Get all users", "call"),
-            ("msg", "Database", "Controller", "Users list data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan index users dengan tombol Aksi", "reply"),
-            ("alt_end",),
-            ("msg", "Actor", "View", "Klik tombol Hapus Pengguna (Admin)", "call"),
-            ("msg", "View", "Middleware", "DELETE /admin/users/{email}", "call"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Delete user record", "call"),
-            ("msg", "Database", "Controller", "Success", "reply"),
-            ("msg", "Controller", "View", "Refresh & tampilkan pesan sukses", "reply")
-        ]
+        "actor": "Admin",
+        "menu": "Pengguna",
+        "submenu": "Manajemen",
+        "halaman": "Halaman Manajemen Pengguna",
+        "controller": "User Controller",
+        "model": "User Model",
+        "data_singular": "pengguna",
+        "data_plural": "pengguna",
+        "roles": ["Admin"]
     },
     "3_kelola_tamu": {
         "title": "3. Kelola Tamu (Guest Management)",
         "description": "Pengelolaan data tamu (Guest) penyewa (Admin kelola penuh, Pimpinan read-only, Petugas diblokir).",
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
-        "steps": [
-            ("msg", "Actor", "View", "Buka Halaman Kelola Tamu", "call"),
-            ("msg", "View", "Middleware", "GET /admin/tamu-management", "call"),
-            ("alt_start", "Role == Pimpinan (2)"),
-            ("msg", "Middleware", "Controller", "Forward request (Read-only)", "call"),
-            ("msg", "Controller", "Database", "Get guest list", "call"),
-            ("msg", "Database", "Controller", "Return data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi hidden)", "reply"),
-            ("alt_else", "Role == Admin (1)"),
-            ("msg", "Middleware", "Controller", "Forward request (Full Access)", "call"),
-            ("msg", "Controller", "Database", "Get guest list", "call"),
-            ("msg", "Database", "Controller", "Return data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi visible)", "reply"),
-            ("alt_end",),
-            ("msg", "Actor", "View", "Klik Tambah Tamu (Admin)", "call"),
-            ("msg", "View", "Middleware", "POST /admin/tamu-management", "call"),
-            ("alt_start", "Role == Pimpinan (2)"),
-            ("msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"),
-            ("alt_else", "Role == Admin (1)"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Simpan data tamu", "call"),
-            ("msg", "Database", "Controller", "Success", "reply"),
-            ("msg", "Controller", "View", "Refresh list tamu", "reply"),
-            ("alt_end",)
-        ]
+        "actor": "Admin",
+        "menu": "Tamu",
+        "submenu": "Manajemen",
+        "halaman": "Halaman Manajemen Tamu",
+        "controller": "Tamu Controller",
+        "model": "Tamu Model",
+        "data_singular": "tamu",
+        "data_plural": "tamu",
+        "roles": ["Admin", "Pimpinan"]
     },
     "4_kelola_gedung": {
         "title": "4. Kelola Gedung",
         "description": "Pengelolaan master data gedung (Admin kelola penuh, Pimpinan read-only, Petugas diblokir).",
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
-        "steps": [
-            ("msg", "Actor", "View", "Buka Halaman Kelola Gedung", "call"),
-            ("msg", "View", "Middleware", "GET /admin/gedung", "call"),
-            ("alt_start", "Role == Pimpinan (2)"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Get gedung list", "call"),
-            ("msg", "Database", "Controller", "Return data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi hidden)", "reply"),
-            ("alt_else", "Role == Admin (1)"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Get gedung list", "call"),
-            ("msg", "Database", "Controller", "Return data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi visible)", "reply"),
-            ("alt_end",),
-            ("msg", "Actor", "View", "Klik Tambah Gedung (Admin)", "call"),
-            ("msg", "View", "Middleware", "POST /admin/gedung", "call"),
-            ("alt_start", "Role == Pimpinan (2)"),
-            ("msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"),
-            ("alt_else", "Role == Admin (1)"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Simpan data gedung", "call"),
-            ("msg", "Database", "Controller", "Success", "reply"),
-            ("msg", "Controller", "View", "Refresh list gedung", "reply"),
-            ("alt_end",)
-        ]
+        "actor": "Admin",
+        "menu": "Gedung",
+        "submenu": "Manajemen",
+        "halaman": "Halaman Manajemen Gedung",
+        "controller": "Gedung Controller",
+        "model": "Gedung Model",
+        "data_singular": "gedung",
+        "data_plural": "gedung",
+        "roles": ["Admin", "Pimpinan"]
     },
     "5_kelola_ruangan": {
         "title": "5. Kelola Ruangan",
         "description": "Pengelolaan master data ruangan (Petugas kelola penuh, Pimpinan read-only, Admin diblokir).",
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
-        "steps": [
-            ("msg", "Actor", "View", "Buka Halaman Kelola Ruangan", "call"),
-            ("msg", "View", "Middleware", "GET /admin/ruangan", "call"),
-            ("alt_start", "Role == Admin (1)"),
-            ("msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"),
-            ("alt_else", "Role == Pimpinan (2)"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Get ruangan list", "call"),
-            ("msg", "Database", "Controller", "Return data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi hidden)", "reply"),
-            ("alt_else", "Role == Petugas (3)"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Get ruangan list", "call"),
-            ("msg", "Database", "Controller", "Return data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi visible)", "reply"),
-            ("alt_end",)
-        ]
+        "actor": "Petugas",
+        "menu": "Ruangan",
+        "submenu": "Manajemen",
+        "halaman": "Halaman Manajemen Ruangan",
+        "controller": "Ruangan Controller",
+        "model": "Ruangan Model",
+        "data_singular": "ruangan",
+        "data_plural": "ruangan",
+        "roles": ["Petugas", "Pimpinan"]
     },
     "6_kelola_sarana": {
         "title": "6. Kelola Sarana & Prasarana",
         "description": "Pengelolaan master data sarana (Petugas kelola penuh, Pimpinan read-only, Admin diblokir).",
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
-        "steps": [
-            ("msg", "Actor", "View", "Buka Halaman Kelola Sarana", "call"),
-            ("msg", "View", "Middleware", "GET /admin/sarana", "call"),
-            ("alt_start", "Role == Admin (1)"),
-            ("msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"),
-            ("alt_else", "Role == Pimpinan (2)"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Get sarana list", "call"),
-            ("msg", "Database", "Controller", "Return data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi hidden)", "reply"),
-            ("alt_else", "Role == Petugas (3)"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Get sarana list", "call"),
-            ("msg", "Database", "Controller", "Return data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi visible)", "reply"),
-            ("alt_end",)
-        ]
+        "actor": "Petugas",
+        "menu": "Sarana",
+        "submenu": "Manajemen",
+        "halaman": "Halaman Manajemen Sarana",
+        "controller": "Sarana Controller",
+        "model": "Sarana Model",
+        "data_singular": "sarana",
+        "data_plural": "sarana",
+        "roles": ["Petugas", "Pimpinan"]
     },
     "7_kelola_paket_ruangan": {
         "title": "7. Kelola Paket Ruangan",
         "description": "Pengelolaan paket sewa dan durasi sewa ruangan (Petugas kelola penuh, Pimpinan read-only, Admin diblokir).",
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
-        "steps": [
-            ("msg", "Actor", "View", "Buka Halaman Kelola Paket", "call"),
-            ("msg", "View", "Middleware", "GET /admin/paket-ruangan", "call"),
-            ("alt_start", "Role == Admin (1)"),
-            ("msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"),
-            ("alt_else", "Role == Pimpinan (2)"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Get paket list", "call"),
-            ("msg", "Database", "Controller", "Return data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi hidden)", "reply"),
-            ("alt_else", "Role == Petugas (3)"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Get paket list", "call"),
-            ("msg", "Database", "Controller", "Return data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan index (Tombol Tambah & Aksi visible)", "reply"),
-            ("alt_end",)
-        ]
-    },
-    "8_pengajuan_peminjaman": {
-        "title": "8. Pengajuan Peminjaman (Reservasi)",
-        "description": "Alur pengajuan sewa ruangan dan sarana pendukung oleh Guest (Peminjam).",
-        "participants": ["Actor (Peminjam)", "View", "Controller", "Database"],
-        "steps": [
-            ("msg", "Actor (Peminjam)", "View", "Isi Form Permohonan Peminjaman", "call"),
-            ("msg", "View", "Controller", "Kirim Permohonan Peminjaman (POST)", "call"),
-            ("msg", "Controller", "Database", "Cek ketersediaan Ruangan & Sarana", "call"),
-            ("msg", "Database", "Controller", "Return status ketersediaan", "reply"),
-            ("alt_start", "Fasilitas Tersedia"),
-            ("msg", "Controller", "Database", "Simpan data peminjaman (status=PENDING)", "call"),
-            ("msg", "Controller", "Database", "Simpan detail sarana yang dipinjam", "call"),
-            ("msg", "Database", "Controller", "Success", "reply"),
-            ("msg", "Controller", "View", "Tampilkan sukses (Menunggu Verifikasi)", "reply"),
-            ("alt_else", "Fasilitas Terbooking / Stok Habis"),
-            ("msg", "Controller", "View", "Tampilkan pesan error ketersediaan", "reply"),
-            ("alt_end",)
-        ]
-    },
-    "9_verifikasi_approval": {
-        "title": "9. Verifikasi & Approval Peminjaman",
-        "description": "Proses persetujuan atau penolakan pengajuan sewa oleh Admin atau Petugas.",
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
-        "steps": [
-            ("msg", "Actor", "View", "Buka detail peminjaman pending", "call"),
-            ("msg", "View", "Middleware", "GET /admin/transaksi/peminjaman/{id}", "call"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Get peminjaman & detail sarana", "call"),
-            ("msg", "Database", "Controller", "Return data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan detail peminjaman", "reply"),
-            ("alt_start", "Role == Pimpinan (2)"),
-            ("self", "View", "Sembunyikan tombol Setujui/Tolak"),
-            ("alt_else", "Role == Admin (1) atau Petugas (3)"),
-            ("msg", "Actor", "View", "Klik tombol Setujui", "call"),
-            ("msg", "View", "Middleware", "POST /admin/transaksi/peminjaman/{id}/approve", "call"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Update statusApproval=APPROVED & set tglApproval", "call"),
-            ("msg", "Controller", "Database", "Auto-generate Invoice record (status=UNPAID)", "call"),
-            ("msg", "Database", "Controller", "Success", "reply"),
-            ("msg", "Controller", "View", "Redirect & tampilkan status APPROVED", "reply"),
-            ("alt_end",)
-        ]
-    },
-    "10_checkin_checkout": {
-        "title": "10. Proses Check-In & Check-Out",
-        "description": "Pemberian check-in tamu pada hari H dan check-out saat masa sewa berakhir.",
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
-        "steps": [
-            ("msg", "Actor (Petugas)", "View", "Klik tombol Proses Check-In", "call"),
-            ("msg", "View", "Middleware", "POST /admin/transaksi/peminjaman/{id}/check-in", "call"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Update statusPeminjaman=CHECK_IN, checkIn=now()", "call"),
-            ("msg", "Database", "Controller", "Success", "reply"),
-            ("msg", "Controller", "View", "Refresh page & status menjadi CHECK_IN", "reply"),
-            ("msg", "Actor (Petugas)", "View", "Tamu selesai, klik Check-Out & isi form kerusakan", "call"),
-            ("msg", "View", "Middleware", "POST /admin/transaksi/peminjaman/{id}/check-out", "call"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Update statusPeminjaman=CHECK_OUT, checkOut=now()", "call"),
-            ("msg", "Controller", "Database", "Simpan kondisiReturn, denda, & biayaTambahan", "call"),
-            ("msg", "Controller", "Database", "Update Invoice (tambah biaya denda ke totalHarga)", "call"),
-            ("msg", "Database", "Controller", "Success", "reply"),
-            ("msg", "Controller", "View", "Redirect & status menjadi CHECK_OUT", "reply")
-        ]
-    },
-    "11_kelola_invoice": {
-        "title": "11. Kelola & Cetak Invoice",
-        "description": "Pembuatan invoice tagihan sewa dan update status pembayaran oleh Admin.",
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
-        "steps": [
-            ("msg", "Actor", "View", "Buka halaman kelola invoice", "call"),
-            ("msg", "View", "Middleware", "GET /admin/transaksi/invoice/{id}", "call"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Get invoice & peminjaman details", "call"),
-            ("msg", "Database", "Controller", "Return data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan Invoice Detail", "reply"),
-            ("msg", "Actor (Admin)", "View", "Konfirmasi Pembayaran Lunas", "call"),
-            ("msg", "View", "Middleware", "POST /admin/transaksi/invoice/{id}/pay", "call"),
-            ("alt_start", "Role == Pimpinan (2)"),
-            ("msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"),
-            ("alt_else", "Role == Admin (1)"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Update statusInvoice=PAID, status_pembayaran=LUNAS", "call"),
-            ("msg", "Database", "Controller", "Success", "reply"),
-            ("msg", "Controller", "View", "Tampilkan status PAID", "reply"),
-            ("alt_end",)
-        ]
+        "actor": "Petugas",
+        "menu": "Paket",
+        "submenu": "Manajemen",
+        "halaman": "Halaman Manajemen Paket",
+        "controller": "Paket Controller",
+        "model": "Paket Model",
+        "data_singular": "paket",
+        "data_plural": "paket",
+        "roles": ["Petugas", "Pimpinan"]
     },
     "12_kelola_berita": {
         "title": "12. Kelola Berita",
         "description": "Penyusunan berita oleh Petugas (sebagai draft) dan penerbitan oleh Admin.",
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
-        "steps": [
-            ("msg", "Actor (Petugas)", "View", "Submit berita baru", "call"),
-            ("msg", "View", "Middleware", "POST /admin/berita", "call"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Simpan berita dengan status=draft", "call"),
-            ("msg", "Database", "Controller", "Success", "reply"),
-            ("msg", "Controller", "View", "Tampilkan sukses (Disimpan sebagai Draft)", "reply"),
-            ("msg", "Actor (Admin)", "View", "Review berita draft, klik Publikasikan", "call"),
-            ("msg", "View", "Middleware", "POST /admin/berita/{id}/approve", "call"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Update status=approved & set tanggal_publish", "call"),
-            ("msg", "Database", "Controller", "Success", "reply"),
-            ("msg", "Controller", "View", "Tampilkan status APPROVED (Terbit)", "reply")
-        ]
+        "actor": "Petugas",
+        "menu": "Berita",
+        "submenu": "Manajemen",
+        "halaman": "Halaman Manajemen Berita",
+        "controller": "Berita Controller",
+        "model": "Berita Model",
+        "data_singular": "berita",
+        "data_plural": "berita",
+        "roles": ["Petugas", "Admin"]
     },
     "13_kelola_landing_page": {
         "title": "13. Kelola Landing Page",
         "description": "Pengaturan informasi profil, FAQ, dan galeri web publik (Hanya untuk Admin).",
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
-        "steps": [
-            ("msg", "Actor", "View", "Buka kelola Landing Page", "call"),
-            ("msg", "View", "Middleware", "GET /admin/landing-page/tentang", "call"),
-            ("alt_start", "Role != Admin (1)"),
-            ("msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"),
-            ("alt_else", "Role == Admin (1)"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Get landing page data", "call"),
-            ("msg", "Database", "Controller", "Return data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan form edit landing page", "reply"),
-            ("alt_end",)
-        ]
-    },
-    "14_cetak_laporan": {
-        "title": "14. Cetak Laporan",
-        "description": "Cetak dan ekspor laporan peminjaman & penggunaan fasilitas (Admin & Pimpinan).",
-        "participants": ["Actor", "View", "Middleware", "Controller", "Database"],
-        "steps": [
-            ("msg", "Actor", "View", "Buka Halaman Laporan & pilih filter tanggal", "call"),
-            ("msg", "View", "Middleware", "GET /admin/laporan", "call"),
-            ("alt_start", "Role == Petugas (3)"),
-            ("msg", "Middleware", "View", "403 Forbidden (Blocked)", "reply"),
-            ("alt_else", "Role in [Admin, Pimpinan]"),
-            ("msg", "Middleware", "Controller", "Forward request", "call"),
-            ("msg", "Controller", "Database", "Query aggregated peminjaman & usage data", "call"),
-            ("msg", "Database", "Controller", "Return data", "reply"),
-            ("msg", "Controller", "View", "Tampilkan Halaman Laporan dengan data & tombol Cetak", "reply"),
-            ("alt_end",)
-        ]
+        "actor": "Admin",
+        "menu": "Landing Page",
+        "submenu": "Manajemen",
+        "halaman": "Halaman Manajemen Landing Page",
+        "controller": "Landing Page Controller",
+        "model": "Landing Page Model",
+        "data_singular": "landing page",
+        "data_plural": "landing page",
+        "roles": ["Admin"]
     }
 }
 
-# Theme details
-COLORS = {
-    "Actor": "#C9A961",           # Amber/Gold
-    "Actor (Peminjam)": "#C9A961",
-    "Actor (Petugas)": "#C9A961",
-    "View": "#17A2B8",            # Teal
-    "Middleware": "#6C757D",      # Gray
-    "Controller": "#007BFF",      # Blue
-    "Database": "#28A745"         # Green
+diagrams = {}
+
+# Generate Group A CRUD diagrams dynamically based on the kelola templates
+for key, tmpl in kelola_templates.items():
+    diagrams[key] = {
+        "title": tmpl["title"],
+        "description": tmpl["description"],
+        "roles": tmpl["roles"],
+        "participants": [
+            {"name": tmpl["actor"], "type": "actor"},
+            {"name": "Halaman Utama", "type": "boundary"},
+            {"name": tmpl["controller"], "type": "control"},
+            {"name": tmpl["model"], "type": "entity"},
+            {"name": tmpl["halaman"], "type": "boundary"}
+        ],
+        "steps": [
+            ("msg", tmpl["actor"], "Halaman Utama", f"1: Membuka menu {tmpl['menu']}()", "call"),
+            ("self", "Halaman Utama", f"1.1: Menampilkan submenu {tmpl['submenu']}()"),
+            ("msg", tmpl["actor"], "Halaman Utama", f"2: Memilih submenu {tmpl['submenu']}()", "call"),
+            ("msg", "Halaman Utama", tmpl["controller"], f"2.1: Request halaman {tmpl['submenu']}()", "call"),
+            ("msg", tmpl["controller"], tmpl["model"], f"2.1.1: Query data {tmpl['data_plural']}()", "call"),
+            ("msg", tmpl["model"], tmpl["controller"], "2.1.2: Return query()", "reply"),
+            ("msg", tmpl["controller"], tmpl["halaman"], f"2.1.3: Menampilkan halaman {tmpl['halaman']}()", "reply"),
+            ("msg", tmpl["actor"], tmpl["halaman"], f"3: Memilih menu Tambah {tmpl['menu']}()", "call"),
+            ("self", tmpl["halaman"], f"3.1: Menampilkan form tambah {tmpl['data_singular']}()"),
+            ("msg", tmpl["actor"], tmpl["halaman"], "4: Menekan tombol Simpan()", "call"),
+            ("self", tmpl["halaman"], "4.1: Menampilkan form input"),
+            ("alt_start", "Input data benar"),
+            ("msg", tmpl["actor"], tmpl["halaman"], f"5: Menginputkan data {tmpl['data_singular']} dan menekan tombol Kirim()", "call"),
+            ("msg", tmpl["halaman"], tmpl["controller"], f"5.1: Request tambah {tmpl['data_singular']}()", "call"),
+            ("msg", tmpl["controller"], tmpl["model"], f"5.1.1: Query tambah {tmpl['data_singular']}()", "call"),
+            ("msg", tmpl["model"], tmpl["controller"], "5.1.2: Return query()", "reply"),
+            ("msg", tmpl["controller"], tmpl["halaman"], "5.1.3: Menampilkan notifikasi berhasil()", "reply"),
+            ("alt_else", "Input data salah atau kosong"),
+            ("msg", tmpl["actor"], tmpl["halaman"], "6: Menekan tombol Kirim()", "call"),
+            ("msg", tmpl["halaman"], tmpl["controller"], f"6.1: Request tambah {tmpl['data_singular']}()", "call"),
+            ("msg", tmpl["controller"], tmpl["halaman"], "6.1.1: Menampilkan notifikasi kesalahan()", "reply"),
+            ("alt_end",)
+        ]
+    }
+
+# Group B: Custom flow diagrams
+diagrams["1_autentikasi"] = {
+    "title": "1. Autentikasi (Login & Logout)",
+    "description": "Alur masuk (login) dan keluar (logout) sistem untuk seluruh pengguna.",
+    "roles": ["Admin", "Petugas", "Pimpinan", "Guest"],
+    "participants": [
+        {"name": "Actor", "type": "actor"},
+        {"name": "Halaman Autentikasi", "type": "boundary"},
+        {"name": "Auth Controller", "type": "control"},
+        {"name": "User Model", "type": "entity"}
+    ],
+    "steps": [
+        ("msg", "Actor", "Halaman Autentikasi", "1: Input username & password, klik Login", "call"),
+        ("msg", "Halaman Autentikasi", "Auth Controller", "1.1: Kirim data login (POST)", "call"),
+        ("msg", "Auth Controller", "User Model", "1.1.1: Cari user berdasarkan email/username", "call"),
+        ("msg", "User Model", "Auth Controller", "1.1.2: Kembalikan data user & password hash", "reply"),
+        ("self", "Auth Controller", "1.1.3: Verifikasi password & session"),
+        ("alt_start", "Password Valid"),
+        ("msg", "Auth Controller", "Halaman Autentikasi", "1.1.4: Redirect ke Dashboard (Session Aktif)", "reply"),
+        ("alt_else", "Password Salah"),
+        ("msg", "Auth Controller", "Halaman Autentikasi", "1.1.5: Kembalikan pesan error (401)", "reply"),
+        ("alt_end",),
+        ("msg", "Actor", "Halaman Autentikasi", "2: Klik Logout", "call"),
+        ("msg", "Halaman Autentikasi", "Auth Controller", "2.1: Request logout (POST)", "call"),
+        ("msg", "Auth Controller", "Halaman Autentikasi", "2.2: Destroy session, redirect ke Login", "reply")
+    ]
 }
 
-def get_color(participant):
-    for key, color in COLORS.items():
-        if key in participant:
-            return color
-    return "#333333"
+diagrams["8_pengajuan_peminjaman"] = {
+    "title": "8. Pengajuan Peminjaman (Reservasi)",
+    "description": "Alur pengajuan sewa ruangan dan sarana pendukung oleh Guest (Peminjam).",
+    "roles": ["Guest"],
+    "participants": [
+        {"name": "Actor (Peminjam)", "type": "actor"},
+        {"name": "Halaman Pengajuan", "type": "boundary"},
+        {"name": "Peminjaman Controller", "type": "control"},
+        {"name": "Peminjaman Model", "type": "entity"}
+    ],
+    "steps": [
+        ("msg", "Actor (Peminjam)", "Halaman Pengajuan", "1: Isi Form Permohonan Peminjaman", "call"),
+        ("msg", "Halaman Pengajuan", "Peminjaman Controller", "1.1: Kirim Permohonan Peminjaman (POST)", "call"),
+        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.1: Cek ketersediaan Ruangan & Sarana", "call"),
+        ("msg", "Peminjaman Model", "Peminjaman Controller", "1.1.2: Return status ketersediaan", "reply"),
+        ("alt_start", "Fasilitas Tersedia"),
+        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.3: Simpan data peminjaman (status=PENDING)", "call"),
+        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.4: Simpan detail sarana yang dipinjam", "call"),
+        ("msg", "Peminjaman Model", "Peminjaman Controller", "1.1.5: Success", "reply"),
+        ("msg", "Peminjaman Controller", "Halaman Pengajuan", "1.1.6: Tampilkan sukses (Menunggu Verifikasi)", "reply"),
+        ("alt_else", "Fasilitas Terbooking / Stok Habis"),
+        ("msg", "Peminjaman Controller", "Halaman Pengajuan", "1.1.7: Tampilkan pesan error ketersediaan", "reply"),
+        ("alt_end",)
+    ]
+}
 
-def generate_svg(name, data):
+diagrams["9_verifikasi_approval"] = {
+    "title": "9. Verifikasi & Approval Peminjaman",
+    "description": "Proses persetujuan atau penolakan pengajuan sewa oleh Admin atau Petugas.",
+    "roles": ["Admin", "Petugas", "Pimpinan (View-only)"],
+    "participants": [
+        {"name": "Actor", "type": "actor"},
+        {"name": "Halaman Detail Peminjaman", "type": "boundary"},
+        {"name": "Approval Controller", "type": "control"},
+        {"name": "Peminjaman Model", "type": "entity"}
+    ],
+    "steps": [
+        ("msg", "Actor", "Halaman Detail Peminjaman", "1: Buka detail peminjaman pending", "call"),
+        ("msg", "Halaman Detail Peminjaman", "Approval Controller", "1.1: GET /admin/transaksi/peminjaman/{id}", "call"),
+        ("msg", "Approval Controller", "Peminjaman Model", "1.1.1: Get peminjaman & detail sarana", "call"),
+        ("msg", "Peminjaman Model", "Approval Controller", "1.1.2: Return data", "reply"),
+        ("msg", "Approval Controller", "Halaman Detail Peminjaman", "1.1.3: Tampilkan detail peminjaman", "reply"),
+        ("alt_start", "Role == Pimpinan"),
+        ("self", "Halaman Detail Peminjaman", "1.1.4: Sembunyikan tombol Setujui/Tolak"),
+        ("alt_else", "Role == Admin atau Petugas"),
+        ("msg", "Actor", "Halaman Detail Peminjaman", "2: Klik tombol Setujui", "call"),
+        ("msg", "Halaman Detail Peminjaman", "Approval Controller", "2.1: POST /admin/transaksi/peminjaman/{id}/approve", "call"),
+        ("msg", "Approval Controller", "Peminjaman Model", "2.1.1: Update statusApproval=APPROVED & set tglApproval", "call"),
+        ("msg", "Approval Controller", "Peminjaman Model", "2.1.2: Auto-generate Invoice record (status=UNPAID)", "call"),
+        ("msg", "Peminjaman Model", "Approval Controller", "2.1.3: Success", "reply"),
+        ("msg", "Approval Controller", "Halaman Detail Peminjaman", "2.1.4: Redirect & tampilkan status APPROVED", "reply"),
+        ("alt_end",)
+    ]
+}
+
+diagrams["10_checkin_checkout"] = {
+    "title": "10. Proses Check-In & Check-Out",
+    "description": "Pemberian check-in tamu pada hari H dan check-out saat masa sewa berakhir.",
+    "roles": ["Petugas", "Admin"],
+    "participants": [
+        {"name": "Actor (Petugas)", "type": "actor"},
+        {"name": "Halaman Transaksi", "type": "boundary"},
+        {"name": "Peminjaman Controller", "type": "control"},
+        {"name": "Peminjaman Model", "type": "entity"}
+    ],
+    "steps": [
+        ("msg", "Actor (Petugas)", "Halaman Transaksi", "1: Klik tombol Proses Check-In", "call"),
+        ("msg", "Halaman Transaksi", "Peminjaman Controller", "1.1: POST /admin/transaksi/peminjaman/{id}/check-in", "call"),
+        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.1: Update statusPeminjaman=CHECK_IN, checkIn=now()", "call"),
+        ("msg", "Peminjaman Model", "Peminjaman Controller", "1.1.2: Success", "reply"),
+        ("msg", "Peminjaman Controller", "Halaman Transaksi", "1.1.3: Refresh page & status menjadi CHECK_IN", "reply"),
+        ("msg", "Actor (Petugas)", "Halaman Transaksi", "2: Tamu selesai, klik Check-Out & isi form kerusakan", "call"),
+        ("msg", "Halaman Transaksi", "Peminjaman Controller", "2.1: POST /admin/transaksi/peminjaman/{id}/check-out", "call"),
+        ("msg", "Peminjaman Controller", "Peminjaman Model", "2.1.1: Update statusPeminjaman=CHECK_OUT, checkOut=now()", "call"),
+        ("msg", "Peminjaman Controller", "Peminjaman Model", "2.1.2: Simpan kondisiReturn, denda, & biayaTambahan", "call"),
+        ("msg", "Peminjaman Controller", "Peminjaman Model", "2.1.3: Update Invoice (tambah biaya denda ke totalHarga)", "call"),
+        ("msg", "Peminjaman Model", "Peminjaman Controller", "2.1.4: Success", "reply"),
+        ("msg", "Peminjaman Controller", "Halaman Transaksi", "2.1.5: Redirect & status menjadi CHECK_OUT", "reply")
+    ]
+}
+
+diagrams["11_kelola_invoice"] = {
+    "title": "11. Kelola & Cetak Invoice",
+    "description": "Pembuatan invoice tagihan sewa dan update status pembayaran oleh Admin.",
+    "roles": ["Admin"],
+    "participants": [
+        {"name": "Actor", "type": "actor"},
+        {"name": "Halaman Detail Invoice", "type": "boundary"},
+        {"name": "Invoice Controller", "type": "control"},
+        {"name": "Invoice Model", "type": "entity"}
+    ],
+    "steps": [
+        ("msg", "Actor", "Halaman Detail Invoice", "1: Buka halaman kelola invoice", "call"),
+        ("msg", "Halaman Detail Invoice", "Invoice Controller", "1.1: GET /admin/transaksi/invoice/{id}", "call"),
+        ("msg", "Invoice Controller", "Invoice Model", "1.1.1: Get invoice & peminjaman details", "call"),
+        ("msg", "Invoice Model", "Invoice Controller", "1.1.2: Return data", "reply"),
+        ("msg", "Invoice Controller", "Halaman Detail Invoice", "1.1.3: Tampilkan Invoice Detail", "reply"),
+        ("msg", "Actor", "Halaman Detail Invoice", "2: Konfirmasi Pembayaran Lunas", "call"),
+        ("msg", "Halaman Detail Invoice", "Invoice Controller", "2.1: POST /admin/transaksi/invoice/{id}/pay", "call"),
+        ("alt_start", "Role == Pimpinan"),
+        ("msg", "Invoice Controller", "Halaman Detail Invoice", "2.1.1: 403 Forbidden (Blocked)", "reply"),
+        ("alt_else", "Role == Admin"),
+        ("msg", "Invoice Controller", "Invoice Model", "2.1.2: Update statusInvoice=PAID, status_pembayaran=LUNAS", "call"),
+        ("msg", "Invoice Model", "Invoice Controller", "2.1.3: Success", "reply"),
+        ("msg", "Invoice Controller", "Halaman Detail Invoice", "2.1.4: Tampilkan status PAID", "reply"),
+        ("alt_end",)
+    ]
+}
+
+diagrams["14_cetak_laporan"] = {
+    "title": "14. Cetak Laporan",
+    "description": "Cetak dan ekspor laporan peminjaman & penggunaan fasilitas (Admin & Pimpinan).",
+    "roles": ["Admin", "Pimpinan"],
+    "participants": [
+        {"name": "Actor", "type": "actor"},
+        {"name": "Halaman Laporan", "type": "boundary"},
+        {"name": "Laporan Controller", "type": "control"},
+        {"name": "Peminjaman Model", "type": "entity"}
+    ],
+    "steps": [
+        ("msg", "Actor", "Halaman Laporan", "1: Buka Halaman Laporan & pilih filter tanggal", "call"),
+        ("msg", "Halaman Laporan", "Laporan Controller", "1.1: GET /admin/laporan", "call"),
+        ("alt_start", "Role == Petugas"),
+        ("msg", "Laporan Controller", "Halaman Laporan", "1.1.1: 403 Forbidden (Blocked)", "reply"),
+        ("alt_else", "Role in [Admin, Pimpinan]"),
+        ("msg", "Laporan Controller", "Peminjaman Model", "1.1.2: Query aggregated data", "call"),
+        ("msg", "Peminjaman Model", "Laporan Controller", "1.1.3: Return data", "reply"),
+        ("msg", "Laporan Controller", "Halaman Laporan", "1.1.4: Tampilkan Halaman Laporan dengan data & tombol Cetak", "reply"),
+        ("alt_end",)
+    ]
+}
+
+# Drawing helpers
+def get_font():
+    # Attempt to load standard clean fonts from Windows directory
+    paths = [
+        "C:\\Windows\\Fonts\\segoeui.ttf",
+        "C:\\Windows\\Fonts\\arial.ttf",
+        "segoeui.ttf",
+        "arial.ttf"
+    ]
+    for path in paths:
+        try:
+            font_title = ImageFont.truetype(path, 16)
+            font_bold = ImageFont.truetype(path, 12)
+            font_regular = ImageFont.truetype(path, 11)
+            return font_title, font_bold, font_regular
+        except IOError:
+            continue
+    # Default fallback
+    fallback = ImageFont.load_default()
+    return fallback, fallback, fallback
+
+font_title, font_bold, font_regular = get_font()
+
+def draw_text_centered(draw, text, x, y, font, fill):
+    bbox = draw.textbbox((0, 0), text, font=font)
+    w = bbox[2] - bbox[0]
+    h = bbox[3] - bbox[1]
+    draw.text((x - w / 2, y - h / 2), text, font=font, fill=fill)
+
+def wrap_text(text, font, max_width, draw):
+    words = text.split(' ')
+    lines = []
+    current_line = []
+    for word in words:
+        test_line = ' '.join(current_line + [word])
+        bbox = draw.textbbox((0, 0), test_line, font=font)
+        w = bbox[2] - bbox[0]
+        if w <= max_width:
+            current_line.append(word)
+        else:
+            if current_line:
+                lines.append(' '.join(current_line))
+                current_line = [word]
+            else:
+                lines.append(word)
+                current_line = []
+    if current_line:
+        lines.append(' '.join(current_line))
+    return lines
+
+def draw_message_text(draw, text, x1, x2, y, font, fill):
+    max_w = abs(x2 - x1) - 20
+    lines = wrap_text(text, font, max_w, draw)
+    mid_x = (x1 + x2) / 2
+    
+    line_heights = []
+    for line in lines:
+        bbox = draw.textbbox((0, 0), line, font=font)
+        line_heights.append(bbox[3] - bbox[1] + 3)
+    total_text_h = sum(line_heights)
+    
+    curr_y = y - total_text_h - 4
+    for line in lines:
+        bbox = draw.textbbox((0, 0), line, font=font)
+        w = bbox[2] - bbox[0]
+        h = bbox[3] - bbox[1]
+        draw.text((mid_x - w / 2, curr_y), line, font=font, fill=fill)
+        curr_y += h + 3
+
+def draw_self_call_text(draw, text, x, y, font, fill):
+    max_w = 180
+    lines = wrap_text(text, font, max_w, draw)
+    curr_y = y + 5
+    for line in lines:
+        bbox = draw.textbbox((0, 0), line, font=font)
+        h = bbox[3] - bbox[1]
+        draw.text((x + 42, curr_y), line, font=font, fill=fill)
+        curr_y += h + 3
+
+def draw_dashed_line(draw, x1, y1, x2, y2, fill, width=2, dash_length=6, gap_length=4):
+    dx = x2 - x1
+    dy = y2 - y1
+    distance = math.sqrt(dx**2 + dy**2)
+    if distance == 0:
+        return
+    ux = dx / distance
+    uy = dy / distance
+    
+    curr_dist = 0
+    while curr_dist < distance:
+        next_dist = min(curr_dist + dash_length, distance)
+        draw.line([
+            int(round(x1 + ux * curr_dist)),
+            int(round(y1 + uy * curr_dist)),
+            int(round(x1 + ux * next_dist)),
+            int(round(y1 + uy * next_dist))
+        ], fill=fill, width=int(width))
+        curr_dist += dash_length + gap_length
+
+def draw_uml_actor(draw, x, y, font, label):
+    # Head
+    draw.ellipse([x - 7, y - 25, x + 7, y - 11], fill=(122, 194, 240), outline=(30, 41, 59), width=2)
+    # Body
+    draw.line([x, y - 11, x, y + 8], fill=(30, 41, 59), width=2)
+    # Arms
+    draw.line([x - 14, y - 4, x + 14, y - 4], fill=(30, 41, 59), width=2)
+    # Legs
+    draw.line([x, y + 8, x - 10, y + 22], fill=(30, 41, 59), width=2)
+    draw.line([x, y + 8, x + 10, y + 22], fill=(30, 41, 59), width=2)
+    # Label
+    draw_text_centered(draw, label, x, y + 36, font, (30, 41, 59))
+
+def draw_uml_boundary(draw, x, y, font, label):
+    # Circle on the right
+    draw.ellipse([x - 2, y - 12, x + 22, y + 12], fill=(122, 194, 240), outline=(30, 41, 59), width=2)
+    # Vertical line on the left
+    draw.line([x - 15, y - 18, x - 15, y + 18], fill=(30, 41, 59), width=2)
+    # Horizontal link
+    draw.line([x - 15, y, x - 2, y], fill=(30, 41, 59), width=2)
+    # Label
+    draw_text_centered(draw, label, x, y + 36, font, (30, 41, 59))
+
+def draw_uml_control(draw, x, y, font, label):
+    # Main Circle
+    draw.ellipse([x - 12, y - 12, x + 12, y + 12], fill=(122, 194, 240), outline=(30, 41, 59), width=2)
+    # Loop arrow on top
+    draw.arc([x - 16, y - 16, x + 16, y + 16], start=-140, end=10, fill=(30, 41, 59), width=2)
+    # Arrow head pointing clockwise (down-right at the right side)
+    draw.polygon([x + 11, y - 7, x + 20, y - 7, x + 15, y + 1], fill=(30, 41, 59))
+    # Label
+    draw_text_centered(draw, label, x, y + 36, font, (30, 41, 59))
+
+def draw_uml_entity(draw, x, y, font, label):
+    # Circle
+    draw.ellipse([x - 12, y - 18, x + 12, y + 6], fill=(122, 194, 240), outline=(30, 41, 59), width=2)
+    # Vertical link
+    draw.line([x, y + 6, x, y + 14], fill=(30, 41, 59), width=2)
+    # Flat base line
+    draw.line([x - 18, y + 14, x + 18, y + 14], fill=(30, 41, 59), width=2)
+    # Label
+    draw_text_centered(draw, label, x, y + 36, font, (30, 41, 59))
+
+def generate_png(name, data, output_dir):
     title = data["title"]
     participants = data["participants"]
     steps = data["steps"]
 
-    # Dimensions
-    width = 960
-    margin_x = 100
+    # Calculate coordinates
+    margin_x = 120
+    spacing_x = 220
     n_part = len(participants)
-    spacing_x = (width - 2 * margin_x) / (n_part - 1) if n_part > 1 else 0
+    width = margin_x * 2 + (n_part - 1) * spacing_x
+    
+    def get_x(p_name):
+        for idx, p in enumerate(participants):
+            if p["name"] == p_name or p_name.startswith(p["name"]) or p["name"].startswith(p_name):
+                return margin_x + idx * spacing_x
+        return margin_x
 
-    def get_x(p):
-        try:
-            idx = participants.index(p)
-        except ValueError:
-            # Match partially (e.g. Actor (Petugas) matches Actor)
-            idx = 0
-            for i, part in enumerate(participants):
-                if p.split()[0] in part or part.split()[0] in p:
-                    idx = i
-                    break
-        return margin_x + idx * spacing_x
-
-    # First pass: calculate step heights and alt blocks
-    y = 120
-    rendered_steps = []
+    # Calculate step Y values
+    y = 160
+    step_data = []
     alt_stack = []
     
     for step in steps:
         stype = step[0]
         if stype == "msg":
             _, p_from, p_to, label, mtype = step
-            x1, x2 = get_x(p_from), get_x(p_to)
-            rendered_steps.append({
+            step_data.append({
                 "type": "msg",
                 "from": p_from, "to": p_to,
-                "x1": x1, "x2": x2,
+                "x1": get_x(p_from), "x2": get_x(p_to),
                 "y": y,
                 "label": label,
                 "mtype": mtype
             })
-            y += 50
+            y += 65
         elif stype == "self":
             _, p, label = step
-            x = get_x(p)
-            rendered_steps.append({
+            step_data.append({
                 "type": "self",
-                "x": x,
+                "p": p,
+                "x": get_x(p),
                 "y": y,
                 "label": label
             })
-            y += 65
+            y += 75
         elif stype == "alt_start":
             _, cond = step
-            alt_stack.append({
+            alt_info = {
                 "y_start": y - 10,
                 "cond": cond,
                 "splits": [],
-                "idx": len(rendered_steps)
+                "y_end": None
+            }
+            alt_stack.append(alt_info)
+            step_data.append({
+                "type": "alt_start",
+                "info": alt_info
             })
-            y += 25
+            y += 20
         elif stype == "alt_else":
             _, cond = step
             if alt_stack:
-                alt_stack[-1]["splits"].append((y - 10, cond))
-            y += 25
+                alt_stack[-1]["splits"].append({
+                    "y": y - 10,
+                    "cond": cond
+                })
+            step_data.append({
+                "type": "alt_else",
+                "cond": cond
+            })
+            y += 20
         elif stype == "alt_end":
             if alt_stack:
-                alt = alt_stack.pop()
-                y_end = y
-                rendered_steps.append({
-                    "type": "alt_block",
-                    "y_start": alt["y_start"],
-                    "y_end": y_end,
-                    "cond": alt["cond"],
-                    "splits": alt["splits"]
+                alt_info = alt_stack.pop()
+                alt_info["y_end"] = y - 10
+                step_data.append({
+                    "type": "alt_end",
+                    "info": alt_info
                 })
-                y += 15
+            y += 15
 
     total_height = y + 80
 
-    # Start SVG content
-    svg = []
-    svg.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {total_height}" width="100%" height="100%">')
-    
-    # CSS Styling
-    svg.append("""  <defs>
-    <style>
-      .title { font-family: 'Inter', system-ui, sans-serif; font-weight: bold; font-size: 18px; fill: #1e293b; }
-      .participant-box { rx: 6px; ry: 6px; }
-      .participant-text { font-family: 'Inter', system-ui, sans-serif; font-weight: 600; font-size: 13px; fill: #ffffff; text-anchor: middle; }
-      .lifeline { stroke: #cbd5e1; stroke-width: 1.5; stroke-dasharray: 6,4; }
-      .message-line { stroke-width: 2; }
-      .message-text { font-family: 'Inter', system-ui, sans-serif; font-size: 12px; fill: #334155; }
-      .self-msg-text { font-family: 'Inter', system-ui, sans-serif; font-size: 11px; fill: #334155; }
-      .alt-box { fill: #f8fafc; fill-opacity: 0.5; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 4,4; rx: 4px; ry: 4px; }
-      .alt-label { font-family: 'Inter', system-ui, sans-serif; font-weight: bold; font-size: 11px; fill: #475569; }
-      .alt-cond { font-family: 'Inter', system-ui, sans-serif; font-style: italic; font-size: 11px; fill: #64748b; }
-      .activation-bar { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.5; width: 12px; }
-    </style>
-    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#334155" />
-    </marker>
-    <marker id="reply-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 1 L 8 5 L 0 9" fill="none" stroke="#475569" stroke-width="2" />
-    </marker>
-  </defs>""")
-
-    # Background
-    svg.append(f'  <rect width="100%" height="100%" fill="#ffffff" />')
+    # Create image
+    img = Image.new("RGBA", (width, total_height), (255, 255, 255, 255))
+    draw = ImageDraw.Draw(img)
 
     # Draw Title
-    svg.append(f'  <text x="40" y="45" class="title">{title}</text>')
+    draw.text((40, 25), title, fill=(30, 41, 59), font=font_title)
 
-    # Draw Lifelines (Dashed Lines)
+    # Lifeline start/end
+    y_lifeline_start = 120
+    y_lifeline_end = total_height - 60
+
+    # Draw Lifelines (dashed line)
     for p in participants:
-        x = get_x(p)
-        svg.append(f'  <line x1="{x}" y1="80" x2="{x}" y2="{total_height - 60}" class="lifeline" />')
+        x = get_x(p["name"])
+        draw_dashed_line(draw, x, y_lifeline_start, x, y_lifeline_end, fill=(122, 194, 240), width=2)
 
-    # Draw Top Participant Boxes
+    # Gather & Draw Activation boxes
+    activations = []
+    active_calls = {}
+    
+    for s in step_data:
+        if s["type"] == "msg":
+            mtype = s["mtype"]
+            p_from = s["from"]
+            p_to = s["to"]
+            y_val = s["y"]
+            
+            if mtype == "call":
+                if p_to not in active_calls:
+                    active_calls[p_to] = []
+                active_calls[p_to].append(y_val)
+                # Actor lifeline is always active
+                if p_from not in active_calls:
+                    active_calls[p_from] = [y_val]
+            elif mtype == "reply":
+                if p_from in active_calls and active_calls[p_from]:
+                    start_y = active_calls[p_from].pop()
+                    activations.append((p_from, start_y, y_val))
+        elif s["type"] == "self":
+            p = s["p"]
+            y_val = s["y"]
+            activations.append((p, y_val, y_val + 35))
+
+    # Close remaining active calls
+    for p, starts in active_calls.items():
+        for start_y in starts:
+            activations.append((p, start_y, y_lifeline_end))
+
+    # Draw the activation rectangles
+    for p_name, start_y, end_y in activations:
+        x = get_x(p_name)
+        draw.rectangle([x - 6, start_y, x + 6, end_y], fill=(122, 194, 240, 255), outline=(30, 41, 59), width=1)
+
+    # Draw Top Stereotype Symbols
     for p in participants:
-        x = get_x(p)
-        color = get_color(p)
-        svg.append(f'  <g transform="translate({x - 80}, 75)">')
-        svg.append(f'    <rect x="0" y="0" width="160" height="35" class="participant-box" fill="{color}" />')
-        svg.append(f'    <text x="80" y="22" class="participant-text">{p}</text>')
-        svg.append(f'  </g>')
+        x = get_x(p["name"])
+        y_shape = 70
+        ptype = p["type"]
+        if ptype == "actor":
+            draw_uml_actor(draw, x, y_shape, font_bold, p["name"])
+        elif ptype == "boundary":
+            draw_uml_boundary(draw, x, y_shape, font_bold, p["name"])
+        elif ptype == "control":
+            draw_uml_control(draw, x, y_shape, font_bold, p["name"])
+        elif ptype == "entity":
+            draw_uml_entity(draw, x, y_shape, font_bold, p["name"])
 
-    # Draw Bottom Participant Boxes
-    for p in participants:
-        x = get_x(p)
-        color = get_color(p)
-        svg.append(f'  <g transform="translate({x - 80}, {total_height - 50})">')
-        svg.append(f'    <rect x="0" y="0" width="160" height="35" class="participant-box" fill="{color}" />')
-        svg.append(f'    <text x="80" y="22" class="participant-text">{p}</text>')
-        svg.append(f'  </g>')
-
-    # Draw Steps
-    for s in rendered_steps:
+    # Draw Steps (Messages and Alt blocks)
+    for s in step_data:
         stype = s["type"]
         if stype == "msg":
             x1, x2, y_val = s["x1"], s["x2"], s["y"]
             label = s["label"]
             mtype = s["mtype"]
             
-            # Line style & marker
             if mtype == "call":
-                stroke_style = 'stroke="#334155" class="message-line"'
-                marker = 'marker-end="url(#arrow)"'
+                # Solid line
+                draw.line([x1, y_val, x2, y_val], fill=(30, 41, 59), width=2)
+                # Arrowhead
+                if x2 > x1:
+                    draw.polygon([x2, y_val, x2 - 10, y_val - 5, x2 - 10, y_val + 5], fill=(30, 41, 59))
+                else:
+                    draw.polygon([x2, y_val, x2 + 10, y_val - 5, x2 + 10, y_val + 5], fill=(30, 41, 59))
             else:
-                stroke_style = 'stroke="#475569" class="message-line" stroke-dasharray="5,5"'
-                marker = 'marker-end="url(#reply-arrow)"'
-
-            # Text alignment
-            text_anchor = "middle"
-            text_x = (x1 + x2) / 2
-            
-            svg.append(f'  <line x1="{x1}" y1="{y_val}" x2="{x2}" y2="{y_val}" {stroke_style} {marker} />')
-            svg.append(f'  <text x="{text_x}" y="{y_val - 8}" text-anchor="{text_anchor}" class="message-text">{label}</text>')
+                # Dashed line
+                draw_dashed_line(draw, x1, y_val, x2, y_val, fill=(30, 41, 59), width=2)
+                # Open arrowhead
+                if x2 > x1:
+                    draw.line([x2, y_val, x2 - 8, y_val - 4], fill=(30, 41, 59), width=2)
+                    draw.line([x2, y_val, x2 - 8, y_val + 4], fill=(30, 41, 59), width=2)
+                else:
+                    draw.line([x2, y_val, x2 + 8, y_val - 4], fill=(30, 41, 59), width=2)
+                    draw.line([x2, y_val, x2 + 8, y_val + 4], fill=(30, 41, 59), width=2)
+                    
+            draw_message_text(draw, label, x1, x2, y_val, font_regular, (30, 41, 59))
             
         elif stype == "self":
             x, y_val = s["x"], s["y"]
             label = s["label"]
-            # Draw self-call loop
-            svg.append(f'  <path d="M {x} {y_val} L {x+35} {y_val} L {x+35} {y_val+40} L {x+10} {y_val+40}" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#arrow)" />')
-            svg.append(f'  <text x="{x + 42}" y="{y_val + 24}" text-anchor="start" class="self-msg-text">{label}</text>')
-
-        elif stype == "alt_block":
-            y_start, y_end = s["y_start"], s["y_end"]
-            cond = s["cond"]
-            splits = s["splits"]
+            # Loop lines
+            draw.line([x, y_val, x + 35, y_val], fill=(30, 41, 59), width=2)
+            draw.line([x + 35, y_val, x + 35, y_val + 30], fill=(30, 41, 59), width=2)
+            draw.line([x + 35, y_val + 30, x + 6, y_val + 30], fill=(30, 41, 59), width=2)
+            # Arrowhead pointing left
+            draw.polygon([x + 6, y_val + 30, x + 14, y_val + 26, x + 14, y_val + 34], fill=(30, 41, 59))
             
-            # Draw alternative container box
+            draw_self_call_text(draw, label, x, y_val, font_regular, (30, 41, 59))
+            
+        elif stype == "alt_start":
+            info = s["info"]
+            y_start = info["y_start"]
+            y_end = info["y_end"]
+            cond = info["cond"]
+            splits = info["splits"]
+            
             x_min = margin_x - 30
             x_max = width - margin_x + 30
-            svg.append(f'  <rect x="{x_min}" y="{y_start}" width="{x_max - x_min}" height="{y_end - y_start}" class="alt-box" />')
             
-            # Alt tag
-            svg.append(f'  <rect x="{x_min}" y="{y_start}" width="45" height="18" fill="#94a3b8" rx="2" ry="2" />')
-            svg.append(f'  <text x="{x_min + 22}" y="{y_start + 13}" fill="#ffffff" font-family="Inter, sans-serif" font-weight="bold" font-size="10" text-anchor="middle">alt</text>')
+            # Draw alt boundary box
+            draw.rectangle([x_min, y_start, x_max, y_end], outline=(148, 163, 184), width=2)
             
-            # Alt condition
-            svg.append(f'  <text x="{x_min + 55}" y="{y_start + 14}" class="alt-cond">[{cond}]</text>')
+            # Alt badge
+            draw.rectangle([x_min, y_start, x_min + 40, y_start + 18], fill=(148, 163, 184))
+            draw_text_centered(draw, "alt", x_min + 20, y_start + 9, font_bold, (255, 255, 255))
+            
+            # First condition
+            draw.text((x_min + 50, y_start + 3), f"[{cond}]", fill=(100, 116, 139), font=font_regular)
+            
+            # Draw splits
+            for split in splits:
+                sy = split["y"]
+                scond = split["cond"]
+                draw_dashed_line(draw, x_min, sy, x_max, sy, fill=(148, 163, 184), width=1, dash_length=4, gap_length=4)
+                draw.text((x_min + 15, sy + 4), f"[{scond}]", fill=(100, 116, 139), font=font_regular)
 
-            # Draw separators & split conditions
-            for split_y, split_cond in splits:
-                svg.append(f'  <line x1="{x_min}" y1="{split_y}" x2="{x_max}" y2="{split_y}" stroke="#94a3b8" stroke-dasharray="3,3" />')
-                svg.append(f'  <text x="{x_min + 15}" y="{split_y + 16}" class="alt-cond">[{split_cond}]</text>')
+    # Convert to RGB (to drop alpha channel and save as PNG/JPG safely)
+    img_rgb = Image.new("RGB", img.size, (255, 255, 255))
+    img_rgb.paste(img, mask=img.split()[3]) # paste using alpha as mask
 
-    svg.append('</svg>')
-    return "\n".join(svg)
+    # Save image
+    filepath = os.path.join(output_dir, f"{name}.png")
+    img_rgb.save(filepath, "PNG", dpi=(300, 300))
+    print(f"Generated: {filepath}")
 
-# Main generator execution
+# Main execution
 if __name__ == "__main__":
     output_dir = "docs/sequence diagram"
     os.makedirs(output_dir, exist_ok=True)
     
-    print("Generating 14 SVG Sequence Diagrams...")
+    # 1. Generate PNGs
+    print("Generating 14 PNG Sequence Diagrams...")
     for filename, data in diagrams.items():
-        svg_content = generate_svg(filename, data)
-        filepath = os.path.join(output_dir, f"{filename}.svg")
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(svg_content)
-        print(f"Generated: {filepath}")
-
-    print("Sequence Diagrams generation completed successfully.")
+        generate_png(filename, data, output_dir)
+        
+    # 2. Cleanup old SVG files
+    print("Cleaning up old SVG files...")
+    svg_files = [f for f in os.listdir(output_dir) if f.endswith(".svg")]
+    for svg_file in svg_files:
+        svg_path = os.path.join(output_dir, svg_file)
+        try:
+            os.remove(svg_path)
+            print(f"Removed SVG: {svg_path}")
+        except Exception as e:
+            print(f"Failed to remove {svg_path}: {e}")
+            
+    print("Sequence Diagrams generation and cleanup completed successfully.")

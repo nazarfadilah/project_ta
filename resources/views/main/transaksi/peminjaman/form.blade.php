@@ -297,6 +297,11 @@
                         <textarea id="catatanApprove" class="form-control" name="catatanApproval" placeholder="Tambahkan catatan jika diperlukan..." rows="4" maxlength="1000" style="font-size: 14px;"></textarea>
                         <small class="text-muted d-block mt-1">Maksimal 1000 karakter</small>
                     </div>
+                    <div class="mb-3">
+                        <label for="biayaTambahanApprove" class="form-label text-muted small fw-semibold text-uppercase" style="font-size: 11px;">Biaya Tambahan (IDR - Opsional)</label>
+                        <input type="number" id="biayaTambahanApprove" class="form-control" name="biayaTambahan" placeholder="Contoh: 50000" style="font-size: 14px;" min="0">
+                        <small class="text-muted d-block mt-1">Isi jika ada biaya tambahan untuk sarana pendukung</small>
+                    </div>
                 </div>
                 <div class="modal-footer bg-light border-top">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>

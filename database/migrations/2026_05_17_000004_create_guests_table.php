@@ -9,6 +9,7 @@ return new class extends Migration {
             $table->char('nik', 16)->unique();
             $table->string('name', 255);
             $table->enum('gender', ['MALE', 'FEMALE']);
+            $table->char('phone', 15)->nullable();
             $table->text('address')->nullable();
             $table->string('bloodType', 5)->nullable();
             $table->text('notes')->nullable();

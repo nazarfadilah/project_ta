@@ -333,7 +333,7 @@
                     </div>
 
                     <div class="forgot-password">
-                        <a href="#">Lupa password?</a>
+                        <a href="{{ route('password.request') }}">Lupa password?</a>
                     </div>
 
                     <button type="submit" class="btn-login" id="loginBtn" disabled>Masuk</button>

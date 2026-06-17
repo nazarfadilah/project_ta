@@ -36,11 +36,11 @@
                         @foreach($users as $index => $user)
                         <tr>
                             <td style="text-align: center;">{{ $index + 1 }}</td>
-                            <td>{{ $user->name_users }}</td>
-                            <td>{{ $user->email_users }}</td>
-                            <td style="text-align: center;"><span class="badge bg-info">{{ $user->role_users ?? 'User' }}</span></td>
+                            <td>{{ $user->username }}</td>
+                            <td>{{ $user->email }}</td>
+                            <td style="text-align: center;"><span class="badge bg-info">{{ $user->role->name ?? 'User' }}</span></td>
                             <td style="text-align: center;">
-                                <a href="{{ route('main.users.edit', $user->email_users) }}" 
+                                <a href="{{ route('main.users.edit', $user->email) }}" 
                                    class="btn btn-sm btn-warning" 
                                    title="Edit"
                                    style="padding: 4px 10px; font-size: 13px;">

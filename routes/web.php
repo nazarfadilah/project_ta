@@ -57,6 +57,12 @@ Route::get('/login/google', [AuthController::class, 'redirectToGoogle'])->name('
 Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('login.google.callback');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
+Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetCode'])->name('password.email');
+Route::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
+
 
 Route::post('/logout', [AuthController::class, 'logoutUser'])->name('logout')->middleware('auth:web');
 Route::post('/admin/logout', [AuthController::class, 'logoutUser'])->name('admin.logout')->middleware('auth:web');

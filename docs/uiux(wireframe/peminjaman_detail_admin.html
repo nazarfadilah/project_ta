@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xxx - xxx</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --sidebar-width: 240px;
+            --sidebar-collapsed-width: 64px;
+            --navbar-height: 50px;
+            --gold-primary: #C9A961;
+            --gold-dark: #B8953F;
+            --gold-light: #D4BA7A;
+            --sidebar-text: #3a3a3a;
+            --sidebar-hover: rgba(0,0,0,0.08);
+            --sidebar-active: rgba(0,0,0,0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background-color: #f4f6f9;
+            overflow-x: hidden;
+        }
+
+        /* ===== SIDEBAR ===== */
+        #sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background-color: var(--gold-primary);
+            z-index: 1040;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease;
+            overflow: hidden;
+        }
+
+        #sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: var(--navbar-height);
+            padding: 0 14px;
+            background-color: var(--gold-dark);
+            flex-shrink: 0;
+            gap: 12px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .sidebar-brand .brand-logo {
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-brand .brand-logo i {
+            color: #fff;
+            font-size: 22px;
+        }
+
+        .sidebar-brand .brand-text {
+            color: #fff;
+            font-weight: 700;
+            font-size: 17px;
+            letter-spacing: 0.5px;
+            opacity: 1;
+            transition: opacity 0.25s ease, max-width 0.3s ease;
+            overflow: hidden;
+            max-width: 150px;
+        }
+
+        #sidebar.collapsed .sidebar-brand {
+            justify-content: center;
+            padding: 0;
+        }
+
+        #sidebar.collapsed .brand-text {
+            opacity: 0;
+            max-width: 0;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 12px 10px;
+        }
+
+        .sidebar-menu ul {
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu .nav-item {
+            list-style: none;
+            margin-bottom: 2px;
+        }
+
+        .sidebar-menu .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            color: var(--sidebar-text);
+            border-radius: 5px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .sidebar-menu .nav-link:hover {
+            background-color: var(--sidebar-hover);
+            color: #000;
+        }
+
+        .sidebar-menu .nav-link.active {
+            background-color: var(--sidebar-active);
+            color: #000;
+            font-weight: 600;
+        }
+
+        .sidebar-menu .nav-link .menu-icon {
+            width: 20px;
+            flex-shrink: 0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .sidebar-menu .nav-link .menu-text {
+            font-size: 13px;
+            opacity: 1;
+            transition: opacity 0.25s ease;
+        }
+
+        #sidebar.collapsed .sidebar-menu .nav-link {
+            justify-content: center;
+            padding: 10px 0;
+            gap: 0;
+        }
+
+        #sidebar.collapsed .sidebar-menu .nav-link .menu-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            position: absolute;
+        }
+
+        #sidebar.collapsed .sidebar-menu .nav-link .menu-icon {
+            font-size: 16px;
+        }
+
+        .sidebar-divider {
+            border: 0;
+            border-top: 1px solid rgba(0,0,0,0.18);
+            margin: 10px 14px;
+            opacity: 1;
+        }
+
+        #sidebar.collapsed .sidebar-divider {
+            margin: 8px 8px;
+        }
+
+        .sidebar-logout {
+            flex-shrink: 0;
+            padding: 12px 10px;
+            border-top: 1px solid rgba(0,0,0,0.12);
+            margin-bottom: 80px;
+        }
+
+        .sidebar-logout .btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7px 10px;
+            font-size: 13px;
+            border-radius: 5px;
+            gap: 6px;
+        }
+
+        .sidebar-logout .btn .logout-text {
+            opacity: 1;
+            transition: opacity 0.25s ease;
+        }
+
+        #sidebar.collapsed .sidebar-logout .btn .logout-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            position: absolute;
+        }
+
+        #sidebar.collapsed .sidebar-logout .btn {
+            padding: 9px 0;
+        }
+
+        /* ===== TOP NAVBAR ===== */
+        #topNavbar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            height: var(--navbar-height);
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1030;
+            transition: left 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        #topNavbar.collapsed {
+            left: var(--sidebar-collapsed-width);
+        }
+
+        .navbar-toggle-btn {
+            background: none;
+            border: 1px solid #ddd;
+            color: #555;
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .navbar-toggle-btn:hover {
+            background-color: #f0f0f0;
+            border-color: #bbb;
+            color: #333;
+        }
+
+        .navbar-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-left: auto;
+        }
+
+        .navbar-info .page-title {
+            font-weight: 600;
+            color: #444;
+            font-size: 15px;
+        }
+
+        .navbar-info .welcome-text {
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* ===== CONTENT WRAPPER ===== */
+        .content-wrapper {
+            margin-left: var(--sidebar-width);
+            padding-top: var(--navbar-height);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
+        }
+
+        .content-wrapper.collapsed {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 24px;
+        }
+
+        .main-footer {
+            background-color: var(--gold-primary);
+            color: white;
+            padding: 16px 24px;
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.6;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+                width: var(--sidebar-width) !important;
+            }
+
+            #sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            #sidebar.collapsed {
+                transform: translateX(-100%);
+            }
+
+            #topNavbar {
+                left: 0 !important;
+            }
+
+            .content-wrapper {
+                margin-left: 0 !important;
+            }
+
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 1035;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+
+        .card-header {
+            background-color: #C9A961;
+            color: #fff;
+            border-radius: 8px 8px 0 0;
+            padding: 14px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar (Admin Sidebar) -->
+    <nav id="sidebar" class="collapsed">
+        <div class="sidebar-brand" style="cursor: pointer;">
+            <div class="brand-logo">
+                <i class="fas fa-building" style="color: #fff; font-size: 22px;"></i>
+            </div>
+            <span class="brand-text">xxx</span>
+        </div>
+
+        <div class="sidebar-menu">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link" title="xxx">
+                        <i class="fas fa-home menu-icon"></i>
+                        <span class="menu-text">xxx</span>
+                    </a>
+                </li>
+                
+                <hr class="sidebar-divider">
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link" title="xxx">
+                        <i class="fas fa-users menu-icon"></i>
+                        <span class="menu-text">xxx</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link" title="xxx">
+                        <i class="fas fa-user-tie menu-icon"></i>
+                        <span class="menu-text">xxx</span>
+                    </a>
+                </li>
+
+                <hr class="sidebar-divider">
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link" title="xxx">
+                        <i class="fas fa-newspaper menu-icon"></i>
+                        <span class="menu-text">xxx</span>
+                    </a>
+                </li>
+
+                <hr class="sidebar-divider">
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" title="xxx">
+                        <i class="fas fa-calendar-check menu-icon"></i>
+                        <span class="menu-text">xxx</span>
+                    </a>
+                </li>
+
+                <hr class="sidebar-divider">
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link" title="xxx">
+                        <i class="fas fa-database menu-icon"></i>
+                        <span class="menu-text">xxx</span>
+                    </a>
+                </li>
+
+                <hr class="sidebar-divider">
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link" title="xxx">
+                        <i class="fas fa-file-invoice menu-icon"></i>
+                        <span class="menu-text">xxx</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-logout">
+            <form action="#" method="GET">
+                <button type="submit" class="btn btn-danger btn-sm" title="xxx">
+                    <i class="fas fa-sign-out-alt logout-icon"></i>
+                    <span class="logout-text">xxx</span>
+                </button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Top Navbar -->
+    <nav id="topNavbar" class="collapsed">
+        <button class="navbar-toggle-btn" id="sidebarToggle" type="button" title="xxx">
+            <i class="fas fa-bars" style="font-size: 15px;"></i>
+        </button>
+
+        <div class="navbar-info">
+            <span class="page-title">xxx</span>
+            <div class="vr" style="height: 20px; background-color: #ddd;"></div>
+            <span class="welcome-text">
+                <i class="fas fa-hand-wave me-1"></i> Selamat datang!
+            </span>
+        </div>
+    </nav>
+
+    <!-- Content Wrapper -->
+    <div class="content-wrapper collapsed" id="contentWrapper">
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="container-fluid" style="padding-left: 40px; padding-right: 40px; margin-top: 20px;">
+                
+                <a href="#" class="btn btn-secondary btn-sm mb-3">
+                    <i class="fas fa-arrow-left me-1"></i> xxx xxx
+                </a>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="mb-0 fw-semibold text-dark">xxx xxx</h5>
+                    <span class="badge bg-warning text-dark px-3 py-2" style="font-size: 13px;">xxx</span>
+                </div>
+
+                <div class="alert alert-info border-0 shadow-sm d-flex align-items-center gap-2 mb-4" style="font-size: 14px;">
+                    <i class="fas fa-info-circle"></i>
+                    <span>xxx xxx xxx xxx xxx. xxx xxx xxx xxx xxx xxx.</span>
+                </div>
+
+                <!-- Informasi Tamu/Peminjam -->
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0 fw-semibold" style="font-size: 15px;"><i class="fas fa-user me-2"></i>xxx xxx/xxx</h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">xxx xxx/xxx</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;">xxx xxx</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">xxx</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;">xxxxxxxxxxxxxxxx</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">xxx xxx</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;">xxx</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">xxx</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;">xxx xxx</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informasi Ruangan/Fasilitas -->
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0 fw-semibold" style="font-size: 15px;"><i class="fas fa-door-open me-2"></i>xxx xxx</h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">xxx xxx</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;">xxx xxx</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">xxx xxx</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;">xxx xxx</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">xxx</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;">xxx xxx</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">xxx</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;">xxx xxx</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informasi Sarana -->
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0 fw-semibold" style="font-size: 15px;"><i class="fas fa-tools me-2"></i>xxx xxx</h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered align-middle mb-0" style="width: 100%; font-size: 14px;">
+                                <thead style="background-color: #f8f9fa;">
+                                    <tr>
+                                        <th style="width: 50px;" class="text-center">xxx</th>
+                                        <th>xxx xxx</th>
+                                        <th style="width: 150px;" class="text-center">xxx</th>
+                                        <th style="width: 150px;" class="text-center">xxx</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center">xxx</td>
+                                        <td>xxx xxx</td>
+                                        <td class="text-center fw-bold">xx xxx</td>
+                                        <td class="text-center"><span class="badge bg-success px-2 py-1">xxx</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informasi Peminjaman -->
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0 fw-semibold" style="font-size: 15px;"><i class="fas fa-calendar-alt me-2"></i>xxx xxx</h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">xxx xxx</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;">xxx</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">xxx xxx</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;">xx xxx xxxx</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">xxx xxx</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;">xx:xx xxx</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">xxx</label>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;">xx xxx</div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-light rounded border-start border-warning border-4 mt-3">
+                            <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">xxx</label>
+                            <p class="text-dark mb-0" style="line-height: 1.6; font-size: 14px;">xxx xxx xxx xxx xxx</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons (Triggering Mock Modals) -->
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex flex-wrap gap-2">
+                            <!-- Approve button triggers modalApprove -->
+                            <button type="button" class="btn btn-success fw-bold px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalApprove" style="font-size: 13px;">
+                                <i class="fas fa-check me-1"></i> xxx
+                            </button>
+                            <!-- Reject button triggers modalReject -->
+                            <button type="button" class="btn btn-danger fw-bold px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalReject" style="font-size: 13px;">
+                                <i class="fas fa-times me-1"></i> xxx
+                            </button>
+                            <!-- Check-In processes checkin (Mock) -->
+                            <button type="button" class="btn btn-primary fw-bold px-4 py-2" style="font-size: 13px;">
+                                <i class="fas fa-sign-in-alt me-1"></i> xxx xxx-xx
+                            </button>
+                            <!-- Check-Out triggers modalCheckOut -->
+                            <button type="button" class="btn btn-info text-white fw-bold px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalCheckOut" style="font-size: 13px;">
+                                <i class="fas fa-sign-out-alt me-1"></i> xxx xxx-xxx
+                            </button>
+                            <button type="button" class="btn fw-bold px-4 py-2 text-white" style="background-color: #C9A961; font-size: 13px;">
+                                <i class="fas fa-file-invoice-dollar me-1"></i> xxx xxx
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="main-footer">
+            <p style="margin: 0;">
+                &copy;xxxx xxx xxx xxx xxx xxx. xxx xxx xxx.<br>
+                xxx xxx <strong>xxx xxx xxx</strong> - xxx xxx xxx
+            </p>
+        </div>
+    </div>
+
+    <!-- Modal Approve -->
+    <div class="modal fade" id="modalApprove" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-light border-bottom">
+                    <h5 class="modal-title fs-6 fw-semibold text-dark">
+                        <i class="fas fa-check-circle text-success me-1"></i> xxx xxx
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="#" method="GET">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-semibold text-uppercase" style="font-size: 11px;">xxx (xxx)</label>
+                            <textarea class="form-control" placeholder="xxx xxx xxx..." rows="4" style="font-size: 14px;"></textarea>
+                            <small class="text-muted d-block mt-1">xxx xxxx xxx</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-top">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">xxx</button>
+                        <button type="submit" class="btn btn-success btn-sm">xxx</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Reject -->
+    <div class="modal fade" id="modalReject" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-light border-bottom">
+                    <h5 class="modal-title fs-6 fw-semibold text-dark">
+                        <i class="fas fa-times-circle text-danger me-1"></i> xxx xxx
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="#" method="GET">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-semibold text-uppercase" style="font-size: 11px;">xxx xxx *</label>
+                            <textarea class="form-control" placeholder="xxx xxx xxx..." rows="4" required style="font-size: 14px;"></textarea>
+                            <small class="text-muted d-block mt-1">xxx xxxx xxx</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-top">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">xxx</button>
+                        <button type="submit" class="btn btn-danger btn-sm">xxx</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Check-Out -->
+    <div class="modal fade" id="modalCheckOut" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-light border-bottom">
+                    <h5 class="modal-title fs-6 fw-semibold text-dark">
+                        <i class="fas fa-sign-out-alt text-info me-1"></i> xxx xxx-xxx xxx
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="#" method="GET">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-semibold text-uppercase" style="font-size: 11px;">xxx xxx *</label>
+                            <select class="form-select" style="font-size: 14px; padding: 10px;" required>
+                                <option value="BAIK">xxx (xxx xxx)</option>
+                                <option value="RUSAK_RINGAN">xxx xxx</option>
+                                <option value="RUSAK_BERAT">xxx xxx</option>
+                                <option value="HILANG">xxx xxx</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-semibold text-uppercase" style="font-size: 11px;">xxx xxx</label>
+                            <textarea class="form-control" placeholder="xxx xxx..." rows="3" style="font-size: 14px;"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-semibold text-uppercase" style="font-size: 11px;">xxx xxx (xxx - xxx)</label>
+                            <input type="number" class="form-control" placeholder="xxx: xxxxxx" style="font-size: 14px;">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-semibold text-uppercase" style="font-size: 11px;">xxx xxx (xxx - xxx)</label>
+                            <input type="number" class="form-control" placeholder="xxx: xxxxxx" style="font-size: 14px;">
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-top">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">xxx</button>
+                        <button type="submit" class="btn btn-info text-white btn-sm">xxx</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar Collapse and Mobile layout logic
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const contentWrapper = document.getElementById('contentWrapper');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            let isCollapsed = true;
+
+            function isMobile() {
+                return window.innerWidth <= 768;
+            }
+
+            function updateLayout() {
+                if (isMobile()) {
+                    sidebar.classList.remove('collapsed');
+                    if (!isCollapsed) {
+                        sidebar.classList.add('mobile-open');
+                        sidebarOverlay.classList.add('active');
+                    } else {
+                        sidebar.classList.remove('mobile-open');
+                        sidebarOverlay.classList.remove('active');
+                    }
+                } else {
+                    sidebar.classList.remove('mobile-open');
+                    sidebarOverlay.classList.remove('active');
+                    if (isCollapsed) {
+                        sidebar.classList.add('collapsed');
+                        contentWrapper.classList.add('collapsed');
+                    } else {
+                        sidebar.classList.remove('collapsed');
+                        contentWrapper.classList.remove('collapsed');
+                    }
+                }
+            }
+
+            sidebarToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                isCollapsed = !isCollapsed;
+                updateLayout();
+            });
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', function() {
+                    isCollapsed = true;
+                    updateLayout();
+                });
+            }
+
+            window.addEventListener('resize', function() {
+                updateLayout();
+            });
+
+            updateLayout();
+        });
+    </script>
+</body>
+</html>

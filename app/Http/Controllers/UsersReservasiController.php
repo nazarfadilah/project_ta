@@ -144,7 +144,8 @@ class UsersReservasiController extends Controller
             'statusPeminjaman' => 'RESERVASI',
             'statusApproval' => 'PENDING',
             'keterangan' => $validated['keperluan'],
-            'biayaTambahan' => 0.00
+            'biayaTambahan' => 0.00,
+            'userId' => $user->id
         ]);
 
         // 6. Buat invoice tagihan non-paid
