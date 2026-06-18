@@ -42,6 +42,7 @@
                             <th>NIK</th>
                             <th>Nama</th>
                             <th>Jenis Kelamin</th>
+                            <th>No. Telepon</th>
                             <th style="width: 110px; text-align: center;">Aksi</th>
                         </tr>
                     </thead>
@@ -52,6 +53,7 @@
                             <td>{{ $guest->nik }}</td>
                             <td>{{ $guest->name }}</td>
                             <td>{{ $guest->gender == 'MALE' ? 'Laki-laki' : 'Perempuan' }}</td>
+                            <td>{{ $guest->phone ?? '-' }}</td>
                             <td style="text-align: center;">
                                 <a href="{{ route('main.tamu.show', $guest->id) }}" 
                                    class="btn btn-sm btn-info" 
@@ -72,7 +74,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" style="text-align: center; color: #999; padding: 30px;">
+                            <td colspan="6" style="text-align: center; color: #999; padding: 30px;">
                                 <i class="fas fa-inbox" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
                                 Belum ada data tamu
                             </td>
@@ -193,8 +195,8 @@
             ordering: true,
             responsive: true,
             columnDefs: [
-                { orderable: false, targets: [0, 4] },
-                { searchable: false, targets: [0, 4] }
+                { orderable: false, targets: [0, 5] },
+                { searchable: false, targets: [0, 5] }
             ]
         });
     });

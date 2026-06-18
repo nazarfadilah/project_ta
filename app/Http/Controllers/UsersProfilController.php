@@ -25,6 +25,7 @@ class UsersProfilController extends Controller
                 'name' => $user->username,
                 'gender' => 'MALE',
                 'address' => '-',
+                'phone' => $user->phone,
             ]);
             $user->update(['guestId' => $guest->id]);
             $user->load('guest');
@@ -53,6 +54,7 @@ class UsersProfilController extends Controller
                 'name' => $user->username,
                 'gender' => 'MALE',
                 'address' => '-',
+                'phone' => $user->phone,
             ]);
             $user->update(['guestId' => $guest->id]);
             $guestId = $guest->id;
@@ -94,6 +96,7 @@ class UsersProfilController extends Controller
             'address' => $validated['address'],
             'bloodType' => $validated['bloodType'],
             'notes' => $validated['notes'],
+            'phone' => $validated['phone'],
         ]);
 
         // Update User record (phone and optionally password)

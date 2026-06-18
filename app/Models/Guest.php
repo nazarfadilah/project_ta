@@ -14,4 +14,8 @@ class Guest extends Model {
     public function peminjamanTransaksis() {
         return $this->hasMany(PeminjamanTransaksi::class, 'guestId', 'id');
     }
+
+    public function user() {
+        return $this->hasOne(User::class, 'guestId', 'id');
+    }
 }

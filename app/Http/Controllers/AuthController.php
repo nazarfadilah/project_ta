@@ -204,6 +204,7 @@ class AuthController extends Controller
                         'name' => $user->username,
                         'gender' => 'MALE',
                         'address' => '-',
+                        'phone' => $user->phone,
                     ]);
                     $updates['guestId'] = $guest->id;
                 }
