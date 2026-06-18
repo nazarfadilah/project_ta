@@ -1,0 +1,97 @@
+================================================================================
+ALUR PROSES PENGGUNAAN SISTEM - ROLE ADMIN (ADMINISTRATOR)
+Sistem Informasi Peminjaman Sarana dan Prasarana (SIPRASA)
+================================================================================
+
+Dokumen ini menjelaskan alur operasional (admin flow) khusus untuk pengguna dengan 
+hak akses/role ADMIN pada sistem SIPRASA. Berdasarkan kebijakan sistem, Admin 
+memiliki kendali penuh terhadap pengelolaan hak akses pengguna (users), manajemen 
+berita (termasuk penerbitan/approval berita), serta konfigurasi landing page CMS.
+
+Untuk menjaga integritas data transaksi operasional lapangan, Admin DIBATASI dan 
+tidak dapat mengelola data master sewa (gedung, ruangan, sarana) maupun 
+peminjaman/transaksi secara langsung (dikelola oleh Petugas).
+
+--------------------------------------------------------------------------------
+DAFTAR ALUR PROSES ADMIN
+--------------------------------------------------------------------------------
+1. Alur Manajemen Akun Pengguna & Hak Akses (User Management)
+2. Alur Penerbitan & Verifikasi Berita (Berita/CMS Approval)
+3. Alur Pengelolaan Halaman Landing Page (CMS)
+
+================================================================================
+1. ALUR MANAJEMEN AKUN PENGGUNA & HAK AKSES (USER MANAGEMENT)
+================================================================================
+Admin bertanggung jawab atas pendaftaran akun baru, pemutakhiran data, serta
+pembagian peran (role) pengguna dalam sistem SIPRASA.
+
+Diagram Alir:
+   [ Dashboard Admin ] ──> Pilih Menu "Kelola Pengguna" ──> [ Daftar User ]
+                                                                 │
+                                                                 ▼
+                                                       Pilih User & Klik Edit
+                                                                 │
+                                                                 ▼
+                                                        [ Form Edit User ]
+                                                                 │
+                                                       - Ubah Role (Admin,
+                                                         Petugas, Pimpinan, Tamu)
+                                                       - Aktifkan/Nonaktifkan akun
+                                                       - Update informasi dasar
+                                                                 │
+                                                                 ▼
+                                                        [ Klik Simpan ]
+                                                                 │
+                                                                 ▼
+                                                          Sistem update di DB
+                                                          & Refresh Halaman
+
+Penjelasan Detail:
+- Hanya Admin yang dapat mengganti level akses pengguna (misalnya mempromosikan user biasa menjadi Petugas atau Pimpinan).
+- Admin dapat menonaktifkan pengguna yang melanggar aturan agar tidak bisa login kembali ke sistem.
+
+================================================================================
+2. ALUR PENERBITAN & VERIFIKASI BERITA (NEWS MANAGEMENT)
+================================================================================
+Setiap draf berita atau artikel yang dibuat oleh staf/petugas harus diverifikasi dan 
+disetujui oleh Admin sebelum dipublikasikan ke Landing Page utama.
+
+Diagram Alir:
+   [ Draf Berita Masuk ] ──> Notifikasi di Dashboard ──> Admin Buka Detail Berita
+                                                                │
+                                                                ▼
+                                                        Admin memeriksa isi,
+                                                        foto, & kesesuaian berita
+                                                                │
+                                                                ▼
+                                                     [ Keputusan Publikasi ]
+                                                                │
+                                            ┌───────────────────┴───────────────────┐
+                                         Setuju?
+                                            │
+                      ┌─────────────────────┴─────────────────────┐
+                    [TIDAK]                                      [YA]
+                      │                                           │
+                      ▼                                           ▼
+             Klik Button [REJECT]                        Klik Button [APPROVE]
+                      │                                           │
+                      ▼                                           ▼
+             Status berita menjadi                      Status berita menjadi
+             'REJECTED' (Kembali ke                      'PUBLISHED' & Tampil
+              draf/dihapus)                             di Landing Page utama
+                      │                                           │
+                      └─────────────────────┬─────────────────────┘
+                                            ▼
+                                     Sistem Log Aksi
+
+================================================================================
+3. ALUR PENGELOLAAN HALAMAN LANDING PAGE (CMS)
+================================================================================
+Mengelola konten statis yang dilihat oleh publik saat membuka situs utama SIPRASA.
+
+Langkah Operasional:
+1. **Tentang Kami**: Mengedit teks profil organisasi, visi, misi, dan kontak Asrama Haji.
+2. **Galeri Kegiatan**: Mengunggah foto-foto dokumentasi fasilitas atau kegiatan di Asrama Haji beserta keterangannya.
+3. **Gambar Landing (Banner/Hero)**: Mengubah gambar latar belakang utama (carousel banner) dan slogan di halaman beranda.
+4. **FAQ (Frequently Asked Questions)**: Mengelola daftar pertanyaan yang sering ditanyakan tamu beserta jawabannya.
+5. **Kebijakan & Ketentuan**: Memperbarui dokumen halaman Syarat & Ketentuan serta Kebijakan Privasi sewa ruangan.

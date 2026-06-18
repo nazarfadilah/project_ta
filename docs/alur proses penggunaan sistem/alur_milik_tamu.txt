@@ -1,0 +1,217 @@
+================================================================================
+ALUR PROSES PENGGUNAAN SISTEM - ROLE TAMU (GUEST)
+Sistem Informasi Peminjaman Sarana dan Prasarana (SIPRASA)
+================================================================================
+
+Dokumen ini menjelaskan alur operasional (user flow) khusus untuk pengguna dengan 
+hak akses/role TAMU (Guest) pada sistem SIPRASA. Alur ini mencakup proses 
+registrasi, pengelolaan profil, pengajuan peminjaman (reservasi), pembatalan, 
+hingga proses check-in/check-out.
+
+--------------------------------------------------------------------------------
+DAFTAR ALUR PROSES TAMU
+--------------------------------------------------------------------------------
+1. Alur Pendaftaran Akun & Auto-Sync Data Tamu
+2. Alur Kelola Profil Tamu (Wajib untuk Reservasi)
+3. Alur Pengajuan Peminjaman Ruangan & Sarana (Reservasi)
+4. Alur Pembayaran & Verifikasi Admin
+5. Alur Pembatalan Peminjaman oleh Tamu
+6. Alur Check-In & Check-Out (Operasional Lapangan)
+
+================================================================================
+1. ALUR PENDAFTARAN AKUN & AUTO-SYNC DATA TAMU
+================================================================================
+Alur ini menjelaskan bagaimana masyarakat umum mendaftarkan diri menjadi Tamu
+pada sistem SIPRASA secara mandiri.
+
+Diagram Alir:
+   [ Landing Page ] ──> Klik "Daftar Akun" ──> [ Form Register ]
+                                                    │
+                                                    ▼
+                                            Isi Nama, Email,
+                                            Password & NIK (16 digit)
+                                                    │
+                                                    ▼
+                                            [ Proses Simpan ]
+                                                    │
+                                            ┌───────┴───────┐
+                                   Sistem mengecek: Apakah NIK
+                                   sudah terdaftar di tabel Guest?
+                                            │
+                    ┌───────────────────────┴───────────────────────┐
+                   [YA]                                            [TIDAK]
+                    │                                               │
+                    ▼                                               ▼
+     - Hubungkan akun User ke data                  - Buat data Guest baru
+       Guest yang sudah ada                           dengan NIK tersebut
+     - Sinkronkan email & telepon                   - Hubungkan User.guestId
+     - Riwayat peminjaman lama                      - Lengkapi profil nanti
+       (via Admin) otomatis muncul
+                    │                                               │
+                    └───────────────────────┬───────────────────────┘
+                                            ▼
+                                     Registrasi Sukses
+                                   Redirect ke Halaman Login
+
+Penjelasan Detail:
+- Sistem menggunakan NIK (Nomor Induk Kependudukan) sebagai kunci pencocokan data.
+- Jika admin/petugas sebelumnya pernah menginput data peminjaman Anda secara manual (menggunakan NIK Anda), maka saat Anda membuat akun secara mandiri dengan NIK yang sama, seluruh riwayat transaksi lama akan otomatis tersinkronisasi dan muncul di dashboard Anda.
+
+================================================================================
+2. ALUR KELOLA PROFIL TAMU (PENTING / WAJIB SEBELUM RESERVASI)
+================================================================================
+Sebelum mengajukan peminjaman ruangan/sarana, sistem mewajibkan profil tamu terisi dengan lengkap demi validitas hukum peminjaman aset negara.
+
+Diagram Alir:
+   [ Dashboard Tamu ] ──> Pilih Menu "Profil Saya" ──> [ Form Edit Profil ]
+                                                             │
+                                                             ▼
+                                                      Lengkapi Data:
+                                                 - NIK (16 digit, Unik)
+                                                 - Nama Lengkap
+                                                 - Jenis Kelamin
+                                                 - Alamat Lengkap
+                                                 - Nomor Telepon/HP
+                                                 - Golongan Darah (Opsional)
+                                                             │
+                                                             ▼
+                                                    [ Klik Perbarui ]
+                                                             │
+                                                             ▼
+                                                       Validasi Form
+                                                             │
+                                             ┌───────────────┴───────────────┐
+                                           Lolos?
+                                             │
+                       ┌─────────────────────┴─────────────────────┐
+                     [TIDAK]                                      [YA]
+                       │                                           │
+                       ▼                                           ▼
+             Tampilkan Pesan Error                      Update data di DB:
+             (NIK duplikat/Format NIK)                  - Tabel `guest`
+                                                        - Tabel `users`
+                                                                   │
+                                                                   ▼
+                                                          Tampilkan Notifikasi
+                                                          "Profil Diperbarui"
+
+Syarat Kelayakan Pengajuan Reservasi:
+Sistem akan memblokir akses ke form reservasi apabila field berikut kosong atau berisi nilai default (`-`):
+1. NIK kosong atau tidak valid (harus 16 digit).
+2. Alamat belum diisi atau masih bernilai default `-`.
+3. Nomor Telepon/HP belum diisi.
+Jika terdeteksi belum lengkap, tamu akan otomatis diarahkan kembali ke halaman edit profil dengan pesan peringatan.
+
+================================================================================
+3. ALUR PENGAJUAN PEMINJAMAN RUANGAN & SARANA (RESERVASI)
+================================================================================
+Tamu dapat meminjam ruangan (gedung) beserta sarana tambahan (alat pendukung) yang tersedia.
+
+Diagram Alir:
+   [ Dashboard Tamu ] ──> Klik "Pesan Ruangan" ──> [ Validasi Profil Lengkap? ]
+                                                              │
+                                            ┌─────────────────┴─────────────────┐
+                                          [TIDAK]                              [YA]
+                                            │                                   │
+                                            ▼                                   ▼
+                                    Redirect ke Profil                  [ Form Reservasi ]
+                                    (Tampilkan pesan)                           │
+                                      Silahkan isi profil                       ▼
+                                      Terlebih dahulu                   - Pilih Ruangan & Paket Sewa
+                                                                        - Pilih Tanggal & Jam Mulai
+                                                                        - Masukkan Estimasi Peserta
+                                                                        - Masukkan Keperluan/Detail
+                                                                        - Tambahkan Sarana Pendukung
+                                                                          (Jika membutuhkan, e.g:
+                                                                           proyektor, sound system, dll)
+                                                                                │
+                                                                                ▼
+                                                                      [ Klik Simpan/Ajukan ]
+                                                                                │
+                                                                                ▼
+                                                                     [ Pengecekan Sistem ]
+                                                                     1. Kapasitas ruangan
+                                                                     2. Bentrok jadwal (Overlap)
+                                                                     3. Ketersediaan stok sarana
+                                                                                │
+                                                            ┌───────────────────┴───────────────────┐
+                                                          Lolos?
+                                                            │
+                                    ┌───────────────────────┴───────────────────────┐
+                                  [TIDAK]                                          [YA]
+                                    │                                               │
+                                    ▼                                               ▼
+                              Kembali ke Form                               - Simpan PJM Transaksi
+                            Tampilkan Pesan Error                           (Status PJM: RESERVASI,
+                            (Jadwal bentrok/Stok kurang)                     Status Approval: PENDING)
+                                                                            - Generate Invoice (UNPAID)
+                                                                            - Hubungkan Detail Sarana
+                                                                                    │
+                                                                                    ▼
+                                                                            Redirect ke Riwayat Peminjaman
+                                                                            (Notifikasi: Reservasi Berhasil)
+
+Detail Pengecekan Sistem (Mencegah Overbooking):
+- Sistem mengecek apakah estimasi peserta melebihi kapasitas maksimum ruangan yang dipilih.
+- Sistem mendeteksi bentrok jadwal ruangan dengan mengecek transaksi peminjaman lain yang berstatus `APPROVED` pada tanggal dan rentang jam yang sama.
+- Sistem mengecek ketersediaan stok sarana tambahan secara real-time berdasarkan tanggal sewa untuk menghindari kekurangan alat di lapangan.
+
+
+================================================================================
+4. ALUR PEMBATALAN PEMINJAMAN (OLEH TAMU)
+================================================================================
+Tamu memiliki opsi untuk membatalkan pengajuan peminjaman sewa ruangan/sarana sebelum hari H pelaksanaan acara jika terjadi perubahan rencana.
+
+Diagram Alir:
+   [ Halaman Riwayat Reservasi ]
+                 │
+                 ▼
+      Pilih Transaksi yang Ingin Dibatalkan
+      (Hanya untuk status PENDING / APPROVED sebelum Check-in)
+                 │
+                 ▼
+      Klik Tombol "Batalkan Peminjaman"
+                 │
+                 ▼
+      [ Popup Konfirmasi Pembatalan ]
+      "Apakah Anda yakin ingin membatalkan peminjaman ini?"
+                 │
+      ┌──────────┴──────────┐
+   [TIDAK]                 [YA]
+      │                     │
+      ▼                     ▼
+    Batal            Update Database:
+   Kembali           1. PeminjamanTransaksi.statusPeminjaman ──> 'BATAL'
+   ke List           2. PeminjamanTransaksi.statusApproval ──> 'REJECTED' (jika sebelumnya Approved)
+                     3. Invoice.statusInvoice ──> 'CANCELLED'
+                     4. Kosongkan kuota sarana & jadwal ruangan kembali tersedia
+                            │
+                            ▼
+                     Segarkan Halaman (Refresh) &
+                     Tampilkan Notifikasi "Pembatalan Berhasil"
+
+Aturan Pembatalan:
+- Pembatalan hanya bisa dilakukan oleh Tamu secara mandiri jika status sewa masih berupa `RESERVASI` (belum Check-in) atau status approval masih `PENDING`/`APPROVED`.
+- Jika transaksi sudah masuk tahap `CHECK_IN` (sedang menggunakan ruangan), tombol pembatalan tidak akan aktif/tersedia bagi Tamu.
+
+================================================================================
+6. ALUR CHECK-IN & CHECK-OUT (OPERASIONAL LAPANGAN)
+================================================================================
+Ini adalah proses langsung (offline) di kantor Asrama Haji yang dicatat secara real-time ke dalam sistem oleh petugas.
+
+Alur Check-In:
+1. Tamu datang ke lokasi Asrama Haji pada hari H.
+2. Tamu menunjukkan Kode Peminjaman (e.g., PJM/YYYYMMDD/XXXX) kepada petugas Resepsionis.
+3. Petugas melakukan pemeriksaan fisik kondisi ruangan dan kelengkapan sarana yang dipinjam.
+4. Petugas menekan tombol [CHECK-IN] di sistem. Status transaksi berubah menjadi `CHECK_IN` (Aktif) dan mencatat waktu masuk riil (`tglMulaiRil`).
+
+Alur Check-Out:
+1. Setelah acara selesai, Tamu melaporkan ke pihak Resepsionis untuk melakukan check-out dan mengembalikan kunci.
+2. Petugas melakukan inspeksi akhir kondisi fisik ruangan dan kuantitas/kondisi sarana yang dipinjam.
+3. Petugas mencatat hasil inspeksi di sistem:
+   - Kondisi Kembali: `BAIK`, `RUSAK_RINGAN`, `RUSAK_BERAT`, atau `HILANG`.
+   - Catatan Kerusakan: Menguraikan detail bagian yang rusak (jika ada).
+   - Estimasi Denda/Ganti Rugi: Menginput nominal biaya kerusakan (jika ada).
+4. Jika ada denda kerusakan, sistem akan secara otomatis memperbarui Invoice dengan menambahkan `biayaTambahan` ganti rugi.
+5. Tamu menyelesaikan sisa pembayaran (biaya sewa + denda jika ada) ke Kasir.
+6. Setelah lunas, Kasir meng-update status invoice menjadi `PAID` dan transaksi otomatis berubah status menjadi `SELESAI` (Closed).

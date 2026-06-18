@@ -1,0 +1,219 @@
+================================================================================
+ALUR PROSES PENGGUNAAN SISTEM - ROLE PETUGAS (OFFICER)
+Sistem Informasi Peminjaman Sarana dan Prasarana (SIPRASA)
+================================================================================
+
+Dokumen ini menjelaskan alur operasional (officer flow) khusus untuk pengguna 
+dengan hak akses/role PETUGAS pada sistem SIPRASA. Berdasarkan kebijakan sistem,
+Petugas bertanggung jawab penuh atas manajemen operasional harian, data master 
+fasilitas, verifikasi transaksi, serta pelayanan check-in/check-out tamu.
+
+Petugas TIDAK memiliki akses ke modul Kelola Pengguna (Users), Landing Page CMS, 
+serta Laporan Keuangan Akhir (Laporan).
+
+--------------------------------------------------------------------------------
+DAFTAR ALUR PROSES PETUGAS
+--------------------------------------------------------------------------------
+1. Alur Manajemen Data Master (Gedung, Ruangan, Sarana, Paket Sewa)
+2. Alur Pendaftaran Tamu Secara Manual (Peminjaman Offline via WA/Telepon)
+3. Alur Verifikasi & Persetujuan Reservasi Tamu (Online Booking)
+4. Alur Proses Check-In (Kedatangan Tamu)
+5. Alur Proses Check-Out & Evaluasi Kerusakan (Damage Assessment)
+6. Alur Pencatatan Pembayaran Invoice (Kasir/Petugas)
+
+================================================================================
+1. ALUR MANAJEMEN DATA MASTER
+================================================================================
+Petugas memegang kendali penuh atas ketersediaan fasilitas yang disewakan kepada publik.
+
+Langkah Operasional:
+1. **Manajemen Gedung**: Petugas menambahkan/mengedit gedung (nama gedung, deskripsi, lokasi fisik).
+2. **Manajemen Ruangan**: Petugas memasukkan ruangan di dalam gedung tertentu beserta deskripsi, kapasitas maksimal, foto ruangan, dan status aktif.
+3. **Manajemen Paket Ruangan**: Menentukan paket durasi sewa ruangan (misal: paket 4 jam, 8 jam, atau harian) beserta tarif sewa masing-masing paket.
+4. **Manajemen Sarana**: Mengelola inventaris pendukung (misal: Proyektor, Sound System, Kursi Tambahan) beserta total stok fisik yang tersedia untuk dipinjam.
+
+================================================================================
+2. ALUR PENDAFTARAN TAMU SECARA MANUAL (OFFLINE BOOKING)
+================================================================================
+Digunakan apabila calon tamu menghubungi petugas secara langsung (WhatsApp/Telepon) 
+dan tidak memiliki akun online.
+
+Diagram Alir:
+   [ Hubungi via WA/Telp ] ──> Petugas Buka "Kelola Tamu" ──> [ Form Input Tamu ]
+                                                                     │
+                                                                     ▼
+                                                              Petugas menginput:
+                                                              - NIK (16 digit)
+                                                              - Nama Lengkap
+                                                              - No Telepon & Alamat
+                                                                     │
+                                                                     ▼
+                                                             Sistem Validasi NIK
+                                                                     │
+                                                     ┌───────────────┴───────────────┐
+                                                   NIK unik?
+                                                     │
+                               ┌─────────────────────┴─────────────────────┐
+                             [TIDAK]                                      [YA]
+                               │                                           │
+                               ▼                                           ▼
+                      Gunakan Data Guest                            Simpan Data Guest
+                      yang sudah ada di DB                           Baru ke database
+                               │                                           │
+                               └─────────────────────┬─────────────────────┘
+                                                     ▼
+                                             Buat Transaksi Baru
+                                            (Peminjaman Offline)
+
+Penjelasan Detail:
+- Petugas menginput data tamu ke modul `tamu-management`.
+- NIK bersifat unik. Jika tamu pernah berkunjung sebelumnya, datanya cukup dicari di database tanpa harus membuat baru, sehingga riwayat transaksi tetap terjaga.
+
+================================================================================
+3. ALUR VERIFIKASI & PERSETUJUAN RESERVASI TAMU (ONLINE BOOKING)
+================================================================================
+Petugas memverifikasi setiap pengajuan reservasi ruangan yang dikirimkan oleh tamu secara online.
+
+Diagram Alir:
+   [ Reservasi Baru Masuk ] ──> Notifikasi di Dashboard ──> Petugas Review Detail
+                                                                  │
+                                                                  ▼
+                                                          Petugas memeriksa:
+                                                          - Kesesuaian keperluan sewa
+                                                          - Validitas NIK & instansi
+                                                          - Kelayakan berkas/tujuan
+                                                          - Bentrok jadwal ruangan
+                                                                  │
+                                                                  ▼
+                                                      [ Keputusan Verifikasi ]
+                                                                  │
+                                            ┌─────────────────────┴─────────────────────┐
+                                         Setuju?
+                                            │
+                      ┌─────────────────────┴─────────────────────┐
+                    [TIDAK]                                      [YA]
+                      │                                           │
+                      ▼                                           ▼
+             Ubah Status Transaksi                       Ubah Status Transaksi
+             menjadi 'REJECTED'                          menjadi 'APPROVED'
+                      │                                           │
+                      ▼                                           ▼
+               - Sarana & Ruangan                         - Jadwal ruangan dikunci
+                 kembali dibebaskan                         oleh sistem
+               - Selesai                                  - Invoice (UNPAID) aktif
+                                                                  │
+                                                                  ▼
+                                                          Menunggu Kedatangan
+                                                          Tamu (Hari H)
+
+Detail Operasional:
+- Transaksi online yang masuk pertama kali berstatus `statusApproval: PENDING` dan `statusPeminjaman: RESERVASI`.
+- Petugas berhak menolak atau membatalkan sepihak jika keperluan dinilai tidak sesuai dengan regulasi pemakaian aset pemerintah.
+
+================================================================================
+4. ALUR PROSES CHECK-IN (KEDATANGAN TAMU PADA HARI H)
+================================================================================
+Dilakukan di meja resepsionis saat tamu tiba di lokasi Asrama Haji.
+
+Diagram Alir:
+   [ Tamu Tiba di Lokasi ] ──> Tunjukkan Kode Booking ──> Petugas Cari di Sistem
+                                                                 │
+                                                                 ▼
+                                                       Status 'APPROVED'?
+                                                                 │
+                                                 ┌───────────────┴───────────────┐
+                                               [YA]                           [TIDAK]
+                                                 │                               │
+                                                 ▼                               ▼
+                                       Petugas Bersama Tamu               Arahkan untuk bayar/
+                                       Melakukan Inspeksi                 verifikasi terlebih
+                                       Kondisi Awal Aset                  dahulu
+                                                 │
+                                                 ▼
+                                        Kondisi Ruangan &
+                                        Sarana Siap Pakai?
+                                                 │
+                                        ┌────────┴────────┐
+                                     [TIDAK]             [YA]
+                                        │                 │
+                                        ▼                 ▼
+                                  Siapkan Unit       Klik Button [CHECK-IN]
+                                  Pengganti          pada sistem SIPRASA
+                                                          │
+                                                          ▼
+                                                     Sistem update:
+                                                     - Status: CHECK_IN (Aktif)
+                                                     - tglMulaiRil: Waktu riil check-in
+                                                          │
+                                                          ▼
+                                                     Cetak E-Ticket /
+                                                     Bukti Check-In Resmi
+                                                          │
+                                                          ▼
+                                                     Serahkan Kunci &
+                                                     Mulai Penggunaan Ruang
+
+================================================================================
+5. ALUR PROSES CHECK-OUT & EVALUASI KERUSAKAN (DAMAGE ASSESSMENT)
+================================================================================
+Alur terpenting untuk memastikan pertanggungjawaban pemakaian sarana dan prasarana.
+
+Diagram Alir:
+   [ Acara Tamu Selesai ] ──> Tamu Lapor Checkout ──> Petugas Bersama Tamu
+                                                      Melakukan Inspeksi Akhir
+                                                                 │
+                                                                 ▼
+                                                       Petugas mengecek:
+                                                       - Kebersihan ruangan
+                                                       - Keutuhan furniture
+                                                       - Kuantitas & kondisi alat
+                                                       - Fungsi elektronik (AC/lampu)
+                                                                 │
+                                                                 ▼
+                                                         Sistem Validasi
+                                                     (Update Kondisi Return)
+                                                                 │
+                                            ┌────────────────────┴────────────────────┐
+                                       Ada Kerusakan/
+                                       Barang Hilang?
+                                            │
+                     ┌──────────────────────┴──────────────────────┐
+                   [YA]                                           [TIDAK]
+                     │                                             │
+                     ▼                                             ▼
+       - Ubah Kondisi Return di sistem:             - Ubah Kondisi Return di sistem:
+         `RUSAK_RINGAN` / `RUSAK_BERAT` / `HILANG`    `BAIK`
+       - Isi Catatan Kerusakan (detail item)        - Estimasi Biaya Denda: Rp 0
+       - Input Estimasi Biaya Ganti Rugi/Denda                     │
+                     │                                             │
+                     └──────────────────────┬──────────────────────┘
+                                            ▼
+                                 Klik Button [CHECK-OUT]
+                                            │
+                                            ▼
+                                  Sistem otomatis update:
+                                  - statusPeminjaman ──> 'CHECK_OUT'
+                                  - tglSelesaiRil: Waktu riil check-out
+                                  - totalHargaInvoice = Biaya Sewa + Denda Kerusakan
+                                            │
+                                            ▼
+                                  Arahkan Tamu Ke Kasir
+                                  untuk Pelunasan Tagihan
+
+================================================================================
+6. ALUR PENCATATAN PEMBAYARAN INVOICE
+================================================================================
+Petugas/Kasir mencatat pelunasan tagihan sewa ruangan, sarana, beserta denda (jika ada).
+
+Langkah Operasional:
+1. **Tamu Menuju Kasir**: Tamu menyerahkan Kode Peminjaman setelah proses check-out fisik selesai dilakukan.
+2. **Buka Invoice**: Petugas kasir mencari nomor invoice terkait di menu "Invoice".
+3. **Pemeriksaan Nominal**: Kasir melihat total tagihan yang sudah di-update (Biaya Paket + Denda Kerusakan).
+4. **Proses Pembayaran**:
+   - Jika **Lunas Langsung**: Tamu membayar penuh. Kasir mencatat metode pembayaran (`TUNAI` / `TRANSFER`) beserta nomor referensi transaksi.
+   - Jika **Pembayaran Bertahap (Partial)**: Tamu membayar sebagian (misal: bayar sewa dulu, denda menyusul via transfer). Kasir mencatat nominal bayar di kolom partial.
+5. **Update Status di Sistem**:
+   - Status Pembayaran: `LUNAS` (jika pembayaran lunas) atau `BELUM_LUNAS` / `SEBAGIAN` (jika partial).
+   - Status Invoice: `PAID` atau `PARTIAL`.
+   - Status Peminjaman: Jika Invoice sudah berstatus `PAID`, sistem akan otomatis mengubah status peminjaman dari `CHECK_OUT` menjadi `SELESAI` (Closed).
+6. **Cetak Bukti**: Kasir mencetak kuitansi/tanda bukti pembayaran lunas resmi untuk diberikan kepada tamu.

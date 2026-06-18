@@ -1,0 +1,136 @@
+================================================================================
+KUESIONER PENGUJIAN USABILITAS SISTEM "SIPRASA" DENGAN METODE SUS
+(SYSTEM USABILITY SCALE)
+================================================================================
+
+Kuesioner ini dirancang untuk mengukur tingkat kebergunaan (usability) dari
+aplikasi SIPRASA (Sistem Peminjaman Sarana dan Prasarana) berdasarkan sudut
+pandang pengguna (audience/responden).
+
+--------------------------------------------------------------------------------
+A. PERTANYAAN IDENTITAS / DEMOGRAFI RESPONDEN (INFORMASI PENDUKUNG)
+--------------------------------------------------------------------------------
+Petunjuk: Mohon isi data diri Anda di bawah ini secara singkat dan benar.
+
+1. Nama Lengkap (opsional): [________________________________]
+2. Peran/Jabatan Anda di Organisasi:
+   [ ] Staf Administrasi / Sarpras (Admin)
+   [ ] Anggota / Peminjam (User Umum)
+   [ ] Pimpinan / Verifikator
+   [ ] Lainnya: _________________
+3. Berapa kali Anda melakukan peminjaman sarana/prasarana dalam sebulan?
+   [ ] Jarang (1 - 2 kali)
+   [ ] Cukup sering (3 - 5 kali)
+   [ ] Sangat sering (> 5 kali)
+4. Perangkat apa yang Anda gunakan untuk mengakses sistem SIPRASA ini?
+   [ ] PC / Laptop
+   [ ] Smartphone / HP
+   [ ] Keduanya
+
+--------------------------------------------------------------------------------
+B. PETUNJUK PENGISIAN PERNYATAAN SUS
+--------------------------------------------------------------------------------
+Berikan penilaian Anda terhadap sistem SIPRASA dengan memberikan tanda silang (X)
+atau tanda centang (V) pada salah satu kolom skala pilihan yang tersedia:
+
+Skala Penilaian:
+1 = Sangat Tidak Setuju (STS)
+2 = Tidak Setuju (TS)
+3 = Ragu-Ragu / Netral (N)
+4 = Setuju (S)
+5 = Sangat Setuju (SS)
+
+--------------------------------------------------------------------------------
+C. 10 PERNYATAAN STANDAR SYSTEM USABILITY SCALE (SUS) UNTUK SIPRASA
+--------------------------------------------------------------------------------
+
+Pernyataan Positif (Ganjil): Menunjukkan kemudahan dan kenyamanan penggunaan.
+Pernyataan Negatif (Genap): Menunjukkan kesulitan atau kompleksitas sistem.
+
++----+-----------------------------------------------------+---+---+---+---+---+
+| No | Pernyataan                                          | 1 | 2 | 3 | 4 | 5 |
+|    |                                                     |STS|TS | N | S |SS |
++----+-----------------------------------------------------+---+---+---+---+---+
+| 1  | Saya rasa saya akan sering menggunakan sistem       |   |   |   |   |   |
+|    | SIPRASA ini.                                        |   |   |   |   |   |
++----+-----------------------------------------------------+---+---+---+---+---+
+| 2  | Saya merasa sistem SIPRASA ini terlalu rumit untuk  |   |   |   |   |   |
+|    | digunakan.                                          |   |   |   |   |   |
++----+-----------------------------------------------------+---+---+---+---+---+
+| 3  | Saya merasa sistem SIPRASA ini mudah untuk digunakan|   |   |   |   |   |
++----+-----------------------------------------------------+---+---+---+---+---+
+| 4  | Saya rasa saya membutuhkan bantuan orang lain atau  |   |   |   |   |   |
+|    | tenaga teknis untuk dapat menggunakan sistem ini.   |   |   |   |   |   |
++----+-----------------------------------------------------+---+---+---+---+---+
+| 5  | Saya merasa fitur-fitur dalam sistem SIPRASA ini    |   |   |   |   |   |
+|    | terintegrasi dengan baik.                           |   |   |   |   |   |
++----+-----------------------------------------------------+---+---+---+---+---+
+| 6  | Saya merasa ada banyak ketidakkonsistenan           |   |   |   |   |   |
+|    | (tidak konsisten) pada sistem SIPRASA ini.          |   |   |   |   |   |
++----+-----------------------------------------------------+---+---+---+---+---+
+| 7  | Saya membayangkan bahwa kebanyakan orang akan dapat |   |   |   |   |   |
+|    | mempelajari sistem SIPRASA ini dengan sangat cepat. |   |   |   |   |   |
++----+-----------------------------------------------------+---+---+---+---+---+
+| 8  | Saya merasa sistem SIPRASA ini sangat membingungkan |   |   |   |   |   |
+|    | atau tidak praktis (cumbersome) saat digunakan.     |   |   |   |   |   |
++----+-----------------------------------------------------+---+---+---+---+---+
+| 9  | Saya merasa sangat percaya diri dan yakin saat      |   |   |   |   |   |
+|    | menggunakan sistem SIPRASA ini.                     |   |   |   |   |   |
++----+-----------------------------------------------------+---+---+---+---+---+
+| 10 | Saya harus mempelajari banyak hal terlebih dahulu   |   |   |   |   |   |
+|    | sebelum mulai menggunakan sistem SIPRASA ini.       |   |   |   |   |   |
++----+-----------------------------------------------------+---+---+---+---+---+
+
+--------------------------------------------------------------------------------
+D. PERTANYAAN KUALITATIF / UMPAN BALIK TERBUKA
+--------------------------------------------------------------------------------
+1. Menurut Anda, bagian atau fitur mana dari SIPRASA yang paling memuaskan/mudah
+   digunakan? (Misalnya: Fitur pengecekan stok sarana real-time, form peminjaman)
+   Jawab: ______________________________________________________________________
+
+2. Hambatan atau kendala apa saja yang Anda temukan saat menggunakan sistem
+   SIPRASA ini?
+   Jawab: ______________________________________________________________________
+
+3. Apa saran atau rekomendasi Anda untuk pengembangan sistem SIPRASA selanjutnya?
+   Jawab: ______________________________________________________________________
+
+--------------------------------------------------------------------------------
+E. PANDUAN PERHITUNGAN SKOR SUS (KARTU PETUNJUK PENELITI)
+--------------------------------------------------------------------------------
+Untuk menghitung skor akhir SUS dari setiap responden, gunakan aturan berikut:
+
+1. Untuk Pernyataan GANJIL (1, 3, 5, 7, 9):
+   Skor Pertanyaan = (Skor Responden - 1)
+   *Contoh: Jika responden memilih 5 pada nomor 1, nilainya: 5 - 1 = 4.
+
+2. Untuk Pernyataan GENAP (2, 4, 6, 8, 10):
+   Skor Pertanyaan = (5 - Skor Responden)
+   *Contoh: Jika responden memilih 2 pada nomor 2, nilainya: 5 - 2 = 3.
+
+3. Total Skor Responden Individu:
+   Jumlahkan semua skor pertanyaan (1 s.d. 10) lalu kalikan dengan 2,5.
+   Rumus: Total Skor Individu = (Jumlah Skor Pernyataan 1 s.d. 10) * 2,5
+   Nilai akhir per responden akan berkisar antara 0 s.d. 100.
+
+4. Rata-rata Skor SUS (Average SUS Score):
+   Jumlahkan Total Skor seluruh responden, lalu bagi dengan jumlah responden.
+   Rumus: Rata-rata Skor = (Total Skor Responden 1 + ... + Responden N) / N
+
+5. Interpretasi Skor Akhir SUS (Berdasarkan Bangor et al., 2008 & Sauro, 2011):
+   * Acceptability (Penerimaan):
+     - Skor >= 70 : Acceptable (Dapat Diterima)
+     - Skor 50-69 : Marginal (Marginal-Low/Marginal-High)
+     - Skor < 50  : Not Acceptable (Tidak Dapat Diterima)
+   * Grade Scale (Skala Huruf):
+     - A (Skor >= 80.3)
+     - B (Skor 74 - 80.2)
+     - C (Skor 68 - 73.9)
+     - D (Skor 51 - 67.9)
+     - F (Skor < 51)
+   * Adjective Rating (Penilaian Adjektif):
+     - Best Imaginable (Skor >= 85)
+     - Excellent (Skor 72.5 - 84.9)
+     - Good (Skor 52.6 - 72.4)
+     - OK (Skor 50.9 - 52.5)
+     - Poor / Awful (Skor < 50.9)

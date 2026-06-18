@@ -1,0 +1,81 @@
+================================================================================
+ALUR PROSES PENGGUNAAN SISTEM - ROLE PIMPINAN (DIRECTOR / MANAGER)
+Sistem Informasi Peminjaman Sarana dan Prasarana (SIPRASA)
+================================================================================
+
+Dokumen ini menjelaskan alur operasional (pimpinan flow) khusus untuk pengguna dengan 
+hak akses/role PIMPINAN pada sistem SIPRASA. Berdasarkan kebijakan sistem, Pimpinan 
+berperan sebagai pengawas seluruh operasional. Pimpinan memiliki akses read-only 
+(hanya melihat) ke seluruh modul operasional serta memegang hak penuh dalam 
+mengakses dan mengekspor laporan keuangan/peminjaman.
+
+Pimpinan DIBATASI dan tidak dapat melakukan tindakan manipulasi data (tambah, edit, 
+hapus) pada data master, user, berita, maupun transaksi, kecuali mengakses modul Laporan.
+
+--------------------------------------------------------------------------------
+DAFTAR ALUR PROSES PIMPINAN
+--------------------------------------------------------------------------------
+1. Alur Pemantauan Operasional (Monitoring Dashboard)
+2. Alur Pemeriksaan Detil Data & Transaksi (View-Only Audit)
+3. Alur Analisis & Ekspor Laporan Keuangan (Laporan Keuangan/Peminjaman)
+
+================================================================================
+1. ALUR PEMANTAUAN OPERASIONAL (MONITORING DASHBOARD)
+================================================================================
+Pimpinan memantau kondisi dan statistik penggunaan aset Asrama Haji secara langsung.
+
+Langkah Operasional:
+1. **Login Pimpinan**: Pimpinan masuk ke halaman administrator utama SIPRASA.
+2. **Dashboard Overview**: Sistem menyajikan visualisasi data yang mencakup:
+   - Jumlah peminjaman aktif hari ini.
+   - Total pendapatan sewa bulan ini.
+   - Status hunian/okupansi ruangan saat ini (Kamar/Aula terpakai vs tersedia).
+   - Grafik tren peminjaman sarana prasarana.
+3. **Analisis Cepat**: Memantau grafik untuk pengambilan keputusan manajerial (misal: penambahan sarana proyektor baru jika tren peminjaman tinggi).
+
+================================================================================
+2. ALUR PEMERIKSAAN DETIL DATA & TRANSAKSI (VIEW-ONLY AUDIT)
+================================================================================
+Pimpinan berhak mengaudit seluruh data master dan transaksi sewa yang sedang 
+berlangsung tanpa dapat mengubah isinya.
+
+Langkah Operasional:
+1. **Akses Menu**: Pimpinan membuka menu data master (Ruangan, Sarana, Gedung) atau data operasional (Daftar Tamu, Transaksi Peminjaman, Berita).
+2. **Lihat Detail**: Mengklik tombol "Lihat Detail" atau "Show" untuk melihat isi lengkap data.
+3. **Restriksi**: Jika Pimpinan mencoba mengklik tombol tambah, edit, hapus, atau mengirimkan request POST/PUT/DELETE, sistem akan otomatis menampilkan pesan error `403 Access Denied` (Akses ditolak).
+
+================================================================================
+3. ALUR ANALISIS & EKSPOR LAPORAN (REPORTING)
+================================================================================
+Ini adalah alur utama dari peran Pimpinan untuk menyetujui laporan pertanggungjawaban 
+operasional sarana prasarana.
+
+Diagram Alir:
+   [ Dashboard Pimpinan ] ──> Pilih Menu "Laporan" ──> [ Halaman Filter Laporan ]
+                                                             │
+                                                             ▼
+                                                    Pimpinan menginput:
+                                                    - Rentang Tanggal Mulai
+                                                    - Rentang Tanggal Selesai
+                                                    - Status Transaksi (Opsional)
+                                                             │
+                                                             ▼
+                                                    [ Klik Filter / Cari ]
+                                                             │
+                                                             ▼
+                                                 Sistem Menampilkan Rekap:
+                                                 - Daftar Peminjaman Terkait
+                                                 - Rincian Pendapatan Sewa
+                                                 - Jumlah Sarana yang Terpakai
+                                                             │
+                                                             ▼
+                                                 [ Pilih Metode Ekspor ]
+                                                 (Cetak Langsung / PDF / Excel)
+                                                             │
+                                                             ▼
+                                                Sistem Men-generate Berkas 
+                                                dan Otomatis Mengunduh (Download)
+
+Detail Laporan:
+- Laporan yang dihasilkan mencakup rincian kode peminjaman, nama peminjam/tamu, ruangan yang disewa, tanggal transaksi, total biaya sewa, biaya denda kerusakan, serta status pembayaran akhir.
+- Dokumen ekspor ini digunakan sebagai berkas laporan resmi untuk rapat evaluasi bulanan/tahunan.
