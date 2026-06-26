@@ -27,6 +27,8 @@ class ReservationStatusMail extends Mailable
             $subject .= ' (DISETUJUI)';
         } elseif ($this->statusType === 'REJECTED') {
             $subject .= ' (DITOLAK)';
+        } elseif ($this->statusType === 'PENDING') {
+            $subject .= ' (BERHASIL DIAJUKAN)';
         } else {
             $subject .= ' (DIPERBARUI)';
         }

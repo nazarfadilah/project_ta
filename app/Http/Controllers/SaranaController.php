@@ -23,10 +23,10 @@ class SaranaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama_sarana' => 'required|string|max:255',
-            'jumlah' => 'required|integer|min:0',
-            'kondisi' => 'required|in:BAIK,RUSAK_RINGAN,RUSAK_BERAT,HILANG',
-            'keterangan' => 'nullable|string',
+            'nama' => 'required|string|max:128',
+            'kondisi' => 'required|in:Baik,Baik Sekali,Normal,Perlu Perbaikan',
+            'tgl_penerimaan' => 'required|date',
+            'stok' => 'required|integer|min:0',
         ]);
 
         Sarana::create($validated);
@@ -50,10 +50,10 @@ class SaranaController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'nama_sarana' => 'required|string|max:255',
-            'jumlah' => 'required|integer|min:0',
-            'kondisi' => 'required|in:BAIK,RUSAK_RINGAN,RUSAK_BERAT,HILANG',
-            'keterangan' => 'nullable|string',
+            'nama' => 'required|string|max:128',
+            'kondisi' => 'required|in:Baik,Baik Sekali,Normal,Perlu Perbaikan',
+            'tgl_penerimaan' => 'required|date',
+            'stok' => 'required|integer|min:0',
         ]);
 
         $sarana = Sarana::findOrFail($id);

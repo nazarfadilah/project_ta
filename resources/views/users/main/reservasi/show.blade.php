@@ -15,6 +15,19 @@
             <a href="{{ route('users.main.invoice.index', $reservasi->id) }}" class="btn btn-primary btn-sm text-white" style="background-color: #C9A961; border-color: #C9A961;">
                 <i class="fas fa-file-invoice-dollar me-1"></i> Lihat Invoice
             </a>
+            @if($reservasi->status === 'COMPLETED')
+                @if($reservasi->ruangan && $reservasi->ruangan->id_ruangan)
+                    <a href="{{ route('users.main.reservasi.create', ['ruangan_id' => $reservasi->ruangan->id_ruangan]) }}" class="btn btn-success btn-sm px-3">
+                        <i class="fas fa-redo me-1"></i> Reservasi Lagi
+                    </a>
+                @endif
+            @elseif($reservasi->status === 'BATAL' || $reservasi->status === 'REJECTED')
+                @if($reservasi->ruangan && $reservasi->ruangan->id_ruangan)
+                    <a href="{{ route('users.main.reservasi.create', ['ruangan_id' => $reservasi->ruangan->id_ruangan]) }}" class="btn btn-warning btn-sm text-dark px-3">
+                        <i class="fas fa-sync me-1"></i> Ajukan Ulang
+                    </a>
+                @endif
+            @endif
         </div>
         
         @php
@@ -24,6 +37,7 @@
                 'APPROVED' => 'bg-success text-white',
                 'REJECTED' => 'bg-danger text-white',
                 'COMPLETED' => 'bg-info text-dark',
+                'BATAL' => 'bg-secondary text-white',
                 default => 'bg-warning text-dark'
             };
             $statusLabel = match($status) {
@@ -31,6 +45,7 @@
                 'APPROVED' => 'Disetujui',
                 'REJECTED' => 'Ditolak',
                 'COMPLETED' => 'Selesai',
+                'BATAL' => 'Dibatalkan',
                 default => 'Menunggu Persetujuan'
             };
         @endphp
@@ -52,6 +67,11 @@
         <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center gap-2 mb-4" style="font-size: 14px;">
             <i class="fas fa-times-circle me-1"></i>
             <span>Maaf, reservasi Anda telah ditolak. Silakan hubungi petugas untuk alasan penolakan.</span>
+        </div>
+    @elseif($reservasi->status === 'BATAL')
+        <div class="alert alert-secondary border-0 shadow-sm d-flex align-items-center gap-2 mb-4" style="font-size: 14px;">
+            <i class="fas fa-ban me-1"></i>
+            <span>Reservasi ini telah dibatalkan. Anda dapat mengajukan ulang reservasi untuk ruangan ini jika diperlukan.</span>
         </div>
     @elseif($reservasi->status === 'COMPLETED')
         <div class="alert alert-info border-0 shadow-sm d-flex align-items-center gap-2 mb-4" style="font-size: 14px;">

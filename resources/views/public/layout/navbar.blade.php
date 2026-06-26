@@ -12,7 +12,6 @@
       <div class="nav-links" id="navLinks">
         <a href="{{ url('/') }}" class="nav-link">Beranda</a>
         <a href="{{ url('/#fasilitas') }}" class="nav-link">Fasilitas</a>
-        <a href="{{ url('/#harga') }}" class="nav-link">Harga</a>
         <a href="{{ url('/berita') }}" class="nav-link">Berita</a>
         <a href="{{ url('/#kontak') }}" class="nav-link">Kontak</a>
         <a href="/login" class="btn-booking" target="_blank">

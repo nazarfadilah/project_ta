@@ -24,13 +24,19 @@ class PeminjamanTransaksi extends Model {
     protected static function booted()
     {
         static::created(function ($peminjaman) {
-            if ($peminjaman->statusApproval === 'APPROVED') {
-                $user = $peminjaman->user ?? User::where('guestId', $peminjaman->guestId)->first();
-                if ($user && $user->email) {
+            $user = $peminjaman->user ?? User::where('guestId', $peminjaman->guestId)->first();
+            if ($user && $user->email) {
+                if ($peminjaman->statusApproval === 'APPROVED') {
                     try {
                         Mail::to($user->email)->send(new ReservationStatusMail($peminjaman, 'APPROVED'));
                     } catch (\Exception $e) {
-                        \Log::error('Gagal kirim email status reservasi (created): ' . $e->getMessage());
+                        \Log::error('Gagal kirim email status reservasi (created approved): ' . $e->getMessage());
+                    }
+                } elseif ($peminjaman->statusApproval === 'PENDING') {
+                    try {
+                        Mail::to($user->email)->send(new ReservationStatusMail($peminjaman, 'PENDING'));
+                    } catch (\Exception $e) {
+                        \Log::error('Gagal kirim email status reservasi (created pending): ' . $e->getMessage());
                     }
                 }
             }

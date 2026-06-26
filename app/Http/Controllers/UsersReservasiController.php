@@ -204,7 +204,14 @@ class UsersReservasiController extends Controller
             
             // Map approval statuses: PENDING, APPROVED, REJECTED
             // If statusPeminjaman is SELESAI, map to COMPLETED status
-            $item->status = ($item->statusPeminjaman === 'SELESAI') ? 'COMPLETED' : $item->statusApproval;
+            // If statusPeminjaman is BATAL, map to BATAL status
+            if ($item->statusPeminjaman === 'SELESAI') {
+                $item->status = 'COMPLETED';
+            } elseif ($item->statusPeminjaman === 'BATAL') {
+                $item->status = 'BATAL';
+            } else {
+                $item->status = $item->statusApproval;
+            }
             
             return $item;
         });
@@ -230,7 +237,13 @@ class UsersReservasiController extends Controller
         $reservasi->tanggal_mulai = $peminjaman->tanggal;
         $reservasi->tanggal_selesai = Carbon::parse($peminjaman->jamMulai)->addHours($peminjaman->durasi)->format('Y-m-d');
         $reservasi->estimasi_peserta = $peminjaman->paketRuangan->ruangan->kapasitas ?? 1;
-        $reservasi->status = ($peminjaman->statusPeminjaman === 'SELESAI') ? 'COMPLETED' : $peminjaman->statusApproval;
+        if ($peminjaman->statusPeminjaman === 'SELESAI') {
+            $reservasi->status = 'COMPLETED';
+        } elseif ($peminjaman->statusPeminjaman === 'BATAL') {
+            $reservasi->status = 'BATAL';
+        } else {
+            $reservasi->status = $peminjaman->statusApproval;
+        }
         $reservasi->keperluan = $peminjaman->keterangan;
         $reservasi->kontak_person = $peminjaman->guest->name ?? $user->username;
         $reservasi->no_telepon = $user->phone ?? '-';

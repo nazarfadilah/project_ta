@@ -64,6 +64,10 @@
             background-color: #fff3cd;
             color: #856404;
         }
+        .status-PENDING {
+            background-color: #cce5ff;
+            color: #004085;
+        }
         .details-table {
             width: 100%;
             border-collapse: collapse;
@@ -105,6 +109,8 @@
                         RESERVASI DISETUJUI
                     @elseif ($statusType === 'REJECTED')
                         RESERVASI DITOLAK
+                    @elseif ($statusType === 'PENDING')
+                        RESERVASI BERHASIL DIAJUKAN
                     @else
                         DATA RESERVASI DIPERBARUI
                     @endif
@@ -158,6 +164,8 @@
                 <p>Silakan melakukan pembayaran tagihan Anda jika ada, dan bersiap untuk melakukan <strong>Check-In di lokasi maksimal 1 jam sebelum acara dimulai</strong>.</p>
             @elseif ($statusType === 'REJECTED')
                 <p>Mohon maaf, Anda belum dapat menggunakan fasilitas kami pada jadwal tersebut. Silakan lakukan pengajuan reservasi ulang dengan jadwal atau ruangan alternatif lainnya.</p>
+            @elseif ($statusType === 'PENDING')
+                <p>Reservasi Anda berhasil kami terima dan saat ini sedang menunggu persetujuan dari pihak administrator. Kami akan mengirimkan email notifikasi lain setelah status reservasi Anda diperbarui.</p>
             @else
                 <p>Perubahan rincian reservasi Anda telah berhasil disimpan oleh administrator. Harap perhatikan jadwal terupdate di atas.</p>
             @endif

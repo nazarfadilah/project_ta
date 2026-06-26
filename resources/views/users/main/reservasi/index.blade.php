@@ -65,6 +65,7 @@
                                         'APPROVED' => 'bg-success text-white',
                                         'REJECTED' => 'bg-danger text-white',
                                         'COMPLETED' => 'bg-info text-dark',
+                                        'BATAL' => 'bg-secondary text-white',
                                         default => 'bg-warning text-dark'
                                     };
                                     $statusLabel = match($status) {
@@ -72,15 +73,31 @@
                                         'APPROVED' => 'Disetujui',
                                         'REJECTED' => 'Ditolak',
                                         'COMPLETED' => 'Selesai',
+                                        'BATAL' => 'Dibatalkan',
                                         default => 'Menunggu'
                                     };
                                 @endphp
                                 <span class="badge {{ $badgeColor }} px-2 py-1">{{ $statusLabel }}</span>
                             </td>
                             <td style="text-align: center;">
-                                <a href="{{ route('users.main.reservasi.show', $reservasi->id) }}" class="btn btn-sm btn-info text-white px-3" style="font-size: 13px;">
-                                    <i class="fas fa-eye me-1"></i> Detail
-                                </a>
+                                <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
+                                    <a href="{{ route('users.main.reservasi.show', $reservasi->id) }}" class="btn btn-sm btn-info text-white px-3" style="font-size: 13px;">
+                                        <i class="fas fa-eye me-1"></i> Detail
+                                    </a>
+                                    @if($reservasi->status === 'COMPLETED')
+                                        @if($reservasi->ruangan && $reservasi->ruangan->id_ruangan)
+                                            <a href="{{ route('users.main.reservasi.create', ['ruangan_id' => $reservasi->ruangan->id_ruangan]) }}" class="btn btn-sm btn-success px-3" style="font-size: 13px;">
+                                                <i class="fas fa-redo me-1"></i> Reservasi Lagi
+                                            </a>
+                                        @endif
+                                    @elseif($reservasi->status === 'BATAL' || $reservasi->status === 'REJECTED')
+                                        @if($reservasi->ruangan && $reservasi->ruangan->id_ruangan)
+                                            <a href="{{ route('users.main.reservasi.create', ['ruangan_id' => $reservasi->ruangan->id_ruangan]) }}" class="btn btn-sm btn-warning text-dark px-3" style="font-size: 13px;">
+                                                <i class="fas fa-sync me-1"></i> Ajukan Ulang
+                                            </a>
+                                        @endif
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                         @endforeach

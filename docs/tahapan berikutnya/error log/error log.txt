@@ -45,3 +45,13 @@ Next step
 harus bisa kirim email ketika reservasi disetujui, ditolak, dan diupdate
 Akan kirim email otomatis 24-48 jam sebelum peminjaman harus check-in untuk peminjaman yang di approved
 harus bisa kirim kode ke email untuk permintaan reset password, dan ketika di reset password otomatis kembali ke settingan default yaitu password dan bisa diganti di halaman profil users
+
+
+next step menyesuaikan frontend dan ui/ux
+sesuaikan fontnya di landing page untuk mode gelap dan mode terang, jika mode terang font putih warna hitam, jika mode gelap font hitam jadi warna putih
+hapus card yg bagian perminggu/Paket Layanan
+Harga Transparan,
+Tanpa Biaya Tersembunyi
+Pilih paket yang sesuai kebutuhan Anda. Semua harga sudah termasuk pajak dan fasilitas dasar.
+
+bagian login yg menjadi nama aplikasi latar belakangnya diganti menjadi warna emas
