@@ -79,7 +79,7 @@
 
                     <div class="col-md-6 mb-3">
                         <label for="phone" class="form-label" style="font-size: 13px; font-weight: 600; color: #555;">Nomor Telepon</label>
-                        <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', $guest->phone) }}" {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;" placeholder="Contoh: 08123456789" maxlength="15" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', $guest->phone ?? ($guest->user->phone ?? '')) }}" {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;" placeholder="Contoh: 08123456789" maxlength="15" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
 
                     <div class="col-md-6 mb-3">

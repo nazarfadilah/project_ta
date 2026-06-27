@@ -1,6 +1,6 @@
 @extends('main.layout.app')
 
-@section('title', 'Daftar Peminjaman/Reservasi')
+@section('title', $pageTitle ?? 'Daftar Peminjaman/Reservasi')
 
 @section('content')
 <div class="container-fluid" style="padding-left: 40px; padding-right: 40px; margin-top: 20px;">
@@ -25,7 +25,7 @@
     <div class="card border-0 shadow-sm rounded-3">
         <div class="card-header d-flex align-items-center justify-content-between" style="background-color: #C9A961; color: #fff; border-radius: 8px 8px 0 0; padding: 14px 20px;">
             <h6 class="mb-0 fw-semibold" style="font-size: 15px;">
-                <i class="fas fa-book me-2"></i>Daftar Peminjaman/Reservasi
+                <i class="fas fa-book me-2"></i>{{ $pageTitle ?? 'Daftar Peminjaman/Reservasi' }}
             </h6>
             @if(Auth::user()->roleId != 2)
             <a href="{{ route('main.transaksi.peminjaman.create') }}" class="btn btn-sm btn-light" style="font-size: 13px; padding: 6px 12px;">
@@ -43,7 +43,7 @@
                             <th>Nama Tamu/Peminjam</th>
                             <th>Ruangan</th>
                             <th>Tanggal</th>
-                            <th style="width: 150px; text-align: center;">Status Approval</th>
+                            <th style="width: 150px; text-align: center;">Status</th>
                             <th style="width: 100px; text-align: center;">Aksi</th>
                         </tr>
                     </thead>
@@ -56,13 +56,38 @@
                             <td>{{ $item->paketRuangan->ruangan->nama_ruangan ?? 'N/A' }}</td>
                             <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
                             <td style="text-align: center;">
-                                @if($item->statusApproval === 'PENDING')
-                                    <span class="badge bg-warning text-dark px-3 py-2" style="font-size: 12px; font-weight: 600;">PENDING</span>
-                                @elseif($item->statusApproval === 'APPROVED')
-                                    <span class="badge bg-success px-3 py-2" style="font-size: 12px; font-weight: 600;">APPROVED</span>
-                                @else
-                                    <span class="badge bg-danger px-3 py-2" style="font-size: 12px; font-weight: 600;">REJECTED</span>
-                                @endif
+                                @php
+                                    $statusPjm = $item->statusPeminjaman;
+                                    $statusApp = $item->statusApproval;
+                                    
+                                    if ($statusPjm === 'SELESAI') {
+                                        $badgeColor = 'bg-success text-white';
+                                        $statusLabel = 'Selesai';
+                                    } elseif ($statusPjm === 'BATAL') {
+                                        $badgeColor = 'bg-secondary text-white';
+                                        $statusLabel = 'Dibatalkan';
+                                    } elseif ($statusPjm === 'CHECK_IN') {
+                                        $badgeColor = 'bg-primary text-white';
+                                        $statusLabel = 'Sudah Check-In';
+                                    } elseif ($statusPjm === 'CHECK_OUT') {
+                                        $badgeColor = 'bg-success text-white';
+                                        $statusLabel = 'Sudah Check-Out';
+                                    } else {
+                                        $badgeColor = match($statusApp) {
+                                            'PENDING' => 'bg-warning text-dark',
+                                            'APPROVED' => 'bg-success text-white',
+                                            'REJECTED' => 'bg-danger text-white',
+                                            default => 'bg-secondary text-white'
+                                        };
+                                        $statusLabel = match($statusApp) {
+                                            'PENDING' => 'Menunggu Persetujuan',
+                                            'APPROVED' => 'Disetujui',
+                                            'REJECTED' => 'Ditolak',
+                                            default => 'Menunggu Persetujuan'
+                                        };
+                                    }
+                                @endphp
+                                <span class="badge {{ $badgeColor }} px-3 py-2" style="font-size: 12px; font-weight: 600;">{{ $statusLabel }}</span>
                             </td>
                             <td style="text-align: center;">
                                 <a href="{{ route('main.transaksi.peminjaman.show', $item->id) }}" 

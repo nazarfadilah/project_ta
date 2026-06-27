@@ -54,11 +54,35 @@ class DashboardController extends Controller
                 ->get();
         }
 
+        $isAdminOrPimpinan = $user ? in_array($user->roleId, [1, 2]) : true;
+
+        $calendarBookings = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan.gedung')
+            ->whereIn('statusApproval', ['PENDING', 'APPROVED'])
+            ->get()
+            ->map(function ($booking) use ($isAdminOrPimpinan) {
+                return [
+                    'id' => $booking->id,
+                    'tanggal' => $booking->tanggal ? $booking->tanggal->format('Y-m-d') : null,
+                    'status' => $booking->statusApproval,
+                    'status_peminjaman' => $booking->statusPeminjaman,
+                    'guest_name' => $isAdminOrPimpinan ? null : ($booking->guest->name ?? 'Tamu'),
+                    'ruangan' => $isAdminOrPimpinan ? null : ($booking->paketRuangan->ruangan->nama_ruangan ?? 'Ruangan'),
+                    'gedung' => $isAdminOrPimpinan ? null : ($booking->paketRuangan->ruangan->gedung->nama_gedung ?? 'Gedung'),
+                    'jam_mulai' => $isAdminOrPimpinan ? null : ($booking->jamMulai ? $booking->jamMulai->format('H:i') : null),
+                    'durasi' => $isAdminOrPimpinan ? null : ($booking->durasi . ' Jam'),
+                ];
+            })
+            ->filter(function ($booking) {
+                return !empty($booking['tanggal']);
+            })
+            ->values();
+
         return view('main.index', array_merge($stats, [
             'pendingBookings' => $pendingBookings,
             'brokenSaranas' => $brokenSaranas,
             'draftBeritas' => $draftBeritas,
             'todayCheckins' => $todayCheckins,
+            'calendarBookings' => $calendarBookings,
         ]));
     }
 

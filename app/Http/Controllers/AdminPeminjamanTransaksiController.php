@@ -13,15 +13,37 @@ use Carbon\Carbon;
 class AdminPeminjamanTransaksiController extends Controller
 {
     /**
-     * Display a listing of peminjaman/reservasi
+     * Display a listing of peminjaman/reservasi (Diajukan & Disetujui)
      */
     public function index()
     {
         $peminjaman = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan.gedung', 'user')
+            ->whereIn('statusApproval', ['PENDING', 'APPROVED'])
+            ->whereIn('statusPeminjaman', ['RESERVASI', 'CHECK_IN'])
             ->orderBy('createdAt', 'DESC')
             ->get();
 
-        return view('main.transaksi.peminjaman.index', compact('peminjaman'));
+        $pageTitle = 'Peminjaman Aktif (Diajukan & Disetujui)';
+
+        return view('main.transaksi.peminjaman.index', compact('peminjaman', 'pageTitle'));
+    }
+
+    /**
+     * Display a listing of completed and cancelled peminjaman/reservasi (Selesai & Batal)
+     */
+    public function history()
+    {
+        $peminjaman = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan.gedung', 'user')
+            ->where(function ($query) {
+                $query->whereIn('statusPeminjaman', ['SELESAI', 'BATAL'])
+                      ->orWhere('statusApproval', 'REJECTED');
+            })
+            ->orderBy('createdAt', 'DESC')
+            ->get();
+
+        $pageTitle = 'Riwayat Peminjaman (Selesai & Batal)';
+
+        return view('main.transaksi.peminjaman.index', compact('peminjaman', 'pageTitle'));
     }
 
     /**
@@ -30,7 +52,7 @@ class AdminPeminjamanTransaksiController extends Controller
     public function show($id)
     {
         $peminjaman = PeminjamanTransaksi::findOrFail($id);
-        $peminjaman->load('guest', 'paketRuangan.ruangan.gedung', 'user', 'invoice', 'detailSaranas.sarana');
+        $peminjaman->load('guest.user', 'paketRuangan.ruangan.gedung', 'user', 'invoice', 'detailSaranas.sarana');
 
         // Check if invoice exists
         $invoice = Invoice::where('peminjamanId', $id)->first();

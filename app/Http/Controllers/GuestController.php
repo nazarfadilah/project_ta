@@ -9,7 +9,7 @@ class GuestController extends Controller
 {
     public function index()
     {
-        $guests = Guest::all();
+        $guests = Guest::with('user')->get();
         return view('main.tamu.index', compact('guests'));
     }
 
@@ -39,14 +39,14 @@ class GuestController extends Controller
 
     public function show($id)
     {
-        $guest = Guest::withCount('peminjamanTransaksis')->findOrFail($id);
+        $guest = Guest::with('user')->withCount('peminjamanTransaksis')->findOrFail($id);
         $isDetail = true;
         return view('main.tamu.form', compact('guest', 'isDetail'));
     }
 
     public function edit($id)
     {
-        $guest = Guest::withCount('peminjamanTransaksis')->findOrFail($id);
+        $guest = Guest::with('user')->withCount('peminjamanTransaksis')->findOrFail($id);
         $isDetail = false;
         return view('main.tamu.form', compact('guest', 'isDetail'));
     }

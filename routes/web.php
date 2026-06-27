@@ -188,6 +188,7 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->group(function () {
         Route::post('/', [AdminPeminjamanTransaksiController::class, 'store'])->name('store');
         Route::get('/guest/check/{nik}', [AdminPeminjamanTransaksiController::class, 'checkGuest'])->name('guest.check');
         Route::get('/ruangan/{id}/details', [AdminPeminjamanTransaksiController::class, 'getRuanganDetails'])->name('ruangan.details');
+        Route::get('/history', [AdminPeminjamanTransaksiController::class, 'history'])->name('history');
         Route::get('/{id}', [AdminPeminjamanTransaksiController::class, 'show'])->name('show');
         Route::post('/{id}/approve', [AdminPeminjamanTransaksiController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [AdminPeminjamanTransaksiController::class, 'reject'])->name('reject');

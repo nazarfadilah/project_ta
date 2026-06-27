@@ -53,7 +53,7 @@
                             <td>{{ $guest->nik }}</td>
                             <td>{{ $guest->name }}</td>
                             <td>{{ $guest->gender == 'MALE' ? 'Laki-laki' : 'Perempuan' }}</td>
-                            <td>{{ $guest->phone ?? '-' }}</td>
+                            <td>{{ $guest->phone ?? ($guest->user->phone ?? '-') }}</td>
                             <td style="text-align: center;">
                                 <a href="{{ route('main.tamu.show', $guest->id) }}" 
                                    class="btn btn-sm btn-info" 

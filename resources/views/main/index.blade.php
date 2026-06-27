@@ -4,6 +4,82 @@
 
 @section('content')
 <div class="container-fluid" style="padding-left: 60px; padding-right: 60px; margin-top: 30px;">
+    <!-- Header Dashboard dengan Toggle Kalender -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="fw-bold mb-0 text-dark" style="font-family: 'Outfit', sans-serif;">Ringkasan Data</h4>
+        </div>
+        <div>
+            <button class="btn d-flex align-items-center gap-2 shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#calendarCollapse" aria-expanded="false" aria-controls="calendarCollapse" id="btnToggleCalendar" style="background: linear-gradient(135deg, #C9A961 0%, #B89750 100%); border: none; color: #fff; font-weight: 600; font-size: 14px; border-radius: 8px; padding: 8px 16px; transition: all 0.3s;">
+                <i class="fas fa-calendar-alt"></i>
+                <span id="calendarToggleText">Buka Kalender</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Collapsible Calendar Container -->
+    <div class="collapse" id="calendarCollapse">
+        <div class="card border-0 shadow-sm rounded-3 mb-4" style="background: #fff; border: 1px solid #eef2f5 !important; overflow: hidden;">
+            <div class="card-body p-0">
+                <div class="row g-0">
+                    <!-- Kolom Kiri: Kalender -->
+                    <div class="col-xl-7 col-lg-7 col-md-12 p-4 border-end border-light">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold mb-0 text-dark" id="calendarMonthYear" style="font-family: 'Outfit', sans-serif; font-size: 18px;"></h5>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center" id="prevMonthBtn" style="width: 34px; height: 34px; border: 1px solid #dee2e6;">
+                                    <i class="fas fa-chevron-left text-secondary" style="font-size: 12px;"></i>
+                                </button>
+                                <button class="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center" id="nextMonthBtn" style="width: 34px; height: 34px; border: 1px solid #dee2e6;">
+                                    <i class="fas fa-chevron-right text-secondary" style="font-size: 12px;"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Weekdays Grid -->
+                        <div class="calendar-weekdays-grid mb-2">
+                            <div>Min</div>
+                            <div>Sen</div>
+                            <div>Sel</div>
+                            <div>Rab</div>
+                            <div>Kam</div>
+                            <div>Jum</div>
+                            <div>Sab</div>
+                        </div>
+
+                        <!-- Days Grid -->
+                        <div class="calendar-days-grid" id="calendarDaysContainer">
+                            <!-- Days will be loaded here dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Kolom Kanan: Detail Reservasi pada Tanggal Terpilih -->
+                    <div class="col-xl-5 col-lg-5 col-md-12 p-4 bg-light-subtle d-flex flex-column" style="min-height: 350px;">
+                        <h6 class="fw-bold text-dark border-bottom pb-2 mb-3" style="font-family: 'Outfit', sans-serif; font-size: 15px;">
+                            <i class="fas fa-info-circle text-primary me-2"></i>Detail Reservasi: <span id="selectedDateLabel" class="text-secondary fw-semibold">Pilih Tanggal</span>
+                        </h6>
+                        <div class="flex-grow-1 overflow-auto" id="selectedDateReservations" style="max-height: 280px;">
+                            <div class="text-center text-muted py-5">
+                                <i class="far fa-calendar-check fa-3x mb-3" style="color: #ddd;"></i>
+                                <p class="mb-0" style="font-size: 13px;">Pilih tanggal dengan indikator peminjaman untuk melihat rincian.</p>
+                            </div>
+                        </div>
+                        <!-- Petunjuk Indikator -->
+                        <div class="mt-3 pt-3 border-top" style="font-size: 12px;">
+                            <span class="fw-semibold text-dark me-2">Petunjuk Indikator:</span>
+                            <span class="d-inline-flex align-items-center me-3">
+                                <span class="indicator-dot pending me-1"></span> Diajukan (Pending)
+                            </span>
+                            <span class="d-inline-flex align-items-center">
+                                <span class="indicator-dot approved me-1"></span> Disetujui (Approved)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row mb-2">
         <!-- Card Pengguna -->
         @if(in_array(Auth::user()->roleId, [1, 2]))
@@ -598,6 +674,351 @@
             ]
         });
         @endif
+    });
+</script>
+@endpush
+
+@push('styles')
+<style>
+    .calendar-weekdays-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+        font-weight: 700;
+        color: #718096;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .calendar-days-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+    }
+    .calendar-day-cell {
+        aspect-ratio: 1.1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 4px;
+        border-radius: 8px;
+        cursor: pointer;
+        position: relative;
+        font-size: 14px;
+        font-weight: 600;
+        color: #2d3748;
+        transition: all 0.2s ease-in-out;
+        border: 1px solid transparent;
+        background-color: #f8fafc;
+    }
+    .calendar-day-cell:hover {
+        background-color: #edf2f7;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .calendar-day-cell.other-month {
+        color: #a0aec0;
+        background-color: #fafbfc;
+        opacity: 0.5;
+    }
+    .calendar-day-cell.today {
+        background-color: #ebf8ff;
+        border-color: #3182ce;
+        color: #2b6cb0;
+        box-shadow: inset 0 0 0 1px #3182ce;
+    }
+    .calendar-day-cell.selected {
+        background-color: #e2e8f0;
+        border-color: #4a5568;
+    }
+    .calendar-day-cell .day-number {
+        line-height: 1;
+    }
+    .calendar-day-cell .indicators {
+        display: flex;
+        justify-content: center;
+        gap: 3px;
+        width: 100%;
+        height: 6px;
+    }
+    .indicator-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .indicator-dot.pending {
+        background-color: #ecc94b; /* Yellow/Gold */
+        box-shadow: 0 0 2px rgba(236,201,75,0.8);
+    }
+    .indicator-dot.approved {
+        background-color: #48bb78; /* Green */
+        box-shadow: 0 0 2px rgba(72,187,120,0.8);
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bookings = @json($calendarBookings ?? []);
+        const userRoleId = {{ Auth::user()->roleId }};
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth(); // 0-indexed
+
+        const monthNames = [
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ];
+
+        // Element Selectors
+        const calendarMonthYear = document.getElementById('calendarMonthYear');
+        const calendarDaysContainer = document.getElementById('calendarDaysContainer');
+        const prevMonthBtn = document.getElementById('prevMonthBtn');
+        const nextMonthBtn = document.getElementById('nextMonthBtn');
+        const selectedDateLabel = document.getElementById('selectedDateLabel');
+        const selectedDateReservations = document.getElementById('selectedDateReservations');
+        const btnToggleCalendar = document.getElementById('btnToggleCalendar');
+        const calendarToggleText = document.getElementById('calendarToggleText');
+
+        // Toggle Button Text changes
+        const calendarCollapse = document.getElementById('calendarCollapse');
+        if (calendarCollapse) {
+            calendarCollapse.addEventListener('show.bs.collapse', function () {
+                if (calendarToggleText) calendarToggleText.textContent = 'Tutup Kalender';
+                if (btnToggleCalendar) btnToggleCalendar.style.background = 'linear-gradient(135deg, #6c757d 0%, #5a6268 100%)';
+            });
+            calendarCollapse.addEventListener('hide.bs.collapse', function () {
+                if (calendarToggleText) calendarToggleText.textContent = 'Buka Kalender';
+                if (btnToggleCalendar) btnToggleCalendar.style.background = 'linear-gradient(135deg, #C9A961 0%, #B89750 100%)';
+            });
+        }
+
+        // Initialize Calendar
+        renderCalendar(currentYear, currentMonth);
+
+        // Prev Month click
+        if (prevMonthBtn) {
+            prevMonthBtn.addEventListener('click', function() {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                renderCalendar(currentYear, currentMonth);
+            });
+        }
+
+        // Next Month click
+        if (nextMonthBtn) {
+            nextMonthBtn.addEventListener('click', function() {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderCalendar(currentYear, currentMonth);
+            });
+        }
+
+        function renderCalendar(year, month) {
+            // Set Header Text
+            if (calendarMonthYear) {
+                calendarMonthYear.textContent = `${monthNames[month]} ${year}`;
+            }
+            
+            // Clear Container
+            if (calendarDaysContainer) {
+                calendarDaysContainer.innerHTML = '';
+            }
+
+            // First day of the month (0 = Sunday, 1 = Monday, etc.)
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            // Total days in current month
+            const totalDays = new Date(year, month + 1, 0).getDate();
+            // Total days in previous month
+            const prevTotalDays = new Date(year, month, 0).getDate();
+
+            // Render Previous Month's trailing days
+            for (let i = firstDayIndex - 1; i >= 0; i--) {
+                const day = prevTotalDays - i;
+                const prevMonthNum = month === 0 ? 11 : month - 1;
+                const prevYearNum = month === 0 ? year - 1 : year;
+                const dateKey = formatDateKey(prevYearNum, prevMonthNum, day);
+                createDayCell(day, true, dateKey);
+            }
+
+            // Render Current Month's days
+            const today = new Date();
+            for (let day = 1; day <= totalDays; day++) {
+                const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
+                const dateKey = formatDateKey(year, month, day);
+                createDayCell(day, false, dateKey, isToday);
+            }
+
+            // Render Next Month's leading days to fill grid (usually 42 cells total)
+            const totalCellsRendered = firstDayIndex + totalDays;
+            const remainingCells = 42 - totalCellsRendered;
+            for (let day = 1; day <= remainingCells; day++) {
+                const nextMonthNum = month === 11 ? 0 : month + 1;
+                const nextYearNum = month === 11 ? year + 1 : year;
+                const dateKey = formatDateKey(nextYearNum, nextMonthNum, day);
+                createDayCell(day, true, dateKey);
+            }
+        }
+
+        function formatDateKey(year, month, day) {
+            const m = String(month + 1).padStart(2, '0');
+            const d = String(day).padStart(2, '0');
+            return `${year}-${m}-${d}`;
+        }
+
+        function createDayCell(day, isOtherMonth, dateKey, isToday = false) {
+            if (!calendarDaysContainer) return;
+            const cell = document.createElement('div');
+            cell.className = 'calendar-day-cell';
+            if (isOtherMonth) cell.classList.add('other-month');
+            if (isToday) cell.classList.add('today');
+            cell.dataset.date = dateKey;
+
+            // Day number element
+            const numSpan = document.createElement('span');
+            numSpan.className = 'day-number';
+            numSpan.textContent = day;
+            cell.appendChild(numSpan);
+
+            // Indicators container
+            const indicatorsDiv = document.createElement('div');
+            indicatorsDiv.className = 'indicators';
+
+            // Filter bookings for this day
+            const dayBookings = bookings.filter(b => b.tanggal === dateKey);
+            const hasPending = dayBookings.some(b => b.status === 'PENDING');
+            const hasApproved = dayBookings.some(b => b.status === 'APPROVED');
+
+            if (hasPending) {
+                const pendingDot = document.createElement('span');
+                pendingDot.className = 'indicator-dot pending';
+                indicatorsDiv.appendChild(pendingDot);
+            }
+            if (hasApproved) {
+                const approvedDot = document.createElement('span');
+                approvedDot.className = 'indicator-dot approved';
+                indicatorsDiv.appendChild(approvedDot);
+            }
+
+            cell.appendChild(indicatorsDiv);
+
+            // Click Handler
+            cell.addEventListener('click', function() {
+                // Remove selected class from all cells
+                document.querySelectorAll('.calendar-day-cell').forEach(c => c.classList.remove('selected'));
+                cell.classList.add('selected');
+
+                showDateDetails(dateKey, dayBookings);
+            });
+
+            calendarDaysContainer.appendChild(cell);
+        }
+
+        function showDateDetails(dateKey, dayBookings) {
+            if (!selectedDateLabel || !selectedDateReservations) return;
+            
+            // Format readable date
+            const dateObj = new Date(dateKey);
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const formattedDate = dateObj.toLocaleDateString('id-ID', options);
+            selectedDateLabel.textContent = formattedDate;
+
+            if (dayBookings.length === 0) {
+                selectedDateReservations.innerHTML = `
+                    <div class="text-center text-muted py-5">
+                        <i class="far fa-calendar fa-3x mb-3" style="color: #ddd;"></i>
+                        <p class="mb-0" style="font-size: 13px;">Tidak ada reservasi pada tanggal ini.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            if (userRoleId === 1 || userRoleId === 2) {
+                // Admin or Pimpinan: only show status, not specific guest/room details
+                const hasPending = dayBookings.some(b => b.status === 'PENDING');
+                const hasApproved = dayBookings.some(b => b.status === 'APPROVED');
+
+                let html = '<div class="d-flex flex-column gap-3">';
+                
+                if (hasPending) {
+                    html += `
+                        <div class="card border-0 shadow-sm p-3 position-relative" style="background: #fff; border-left: 4px solid #ecc94b !important;">
+                            <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3" style="font-size: 10px; font-weight: 700;">Menunggu</span>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 13.5px;">Status Reservasi</h6>
+                            <p class="text-secondary mb-0" style="font-size: 12px;">Terdapat reservasi masuk yang diajukan pada tanggal ini.</p>
+                        </div>
+                    `;
+                }
+
+                if (hasApproved) {
+                    html += `
+                        <div class="card border-0 shadow-sm p-3 position-relative" style="background: #fff; border-left: 4px solid #48bb78 !important;">
+                            <span class="badge bg-success position-absolute top-0 end-0 m-3" style="font-size: 10px; font-weight: 700;">Disetujui</span>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 13.5px;">Status Peminjaman</h6>
+                            <p class="text-secondary mb-0" style="font-size: 12px;">Terdapat peminjaman disetujui pada tanggal ini.</p>
+                        </div>
+                    `;
+                }
+
+                html += '</div>';
+                selectedDateReservations.innerHTML = html;
+                return;
+            }
+
+            // Render list of bookings (for Petugas/Role 3)
+            let html = '<div class="d-flex flex-column gap-3">';
+            dayBookings.forEach(b => {
+                const isApproved = b.status === 'APPROVED';
+                
+                let badgeColor = '';
+                let statusLabel = '';
+                
+                if (b.status_peminjaman === 'SELESAI') {
+                    badgeColor = 'bg-success';
+                    statusLabel = 'Selesai';
+                } else if (b.status_peminjaman === 'BATAL') {
+                    badgeColor = 'bg-secondary';
+                    statusLabel = 'Dibatalkan';
+                } else if (b.status_peminjaman === 'CHECK_IN') {
+                    badgeColor = 'bg-primary';
+                    statusLabel = 'Sudah Check-In';
+                } else if (b.status_peminjaman === 'CHECK_OUT') {
+                    badgeColor = 'bg-success';
+                    statusLabel = 'Sudah Check-Out';
+                } else {
+                    badgeColor = isApproved ? 'bg-success' : 'bg-warning text-dark';
+                    statusLabel = isApproved ? 'Disetujui' : 'Menunggu';
+                }
+                const detailUrl = "{{ route('main.transaksi.peminjaman.show', ':id') }}".replace(':id', b.id);
+                
+                html += `
+                    <div class="card border-0 shadow-sm p-3 position-relative" style="background: #fff; border-left: 4px solid ${isApproved ? '#48bb78' : '#ecc94b'} !important;">
+                        <span class="badge ${badgeColor} position-absolute top-0 end-0 m-3" style="font-size: 10px; font-weight: 700;">${statusLabel}</span>
+                        <h6 class="fw-bold mb-1 text-dark" style="font-size: 13.5px; padding-right: 60px;">${b.guest_name}</h6>
+                        <div class="text-secondary" style="font-size: 12px; line-height: 1.5;">
+                            <div class="mb-1"><i class="fas fa-door-open me-1" style="width: 14px;"></i>${b.ruangan}</div>
+                            <div class="mb-1"><i class="fas fa-building me-1" style="width: 14px;"></i>${b.gedung}</div>
+                            <div class="mb-2"><i class="far fa-clock me-1" style="width: 14px;"></i>${b.jam_mulai} WIB (${b.durasi})</div>
+                        </div>
+                        <div class="d-flex justify-content-end border-top pt-2 mt-2">
+                            <a href="${detailUrl}" class="btn btn-outline-primary d-flex align-items-center gap-1" style="font-size: 11px; padding: 4px 10px; font-weight: 600; border-radius: 6px;">
+                                <i class="fas fa-eye"></i> Detail Peminjaman
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            selectedDateReservations.innerHTML = html;
+        }
     });
 </script>
 @endpush

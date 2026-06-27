@@ -77,19 +77,17 @@
                 <div class="collapse {{ request()->routeIs('main.transaksi.peminjaman.*') || request()->routeIs('main.peminjaman_sarana.*') ? 'show' : '' }}" id="transaksiPeminjamanMenu">
                     <ul class="nav flex-column ps-4">
                         <li class="nav-item">
-                            <a href="{{ route('main.transaksi.peminjaman.index') }}" class="nav-link {{ request()->routeIs('main.transaksi.peminjaman.*') ? 'active' : '' }}" title="Peminjaman Ruangan">
+                            <a href="{{ route('main.transaksi.peminjaman.index') }}" class="nav-link {{ request()->routeIs('main.transaksi.peminjaman.index') ? 'active' : '' }}" title="Diajukan & Disetujui">
                                 <i class="fas fa-door-open menu-icon"></i>
-                                <span class="menu-text">Peminjaman Ruangan</span>
+                                <span class="menu-text">Diajukan & Disetujui</span>
                             </a>
                         </li>
-                        {{-- 
                         <li class="nav-item">
-                            <a href="{{ route('main.peminjaman_sarana.index') }}" class="nav-link {{ request()->routeIs('main.peminjaman_sarana.*') ? 'active' : '' }}" title="Peminjaman Sarana">
-                                <i class="fas fa-tools menu-icon"></i>
-                                <span class="menu-text">Peminjaman Sarana</span>
+                            <a href="{{ route('main.transaksi.peminjaman.history') }}" class="nav-link {{ request()->routeIs('main.transaksi.peminjaman.history') ? 'active' : '' }}" title="Selesai & Batal">
+                                <i class="fas fa-history menu-icon"></i>
+                                <span class="menu-text">Selesai & Batal</span>
                             </a>
                         </li>
-                        --}}
                     </ul>
                 </div>
             </li>

@@ -26,7 +26,7 @@
         }
         .login-left {
             width: 40%;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            background: linear-gradient(135deg, #C9A961 0%, #ab8b46 100%);
             color: white;
             display: flex;
             flex-direction: column;
@@ -50,6 +50,7 @@
             border-radius: 8px;
             margin-bottom: 50px;
             text-align: center;
+            background-color: #000000;
         }
         .logo-box h2 {
             font-size: 36px;
