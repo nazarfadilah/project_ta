@@ -13,6 +13,7 @@ use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
+use App\Mail\RegisterVerificationMail;
 use Carbon\Carbon;
 
 class AuthController extends Controller
@@ -106,23 +107,114 @@ class AuthController extends Controller
             'phone.digits_between' => 'Nomor telepon harus terdiri dari 12 sampai 15 digit.',
         ]);
 
+        $code = rand(100000, 999999);
+
+        // Save data and verification status in user session
+        session([
+            'register_data' => [
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'phone' => $request->phone,
+            ],
+            'register_code' => $code,
+            'register_expires' => Carbon::now()->addMinutes(10),
+        ]);
+
+        // Send OTP email
+        try {
+            Mail::to($request->email)->send(new RegisterVerificationMail($code));
+        } catch (\Exception $e) {
+            session()->forget(['register_data', 'register_code', 'register_expires']);
+            return back()->withErrors(['email' => 'Gagal mengirim email verifikasi: ' . $e->getMessage()])->withInput();
+        }
+
+        return redirect()->route('register.verify')->with('success', 'Kode verifikasi pendaftaran telah dikirim ke email Anda.');
+    }
+
+    public function showVerifyRegister()
+    {
+        if (!session()->has('register_data')) {
+            return redirect()->route('register')->withErrors(['error' => 'Sesi registrasi Anda telah berakhir atau belum dimulai. Silakan daftar kembali.']);
+        }
+        $whatsapp = Tentang::where('key', 'whatsapp')->first()?->value;
+        return view('auth.verify_register', ['whatsapp' => $whatsapp]);
+    }
+
+    public function verifyRegister(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|numeric',
+        ], [
+            'code.required' => 'Kode verifikasi harus diisi.',
+            'code.numeric' => 'Kode verifikasi harus berupa angka.',
+        ]);
+
+        if (!session()->has('register_data') || !session()->has('register_code') || !session()->has('register_expires')) {
+            return redirect()->route('register')->withErrors(['error' => 'Sesi registrasi Anda telah berakhir. Silakan daftar kembali.']);
+        }
+
+        $expires = Carbon::parse(session('register_expires'));
+        if (Carbon::now()->gt($expires)) {
+            return back()->withErrors(['code' => 'Kode verifikasi telah kedaluwarsa. Silakan kirim ulang kode.']);
+        }
+
+        if (session('register_code') != $request->code) {
+            return back()->withErrors(['code' => 'Kode verifikasi yang Anda masukkan salah.']);
+        }
+
         // Get Tamu role
         $peminjamRole = Role::where('name', 'Tamu')->first() ?? Role::find(4);
         if (!$peminjamRole) {
-            return back()->withErrors(['error' => 'Role Tamu tidak ditemukan. Hubungi administrator.']);
+            return redirect()->route('register')->withErrors(['error' => 'Role Tamu tidak ditemukan. Hubungi administrator.']);
+        }
+
+        $regData = session('register_data');
+
+        // Double check email uniqueness
+        if (User::where('email', $regData['email'])->exists()) {
+            return redirect()->route('register')->withErrors(['email' => 'Alamat email sudah terdaftar.']);
         }
 
         $user = User::create([
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'phone' => $request->phone,
+            'username' => $regData['username'],
+            'email' => $regData['email'],
+            'password' => $regData['password'],
+            'phone' => $regData['phone'],
             'roleId' => $peminjamRole->id,
             'status' => 'ACTIVE',
         ]);
 
+        // Clear session register data
+        session()->forget(['register_data', 'register_code', 'register_expires']);
+
         Auth::guard('web')->login($user);
-        return redirect()->route('users.dashboard')->with('success', 'Selamat datang, ' . $request->username . '! Akun berhasil dibuat.');
+        return redirect()->route('users.dashboard')->with('success', 'Selamat datang, ' . $user->username . '! Akun berhasil dibuat.');
+    }
+
+    public function resendVerifyRegister()
+    {
+        if (!session()->has('register_data')) {
+            return redirect()->route('register')->withErrors(['error' => 'Sesi registrasi Anda telah berakhir. Silakan daftar kembali.']);
+        }
+
+        $regData = session('register_data');
+        $code = rand(100000, 999999);
+
+        // Update session
+        session([
+            'register_code' => $code,
+            'register_expires' => Carbon::now()->addMinutes(10),
+        ]);
+
+        // Send email
+        try {
+            Mail::to($regData['email'])->send(new RegisterVerificationMail($code));
+        } catch (\Exception $e) {
+            return back()->withErrors(['code' => 'Gagal mengirim email verifikasi: ' . $e->getMessage()]);
+        }
+
+        return back()->with('success', 'Kode verifikasi baru telah dikirim ke email Anda.');
     }
 
     // ─── GOOGLE LOGIN ─────────────────────────────────────────

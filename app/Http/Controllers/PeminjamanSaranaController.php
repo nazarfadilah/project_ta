@@ -44,6 +44,11 @@ class PeminjamanSaranaController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
+        $saranaModel = Sarana::findOrFail($validated['sarana_id']);
+        if ($validated['jumlah'] > $saranaModel->stok) {
+            return back()->withErrors(['jumlah' => 'Jumlah pinjam melebihi stok yang tersedia (' . $saranaModel->stok . ' unit).'])->withInput();
+        }
+
         // Create peminjaman transaksi
         $peminjaman = PeminjamanTransaksi::create([
             'kodePeminjaman' => 'SARANA-' . date('YmdHis'),
@@ -91,6 +96,11 @@ class PeminjamanSaranaController extends Controller
             'jumlah' => 'required|integer|min:1',
             'keterangan' => 'nullable|string',
         ]);
+
+        $saranaModel = Sarana::findOrFail($validated['sarana_id']);
+        if ($validated['jumlah'] > $saranaModel->stok) {
+            return back()->withErrors(['jumlah' => 'Jumlah pinjam melebihi stok yang tersedia (' . $saranaModel->stok . ' unit).'])->withInput();
+        }
 
         $peminjaman = PeminjamanTransaksi::findOrFail($id);
         

@@ -23,7 +23,7 @@ class DashboardController extends Controller
             'users' => User::count(),
             'guests' => Guest::count(),
             'buildings' => Gedung::count(),
-            'beritas' => Berita::count(),
+            'beritas' => ($user && $user->roleId == 3) ? Berita::where('userId', $user->id)->count() : Berita::count(),
             'rooms' => Ruangan::count(),
             'saranas' => Sarana::count(),
             'packages' => PaketRuangan::count(),

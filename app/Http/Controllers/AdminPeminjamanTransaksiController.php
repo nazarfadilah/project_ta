@@ -67,7 +67,7 @@ class AdminPeminjamanTransaksiController extends Controller
     {
         $validated = $request->validate([
             'catatanApproval' => 'nullable|string|max:1000',
-            'biayaTambahan' => 'nullable|numeric|min:0',
+            'biayaTambahan' => 'nullable|numeric|min:0|max:99999999.99',
         ]);
 
         $peminjaman = PeminjamanTransaksi::findOrFail($id);
@@ -172,8 +172,8 @@ class AdminPeminjamanTransaksiController extends Controller
         $validated = $request->validate([
             'kondisiReturn' => 'required|in:BAIK,RUSAK_RINGAN,RUSAK_BERAT,HILANG',
             'catatanKerusakan' => 'nullable|string|max:1000',
-            'estimasiDamage' => 'nullable|numeric|min:0',
-            'biayaTambahan' => 'nullable|numeric|min:0',
+            'estimasiDamage' => 'nullable|numeric|min:0|max:99999999.99',
+            'biayaTambahan' => 'nullable|numeric|min:0|max:99999999.99',
         ]);
 
         $peminjaman = PeminjamanTransaksi::findOrFail($id);

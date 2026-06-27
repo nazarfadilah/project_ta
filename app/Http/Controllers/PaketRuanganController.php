@@ -27,8 +27,8 @@ class PaketRuanganController extends Controller
         $validated = $request->validate([
             'ruangan_id' => 'required|exists:ruangan,id_ruangan',
             'nama_paket' => 'required|string|max:255',
-            'durasi' => 'nullable|integer|min:1',
-            'harga' => 'required|numeric|min:0',
+            'durasi' => 'nullable|integer|min:1|max:999',
+            'harga' => 'required|numeric|min:0|max:99999999.99',
             'status' => 'required|in:ACTIVE,INACTIVE,MAINTENANCE',
         ]);
 
@@ -58,8 +58,8 @@ class PaketRuanganController extends Controller
         $validated = $request->validate([
             'ruangan_id' => 'required|exists:ruangan,id_ruangan',
             'nama_paket' => 'required|string|max:255',
-            'durasi' => 'nullable|integer|min:1',
-            'harga' => 'required|numeric|min:0',
+            'durasi' => 'nullable|integer|min:1|max:999',
+            'harga' => 'required|numeric|min:0|max:99999999.99',
             'status' => 'required|in:ACTIVE,INACTIVE,MAINTENANCE',
         ]);
 

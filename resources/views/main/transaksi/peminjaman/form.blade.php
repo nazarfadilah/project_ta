@@ -527,8 +527,11 @@
                     </div>
                     <div class="mb-3">
                         <label for="biayaTambahanApprove" class="form-label text-muted small fw-semibold text-uppercase" style="font-size: 11px;">Biaya Tambahan (IDR - Opsional)</label>
-                        <input type="number" id="biayaTambahanApprove" class="form-control" name="biayaTambahan" placeholder="Contoh: 50000" style="font-size: 14px;" min="0">
-                        <small class="text-muted d-block mt-1">Isi jika ada biaya tambahan untuk sarana pendukung</small>
+                        <input type="number" id="biayaTambahanApprove" class="form-control @error('biayaTambahan') is-invalid @enderror" name="biayaTambahan" placeholder="Contoh: 50000" style="font-size: 14px;" min="0" max="99999999.99" maxlength="11" step="0.01">
+                        @error('biayaTambahan')
+                            <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                        @enderror
+                        <small class="text-muted d-block mt-1">Isi jika ada biaya tambahan untuk sarana pendukung (Maksimal Rp 99.999.999,99)</small>
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-top">
@@ -605,13 +608,19 @@
                     <!-- Denda Damage -->
                     <div class="mb-3">
                         <label for="estimasiDamage" class="form-label text-muted small fw-semibold text-uppercase" style="font-size: 11px;">Denda Kerusakan (IDR - Opsional)</label>
-                        <input type="number" class="form-control" id="estimasiDamage" name="estimasiDamage" placeholder="Contoh: 150000" style="font-size: 14px;" min="0">
+                        <input type="number" class="form-control @error('estimasiDamage') is-invalid @enderror" id="estimasiDamage" name="estimasiDamage" placeholder="Contoh: 150000" style="font-size: 14px;" min="0" max="99999999.99" maxlength="11" step="0.01">
+                        @error('estimasiDamage')
+                            <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                        @enderror
                     </div>
 
                     <!-- Biaya Tambahan -->
                     <div class="mb-3">
                         <label for="biayaTambahan" class="form-label text-muted small fw-semibold text-uppercase" style="font-size: 11px;">Biaya Tambahan Lainnya (IDR - Opsional)</label>
-                        <input type="number" class="form-control" id="biayaTambahan" name="biayaTambahan" placeholder="Contoh: 50000 (Misal denda telat check-out)" style="font-size: 14px;" min="0">
+                        <input type="number" class="form-control @error('biayaTambahan') is-invalid @enderror" id="biayaTambahan" name="biayaTambahan" placeholder="Contoh: 50000 (Misal denda telat check-out)" style="font-size: 14px;" min="0" max="99999999.99" maxlength="11" step="0.01">
+                        @error('biayaTambahan')
+                            <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                        @enderror
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-top">

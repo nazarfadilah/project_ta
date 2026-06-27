@@ -88,7 +88,8 @@
                                name="durasi" 
                                value="{{ old('durasi', $paketRuangan?->durasi ?? '') }}" 
                                placeholder="Contoh: 8 (Biarkan kosong jika fleksibel)"
-                               style="font-size: 14px; padding: 10px 14px;">
+                               style="font-size: 14px; padding: 10px 14px;"
+                               min="1" max="999" maxlength="3">
                         @error('durasi')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -107,7 +108,8 @@
                                    name="harga" 
                                    value="{{ old('harga', $paketRuangan?->harga ?? '') }}" 
                                    placeholder="Contoh: 1500000"
-                                   style="font-size: 14px; padding: 10px 14px;" required>
+                                   style="font-size: 14px; padding: 10px 14px;" required
+                                   min="0" max="99999999.99" maxlength="11" step="0.01">
                         </div>
                         @error('harga')
                             <div class="invalid-feedback d-block">{{ $message }}</div>

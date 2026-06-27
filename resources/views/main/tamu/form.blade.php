@@ -60,41 +60,62 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="nik" class="form-label" style="font-size: 13px; font-weight: 600; color: #555;">NIK <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="nik" name="nik" value="{{ old('nik', $guest->nik) }}" required {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;">
+                        <input type="text" class="form-control @error('nik') is-invalid @enderror" id="nik" name="nik" value="{{ old('nik', $guest->nik) }}" required {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;" minlength="16" maxlength="16" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        @error('nik')
+                            <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                        @enderror
                     </div>
                     
                     <div class="col-md-6 mb-3">
                         <label for="name" class="form-label" style="font-size: 13px; font-weight: 600; color: #555;">Nama Lengkap <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $guest->name) }}" required {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;">
+                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $guest->name) }}" required {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;">
+                        @error('name')
+                            <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                        @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="gender" class="form-label" style="font-size: 13px; font-weight: 600; color: #555;">Jenis Kelamin <span class="text-danger">*</span></label>
-                        <select class="form-select" id="gender" name="gender" required {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;">
+                        <select class="form-select @error('gender') is-invalid @enderror" id="gender" name="gender" required {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;">
                             <option value="">-- Pilih --</option>
                             <option value="MALE" {{ old('gender', $guest->gender) == 'MALE' ? 'selected' : '' }}>Laki-laki</option>
                             <option value="FEMALE" {{ old('gender', $guest->gender) == 'FEMALE' ? 'selected' : '' }}>Perempuan</option>
                         </select>
+                        @error('gender')
+                            <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                        @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="phone" class="form-label" style="font-size: 13px; font-weight: 600; color: #555;">Nomor Telepon</label>
-                        <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', $guest->phone ?? ($guest->user->phone ?? '')) }}" {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;" placeholder="Contoh: 08123456789" maxlength="15" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', $guest->phone ?? ($guest->user->phone ?? '')) }}" {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;" placeholder="Contoh: 08123456789" maxlength="15" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        @error('phone')
+                            <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                        @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="bloodType" class="form-label" style="font-size: 13px; font-weight: 600; color: #555;">Golongan Darah</label>
-                        <input type="text" class="form-control" id="bloodType" name="bloodType" value="{{ old('bloodType', $guest->bloodType) }}" {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;" placeholder="Contoh: A, B, O, AB">
+                        <input type="text" class="form-control @error('bloodType') is-invalid @enderror" id="bloodType" name="bloodType" value="{{ old('bloodType', $guest->bloodType) }}" {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;" placeholder="Contoh: A, B, O, AB">
+                        @error('bloodType')
+                            <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                        @enderror
                     </div>
 
                     <div class="col-md-12 mb-3">
                         <label for="address" class="form-label" style="font-size: 13px; font-weight: 600; color: #555;">Alamat Lengkap</label>
-                        <textarea class="form-control" id="address" name="address" rows="3" {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;">{{ old('address', $guest->address) }}</textarea>
+                        <textarea class="form-control @error('address') is-invalid @enderror" id="address" name="address" rows="3" {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;">{{ old('address', $guest->address) }}</textarea>
+                        @error('address')
+                            <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                        @enderror
                     </div>
 
                     <div class="col-md-12 mb-4">
                         <label for="notes" class="form-label" style="font-size: 13px; font-weight: 600; color: #555;">Catatan Tambahan</label>
-                        <textarea class="form-control" id="notes" name="notes" rows="2" {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;">{{ old('notes', $guest->notes) }}</textarea>
+                        <textarea class="form-control @error('notes') is-invalid @enderror" id="notes" name="notes" rows="2" {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;">{{ old('notes', $guest->notes) }}</textarea>
+                        @error('notes')
+                            <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                        @enderror
                     </div>
                 </div>
 

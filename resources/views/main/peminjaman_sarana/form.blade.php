@@ -226,6 +226,9 @@ function checkAvailability() {
             document.getElementById('stok-borrowed').textContent = data.stok.borrowed;
             document.getElementById('stok-available').textContent = data.stok.available;
 
+            const jumlahInput = document.getElementById('jumlah');
+            jumlahInput.max = data.stok.available;
+
             infoDiv.style.display = 'block';
 
             if (data.can_borrow) {
@@ -247,6 +250,17 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('sarana_id').value) {
         checkAvailability();
     }
+
+    const jumlahInput = document.getElementById('jumlah');
+    jumlahInput.addEventListener('change', function() {
+        const max = parseInt(this.max || 0);
+        const val = parseInt(this.value || 0);
+        if (max > 0 && val > max) {
+            alert(`Peringatan: Jumlah sewa melebihi stok yang tersedia (${max} unit)!`);
+            this.value = max;
+            checkAvailability();
+        }
+    });
 });
 </script>
 @endpush

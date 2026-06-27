@@ -26,7 +26,7 @@ class SaranaController extends Controller
             'nama' => 'required|string|max:128',
             'kondisi' => 'required|in:Baik,Baik Sekali,Normal,Perlu Perbaikan',
             'tgl_penerimaan' => 'required|date',
-            'stok' => 'required|integer|min:0',
+            'stok' => 'required|integer|min:0|max:99999',
         ]);
 
         Sarana::create($validated);
@@ -53,7 +53,7 @@ class SaranaController extends Controller
             'nama' => 'required|string|max:128',
             'kondisi' => 'required|in:Baik,Baik Sekali,Normal,Perlu Perbaikan',
             'tgl_penerimaan' => 'required|date',
-            'stok' => 'required|integer|min:0',
+            'stok' => 'required|integer|min:0|max:99999',
         ]);
 
         $sarana = Sarana::findOrFail($id);

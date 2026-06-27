@@ -50,6 +50,9 @@
                                 <i class="fas fa-search me-1"></i> Cek NIK
                             </button>
                         </div>
+                        @error('nik')
+                            <div class="text-danger small mt-1"><strong>{{ $message }}</strong></div>
+                        @enderror
                         <span class="form-text text-muted small d-block mt-1">Masukkan 16 digit NIK tamu yang sudah didaftarkan.</span>
                     </div>
                     <div class="col-md-6">
@@ -159,6 +162,9 @@
                         <div class="col-md-4">
                             <label for="tanggal" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Tanggal Mulai Peminjaman *</label>
                             <input type="date" name="tanggal" id="tanggal" class="form-control @error('tanggal') is-invalid @enderror" value="{{ old('tanggal') }}" required style="font-size: 14px;">
+                            @error('tanggal')
+                                <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                            @enderror
                         </div>
 
                         <div class="col-md-4">
@@ -178,6 +184,9 @@
                                     @endif
                                 @endfor
                             </select>
+                            @error('jam_mulai')
+                                <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                            @enderror
                         </div>
 
                         <div class="col-md-4">
@@ -185,6 +194,9 @@
                             <select name="paket_id" id="paket_id" class="form-select @error('paket_id') is-invalid @enderror" required style="font-size: 14px;">
                                 <option value="">-- Pilih Paket (Pilih Ruangan Terlebih Dahulu) --</option>
                             </select>
+                            @error('paket_id')
+                                <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                            @enderror
                         </div>
                     </div>
 
@@ -226,6 +238,11 @@
                     </h6>
                 </div>
                 <div class="card-body p-4">
+                    @if ($errors->has('sarana') || collect($errors->keys())->contains(fn($k) => str_starts_with($k, 'sarana')))
+                        <div class="alert alert-danger py-2 px-3 mb-3 small">
+                            <i class="fas fa-exclamation-circle me-1"></i> Terjadi kesalahan pada inputan sarana tambahan. Pastikan sarana yang dipilih valid dan jumlah sewa tidak melebihi stok yang tersedia.
+                        </div>
+                    @endif
                     <div id="sarana_rows_container">
                         <!-- Dinamis sewa sarana akan dirender di sini via JS -->
                     </div>
@@ -248,6 +265,9 @@
                     <div class="mb-3">
                         <label for="keperluan" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Keperluan / Tujuan Penggunaan *</label>
                         <textarea id="keperluan" name="keperluan" class="form-control @error('keperluan') is-invalid @enderror" rows="4" placeholder="Jelaskan keperluan penggunaan ruangan secara jelas (misalnya: Rapat koordinasi dinas, Diklat pengawas sekolah, dsb.)" required minlength="10" maxlength="500" style="font-size: 14px;">{{ old('keperluan') }}</textarea>
+                        @error('keperluan')
+                            <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                        @enderror
                         <span class="form-text text-muted small d-block mt-1">Minimal 10 karakter, maksimal 500 karakter.</span>
                     </div>
 
@@ -255,6 +275,9 @@
                         <div class="col-md-6">
                             <label for="estimasi_peserta" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Estimasi Jumlah Peserta *</label>
                             <input type="number" name="estimasi_peserta" id="estimasi_peserta" class="form-control @error('estimasi_peserta') is-invalid @enderror" value="{{ old('estimasi_peserta') }}" min="1" placeholder="Contoh: 30" required style="font-size: 14px;">
+                            @error('estimasi_peserta')
+                                <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                            @enderror
                             <span class="form-text text-muted small d-block mt-1" id="estimasi_peserta_hint">Masukkan jumlah perkiraan peserta.</span>
                         </div>
                         <div class="col-md-6">
@@ -281,7 +304,7 @@
 </div>
 @endsection
 
-@section('js')
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const btnCekNik = document.getElementById('btnCekNik');
@@ -689,4 +712,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endsection
+@endpush

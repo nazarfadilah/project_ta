@@ -99,7 +99,8 @@
                                name="stok" 
                                value="{{ old('stok', $sarana?->stok ?? '') }}" 
                                placeholder="Masukkan stok (contoh: 10)"
-                               style="font-size: 14px; padding: 10px 14px;" required>
+                               style="font-size: 14px; padding: 10px 14px;" required
+                               min="0" max="99999" maxlength="5">
                         @error('stok')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
