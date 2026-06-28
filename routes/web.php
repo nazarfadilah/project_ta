@@ -261,7 +261,6 @@ Route::middleware(['auth:web', 'tamu'])->prefix('users')->name('users.')->group(
             Route::get('/{id}/details', [UsersRuanganController::class, 'getDetails'])->name('details');
             Route::get('/{slug}', [UsersRuanganController::class, 'show'])->name('show');
         });
-
         // Gedung routes (view-only)
         Route::prefix('gedung')->name('gedung.')->group(function () {
             Route::get('/', [UsersGedungController::class, 'index'])->name('index');
