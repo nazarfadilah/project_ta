@@ -97,7 +97,12 @@
 
         <!-- Right Column: Profile Edit Form -->
         <div class="col-lg-8 col-md-7">
-            <form action="{{ route('users.profil.update') }}" method="POST">
+            <form action="{{ route('users.profil.update') }}" 
+                  method="POST"
+                  class="confirm-submit"
+                  data-confirm-title="Simpan Perubahan Profil"
+                  data-confirm-text="Apakah Anda yakin ingin menyimpan perubahan data profil Anda?"
+                  data-confirm-button="Ya, Simpan">
                 @csrf
                 @method('PUT')
                 

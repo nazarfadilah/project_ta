@@ -30,7 +30,13 @@
             </h6>
         </div>
         <div class="card-body" style="padding: 24px;">
-            <form action="{{ $mode === 'create' ? route('main.berita.store') : route('main.berita.update', $berita->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ $mode === 'create' ? route('main.berita.store') : route('main.berita.update', $berita->id) }}" 
+                  method="POST" 
+                  enctype="multipart/form-data"
+                  class="confirm-submit"
+                  data-confirm-title="{{ $mode === 'create' ? 'Tambah Berita' : 'Simpan Perubahan' }}"
+                  data-confirm-text="Apakah Anda yakin ingin {{ $mode === 'create' ? 'menambahkan berita baru ini' : 'menyimpan perubahan pada berita ini' }}?"
+                  data-confirm-button="{{ $mode === 'create' ? 'Ya, Tambahkan' : 'Ya, Simpan' }}">
                 @csrf
                 @if($mode === 'edit')
                     @method('PUT')

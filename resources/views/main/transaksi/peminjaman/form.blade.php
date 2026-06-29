@@ -468,7 +468,13 @@
                     @endif
 
                     @if($peminjaman->statusApproval === 'APPROVED' && $peminjaman->statusPeminjaman === 'RESERVASI')
-                        <form action="{{ route('main.transaksi.peminjaman.checkin', $peminjaman->id) }}" method="POST" style="display: inline-block;">
+                        <form action="{{ route('main.transaksi.peminjaman.checkin', $peminjaman->id) }}" 
+                              method="POST" 
+                              class="confirm-submit" 
+                              style="display: inline-block;"
+                              data-confirm-title="Konfirmasi Check-In"
+                              data-confirm-text="Apakah Anda yakin ingin memproses check-in untuk peminjaman ruangan/fasilitas ini?"
+                              data-confirm-button="Ya, Check-In">
                             @csrf
                             <button type="submit" class="btn btn-primary fw-bold px-4 py-2" style="font-size: 13px;">
                                 <i class="fas fa-sign-in-alt me-1"></i> Proses Check-In

@@ -23,7 +23,13 @@
     </div>
     @endif
 
-    <form action="{{ route('users.main.reservasi.store') }}" method="POST" id="reservasiForm">
+    <form action="{{ route('users.main.reservasi.store') }}" 
+          method="POST" 
+          id="reservasiForm"
+          class="confirm-submit"
+          data-confirm-title="Kirim Reservasi"
+          data-confirm-text="Apakah Anda yakin ingin mengirim pengajuan reservasi ruangan ini?"
+          data-confirm-button="Ya, Kirim">
         @csrf
 
         <!-- SECTION 1: PEMILIHAN RUANGAN -->

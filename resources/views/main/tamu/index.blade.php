@@ -199,17 +199,5 @@
                 { searchable: false, targets: [0, 5] }
             ]
         });
-    });
-
-    function hapusData(url) {
-        if (confirm('Apakah Anda yakin ingin menghapus data tamu ini?')) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = url;
-            form.innerHTML = '@csrf @method("DELETE")';
-            document.body.appendChild(form);
-            form.submit();
-        }
-    }
 </script>
 @endpush

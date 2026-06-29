@@ -201,17 +201,5 @@
                 { searchable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 4] @endif }
             ]
         });
-    });
-
-    function hapusData(url) {
-        if (confirm('Apakah Anda yakin ingin menghapus gedung ini?')) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = url;
-            form.innerHTML = '@csrf @method("DELETE")';
-            document.body.appendChild(form);
-            form.submit();
-        }
-    }
 </script>
 @endpush

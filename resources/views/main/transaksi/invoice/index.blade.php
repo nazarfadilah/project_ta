@@ -94,22 +94,32 @@
                             <span class="text-muted small fw-semibold" style="font-size: 12px; color: #555;">Ubah Status Pembayaran:</span>
                             <div>
                                 @if($invoice->statusInvoice === 'UNPAID')
-                                    <form action="{{ route('main.transaksi.invoice.updateStatus', $invoice->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menandai invoice ini sebagai LUNAS?')">
-                                        @csrf
-                                        <input type="hidden" name="statusInvoice" value="PAID">
-                                        <button type="submit" class="btn btn-sm btn-success px-3 py-1 fw-semibold" style="font-size: 13px;">
-                                            <i class="fas fa-check me-1"></i> Tandai Lunas (PAID)
-                                        </button>
-                                    </form>
-                                @else
-                                    <form action="{{ route('main.transaksi.invoice.updateStatus', $invoice->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menandai invoice ini sebagai BELUM DIBAYAR?')">
-                                        @csrf
-                                        <input type="hidden" name="statusInvoice" value="UNPAID">
-                                        <button type="submit" class="btn btn-sm btn-danger px-3 py-1 fw-semibold" style="font-size: 13px;">
-                                            <i class="fas fa-times me-1"></i> Tandai Belum Bayar (UNPAID)
-                                        </button>
-                                    </form>
-                                @endif
+                                    <form action="{{ route('main.transaksi.invoice.updateStatus', $invoice->id) }}" 
+                                          method="POST" 
+                                          class="d-inline confirm-submit"
+                                          data-confirm-title="Konfirmasi Pembayaran"
+                                          data-confirm-text="Apakah Anda yakin ingin menandai invoice ini sebagai LUNAS?"
+                                          data-confirm-button="Ya, Lunas">
+                                         @csrf
+                                         <input type="hidden" name="statusInvoice" value="PAID">
+                                         <button type="submit" class="btn btn-sm btn-success px-3 py-1 fw-semibold" style="font-size: 13px;">
+                                             <i class="fas fa-check me-1"></i> Tandai Lunas (PAID)
+                                         </button>
+                                     </form>
+                                 @else
+                                     <form action="{{ route('main.transaksi.invoice.updateStatus', $invoice->id) }}" 
+                                          method="POST" 
+                                          class="d-inline confirm-submit"
+                                          data-confirm-title="Konfirmasi Pembayaran"
+                                          data-confirm-text="Apakah Anda yakin ingin menandai invoice ini sebagai BELUM DIBAYAR?"
+                                          data-confirm-button="Ya, Ubah">
+                                         @csrf
+                                         <input type="hidden" name="statusInvoice" value="UNPAID">
+                                         <button type="submit" class="btn btn-sm btn-danger px-3 py-1 fw-semibold" style="font-size: 13px;">
+                                             <i class="fas fa-times me-1"></i> Tandai Belum Bayar (UNPAID)
+                                         </button>
+                                     </form>
+                                 @endif
                             </div>
                         </div>
                         @endif

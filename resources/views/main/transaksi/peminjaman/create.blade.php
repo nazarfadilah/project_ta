@@ -29,7 +29,13 @@
     </div>
     @endif
 
-    <form action="{{ route('main.transaksi.peminjaman.store') }}" method="POST" id="reservasiForm">
+    <form action="{{ route('main.transaksi.peminjaman.store') }}" 
+          method="POST" 
+          id="reservasiForm"
+          class="confirm-submit"
+          data-confirm-title="Tambah Reservasi Tamu"
+          data-confirm-text="Apakah Anda yakin ingin menambahkan pengajuan reservasi tamu ini?"
+          data-confirm-button="Ya, Tambahkan">
         @csrf
 
         <!-- SECTION 1: VERIFIKASI TAMU (GUEST) -->

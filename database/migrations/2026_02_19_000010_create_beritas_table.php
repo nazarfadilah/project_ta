@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('id');
             $table->unsignedBigInteger('userId')->nullable();
             $table->string('judul', 128);
-            $table->string('slug', 64);
+            $table->string('slug', 128)->unique();
             $table->text('isi');
             $table->string('gambar', 255);
             $table->date('tanggal_publish');

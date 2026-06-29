@@ -409,8 +409,72 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // Global helper for delete actions using SweetAlert2
+        function hapusData(url, message = 'Apakah Anda yakin ingin menghapus data ini?') {
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = url;
+                    
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    form.innerHTML = `
+                        <input type="hidden" name="_token" value="${csrfToken}">
+                        <input type="hidden" name="_method" value="DELETE">
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+
+        // Global helper for confirmDelete (specifically for paket_ruangan or other views)
+        function confirmDelete(url) {
+            hapusData(url, 'Apakah Anda yakin ingin menghapus paket ruangan ini?');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Intercept submit event for forms with confirm-submit class
+            document.addEventListener('submit', function(e) {
+                const form = e.target;
+                if (form.classList.contains('confirm-submit')) {
+                    e.preventDefault();
+                    
+                    const title = form.getAttribute('data-confirm-title') || 'Konfirmasi';
+                    const text = form.getAttribute('data-confirm-text') || 'Apakah Anda yakin ingin menyimpan data ini?';
+                    const confirmText = form.getAttribute('data-confirm-button') || 'Ya, Lanjutkan';
+                    
+                    Swal.fire({
+                        title: title,
+                        text: text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#C9A961',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: confirmText,
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.classList.remove('confirm-submit');
+                            form.submit();
+                        }
+                    });
+                }
+            });
+
             // Custom Indonesian validation messages for HTML5 native tooltips
             document.addEventListener('invalid', function(e) {
                 const target = e.target;
