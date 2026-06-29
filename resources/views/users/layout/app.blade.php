@@ -653,6 +653,36 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Automatically scan all forms and apply confirm-submit class and attributes
+            document.querySelectorAll('form').forEach(form => {
+                // Logout form detection
+                if (form.action && form.action.includes('logout')) {
+                    form.classList.add('confirm-submit');
+                    form.setAttribute('data-confirm-title', 'Konfirmasi Keluar');
+                    form.setAttribute('data-confirm-text', 'Apakah Anda yakin ingin keluar dari sistem?');
+                    form.setAttribute('data-confirm-button', 'Ya, Keluar');
+                }
+                // General create / edit form detection (method POST, exclude DELETE, modals, and no-confirm)
+                else if (form.method && form.method.toUpperCase() === 'POST' && !form.classList.contains('no-confirm') && !form.closest('.modal')) {
+                    const isDelete = form.querySelector('input[name="_method"][value="DELETE"]');
+                    if (!isDelete && !form.classList.contains('confirm-submit')) {
+                        const isEdit = form.querySelector('input[name="_method"][value="PUT"]') || 
+                                       form.querySelector('input[name="_method"][value="PATCH"]') ||
+                                       document.title.toLowerCase().includes('edit') ||
+                                       document.title.toLowerCase().includes('ubah');
+                        
+                        const actionWord = isEdit ? 'menyimpan perubahan data' : 'menambahkan data';
+                        const titleText = isEdit ? 'Simpan Perubahan' : 'Tambah Data';
+                        const confirmBtnText = isEdit ? 'Ya, Simpan' : 'Ya, Tambahkan';
+                        
+                        form.classList.add('confirm-submit');
+                        form.setAttribute('data-confirm-title', titleText);
+                        form.setAttribute('data-confirm-text', `Apakah Anda yakin ingin ${actionWord} ini?`);
+                        form.setAttribute('data-confirm-button', confirmBtnText);
+                    }
+                }
+            });
+
             // Intercept submit event for forms with confirm-submit class
             document.addEventListener('submit', function(e) {
                 const form = e.target;
