@@ -131,7 +131,7 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label for="tanggal" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Tanggal Mulai Peminjaman *</label>
-                        <input type="date" name="tanggal" id="tanggal" class="form-control @error('tanggal') is-invalid @enderror" value="{{ old('tanggal') }}" required disabled>
+                        <input type="date" name="tanggal" id="tanggal" class="form-control @error('tanggal') is-invalid @enderror" value="{{ old('tanggal') ?? $tanggal ?? '' }}" required disabled>
                         @error('tanggal')
                         <div class="text-danger small mt-1 fw-semibold">{{ $message }}</div>
                         @enderror
@@ -266,9 +266,9 @@
                     <label for="no_telepon" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Nomor WhatsApp / HP Aktif *</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light text-muted"><i class="fas fa-phone-alt"></i></span>
-                        <input type="text" name="no_telepon" id="no_telepon" class="form-control @error('no_telepon') is-invalid @enderror" value="{{ old('no_telepon', auth()->user()->phone) }}" placeholder="Contoh: 081234567890" required>
+                        <input type="text" name="no_telepon" id="no_telepon" class="form-control @error('no_telepon') is-invalid @enderror" value="{{ old('no_telepon', auth()->user()->phone) }}" placeholder="Contoh: 081234567890" required readonly>
                     </div>
-                    <span class="form-text text-muted small d-block mt-1">Nomor kontak yang dapat dihubungi oleh admin untuk proses verifikasi lanjutan.</span>
+                    <span class="form-text text-muted small d-block mt-1">Nomor kontak terdaftar Anda (Dapat diperbarui melalui menu <a href="{{ route('users.profil.edit') }}" class="fw-semibold" style="color: #C9A961; text-decoration: none;">Profil Saya</a>).</span>
                     @error('no_telepon')
                     <div class="text-danger small mt-1 fw-semibold">{{ $message }}</div>
                     @enderror
@@ -638,7 +638,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const max = parseInt(this.max || 0);
             const val = parseInt(this.value || 0);
             if (val > max) {
-                alert(`Peringatan: Jumlah sewa melebihi stok yang tersedia (${max} unit)!`);
                 this.value = max;
             }
         });
@@ -661,7 +660,6 @@ document.addEventListener('DOMContentLoaded', function() {
     estimasiPesertaInput.addEventListener('change', function() {
         const val = parseInt(this.value || 0);
         if (val > selectedRoomMaxCapacity) {
-            alert(`⚠️ KAPASITAS MELEBIHI BATAS!\n\nJumlah peserta (${val} orang) tidak boleh melebihi kapasitas ruangan terpilih (${selectedRoomMaxCapacity} orang).`);
             this.value = selectedRoomMaxCapacity;
         }
     });

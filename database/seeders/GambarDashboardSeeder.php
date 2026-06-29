@@ -20,7 +20,7 @@ class GambarDashboardSeeder extends Seeder
         for ($i = 1; $i <= 8; $i++) {
             $gambars[] = [
                 'posisi' => $i,
-                'path' => 'https://via.placeholder.com/1920x600?text=Dashboard+Image+' . $i,
+                'path' => 'https://placehold.co/1920x600?text=Dashboard+Image+' . $i,
                 'waktu_upload' => Carbon::now()->subDays(rand(1, 30))->format('Y-m-d H:i:s'),
             ];
         }

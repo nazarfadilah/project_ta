@@ -36,6 +36,7 @@ class UsersReservasiController extends Controller
         }
 
         $ruanganId = $request->input('ruangan_id');
+        $tanggal = $request->input('tanggal');
         $ruangan = null;
         
         if ($ruanganId) {
@@ -52,7 +53,8 @@ class UsersReservasiController extends Controller
             'ruangan',
             'ruangans',
             'saranas',
-            'ruanganId'
+            'ruanganId',
+            'tanggal'
         ));
     }
 

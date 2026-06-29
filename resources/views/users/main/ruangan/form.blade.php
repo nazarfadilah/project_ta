@@ -8,13 +8,22 @@
 
 @section('content')
 @if($ruangan)
+@php
+    $tanggal = request()->query('tanggal');
+@endphp
 <div class="container-fluid" style="padding-left: 20px; padding-right: 20px; margin-top: 20px;">
     
     <!-- Top Action Buttons -->
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-        <a href="{{ route('users.main.ruangan.index') }}" class="btn btn-secondary btn-sm">
-            <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar Ruangan
-        </a>
+        @if($tanggal)
+            <a href="{{ route('users.main.ruangan.ketersediaan', ['tanggal' => $tanggal]) }}" class="btn btn-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Kembali ke Cek Ketersediaan
+            </a>
+        @else
+            <a href="{{ route('users.main.ruangan.index') }}" class="btn btn-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar Ruangan
+            </a>
+        @endif
         
         <form action="{{ route('users.main.reservasi.create') }}" method="POST" style="display: inline;">
             @csrf
@@ -23,7 +32,10 @@
             <input type="hidden" name="tipe_ruangan" value="{{ $ruangan->tipe_ruangan }}">
             <input type="hidden" name="kapasitas" value="{{ $ruangan->kapasitas }}">
             <input type="hidden" name="gedung_id" value="{{ $ruangan->gedung_id }}">
-            <button type="submit" class="btn btn-success fw-bold px-4">
+            @if($tanggal)
+                <input type="hidden" name="tanggal" value="{{ $tanggal }}">
+            @endif
+            <button type="submit" class="btn btn-success fw-bold px-4" id="btnReservasi">
                 <i class="fas fa-calendar-check me-1"></i> Reservasi Ruangan
             </button>
         </form>
@@ -121,7 +133,7 @@
                 @foreach($ruangan->mediaFiles as $media)
                 <div class="col-6 col-sm-4 col-md-3">
                     <a href="{{ asset($media->path) }}" data-lightbox="ruangan-gallery" class="d-block rounded overflow-hidden border" style="aspect-ratio: 1;">
-                        <img src="{{ asset($media->path) }}" alt="Foto {{ $ruangan->nama_ruangan }}" class="w-100 h-100 object-fit-cover" onerror="this.src='https://via.placeholder.com/300?text=Foto+Ruangan'">
+                        <img src="{{ asset($media->path) }}" alt="Foto {{ $ruangan->nama_ruangan }}" class="w-100 h-100 object-fit-cover" onerror="this.src='https://placehold.co/300?text=Foto+Ruangan'; this.onerror=null;">
                     </a>
                 </div>
                 @endforeach

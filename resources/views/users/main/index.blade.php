@@ -167,6 +167,11 @@
         color: #28a745;
     }
 
+    .icon-ketersediaan {
+        background-color: rgba(0, 123, 255, 0.12);
+        color: #007bff;
+    }
+
     .action-title {
         font-size: 20px;
         font-weight: 700;
@@ -214,6 +219,17 @@
         background-color: #218838;
         color: white;
         box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-ketersediaan {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-ketersediaan:hover {
+        background-color: #0056b3;
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
     }
 </style>
 @endsection
@@ -282,7 +298,7 @@
     <!-- Action Cards Row -->
     <div class="row g-4">
         <!-- Action: Kelola Profil -->
-        <div class="col-md-6">
+        <div class="col-lg-4 col-md-6 col-sm-12">
             <div class="action-card">
                 <div class="action-icon icon-profile">
                     <i class="fas fa-user-gear"></i>
@@ -300,7 +316,7 @@
         </div>
 
         <!-- Action: Reservasi Ruangan -->
-        <div class="col-md-6">
+        <div class="col-lg-4 col-md-6 col-sm-12">
             <div class="action-card">
                 <div class="action-icon icon-reservasi">
                     <i class="fas fa-calendar-days"></i>
@@ -312,6 +328,24 @@
                 <div>
                     <a href="{{ route('users.main.ruangan.index') }}" class="btn-action-card btn-reservasi">
                         <i class="fas fa-plus me-1"></i> Cari & Pesan Ruangan
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action: Cek Ketersediaan -->
+        <div class="col-lg-4 col-md-12 col-sm-12">
+            <div class="action-card">
+                <div class="action-icon icon-ketersediaan">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h4 class="action-title">Cek Ketersediaan Ruangan</h4>
+                <p class="action-desc">
+                    Periksa ketersediaan ruangan yang kosong pada tanggal penyewaan pilihan Anda berdasarkan kategori tertentu untuk merencanakan acara Anda dengan tepat.
+                </p>
+                <div>
+                    <a href="{{ route('users.main.ruangan.ketersediaan') }}" class="btn-action-card btn-ketersediaan">
+                        <i class="fas fa-magnifying-glass me-1"></i> Cek Ketersediaan Ruangan
                     </a>
                 </div>
             </div>

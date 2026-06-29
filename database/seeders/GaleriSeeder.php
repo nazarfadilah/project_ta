@@ -90,7 +90,7 @@ class GaleriSeeder extends Seeder
                     'kategori' => $category,
                     'judul' => $dataArray[$i]['judul'],
                     'isi' => $dataArray[$i]['isi'],
-                    'gambar' => 'https://via.placeholder.com/400x300?text=' . urlencode($dataArray[$i]['judul']),
+                    'gambar' => 'https://placehold.co/400x300?text=' . urlencode($dataArray[$i]['judul']),
                     'created_at' => Carbon::now()->subDays(rand(1, 60))->format('Y-m-d H:i:s'),
                 ];
             }

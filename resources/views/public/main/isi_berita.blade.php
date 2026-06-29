@@ -154,7 +154,7 @@
     <section class="news-detail-content">
         <div class="news-detail-container">
                         <!-- Gambar Berita -->
-            <img src="{{ filter_var($berita->gambar, FILTER_VALIDATE_URL) ? $berita->gambar : asset(ltrim($berita->gambar, '/')) }}" onerror="this.src='{{ asset('gambar_dashboard/berita_placeholder.jpg') }}'; this.onerror=null;" alt="{{ $berita->judul }}" class="news-detail-image" style="background: #e2e8f0;">
+            <img src="{{ filter_var($berita->gambar, FILTER_VALIDATE_URL) ? $berita->gambar : asset(ltrim($berita->gambar, '/')) }}" onerror="this.src='https://placehold.co/800x400?text=Berita+Asrama+Haji'; this.onerror=null;" alt="{{ $berita->judul }}" class="news-detail-image" style="background: #e2e8f0;">
 
             <!-- Judul Berita -->
             <h2 class="news-detail-title">{{ $berita->judul }}</h2>

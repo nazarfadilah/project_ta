@@ -623,6 +623,54 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Custom Indonesian validation messages for HTML5 native tooltips
+            document.addEventListener('invalid', function(e) {
+                const target = e.target;
+                if (target.validity.valueMissing) {
+                    target.setCustomValidity('Kolom ini wajib diisi.');
+                } else if (target.validity.typeMismatch && target.type === 'email') {
+                    target.setCustomValidity('Alamat email tidak valid.');
+                } else if (target.validity.rangeUnderflow) {
+                    target.setCustomValidity(`Nilai tidak boleh kurang dari ${target.min}.`);
+                } else if (target.validity.rangeOverflow) {
+                    target.setCustomValidity(`Nilai tidak boleh lebih dari ${target.max}.`);
+                } else if (target.validity.tooShort) {
+                    target.setCustomValidity(`Input terlalu pendek (minimal ${target.minLength} karakter).`);
+                } else if (target.validity.tooLong) {
+                    target.setCustomValidity(`Input terlalu panjang (maksimal ${target.maxLength} karakter).`);
+                }
+            }, true);
+
+            // Reset validation message on new input
+            document.addEventListener('input', function(e) {
+                e.target.setCustomValidity('');
+            });
+
+            // Real-time numeric input validation (restrict input values from exceeding max value)
+            document.addEventListener('input', function(e) {
+                if (e.target && e.target.type === 'number') {
+                    const val = parseInt(e.target.value);
+                    if (!isNaN(val)) {
+                        const max = parseInt(e.target.max);
+                        if (!isNaN(max) && val > max) {
+                            e.target.value = max;
+                        }
+                    }
+                }
+            });
+
+            document.addEventListener('change', function(e) {
+                if (e.target && e.target.type === 'number') {
+                    const val = parseInt(e.target.value);
+                    if (!isNaN(val)) {
+                        const min = parseInt(e.target.min);
+                        if (!isNaN(min) && val < min) {
+                            e.target.value = min;
+                        }
+                    }
+                }
+            });
+
             const themeToggle = document.getElementById('themeToggle');
             const themeIcon = document.getElementById('themeIcon');
 

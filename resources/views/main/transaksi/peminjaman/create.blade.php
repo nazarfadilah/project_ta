@@ -683,7 +683,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const max = parseInt(this.max || 0);
             const val = parseInt(this.value || 0);
             if (val > max) {
-                alert(`Peringatan: Jumlah sewa melebihi stok yang tersedia (${max} unit)!`);
                 this.value = max;
             }
         });
@@ -706,7 +705,6 @@ document.addEventListener('DOMContentLoaded', function() {
     estimasiPesertaInput.addEventListener('change', function() {
         const val = parseInt(this.value || 0);
         if (val > selectedRoomMaxCapacity) {
-            alert(`⚠️ KAPASITAS MELEBIHI BATAS!\n\nJumlah peserta (${val} orang) tidak boleh melebihi kapasitas ruangan terpilih (${selectedRoomMaxCapacity} orang).`);
             this.value = selectedRoomMaxCapacity;
         }
     });

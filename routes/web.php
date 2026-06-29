@@ -258,6 +258,7 @@ Route::middleware(['auth:web', 'tamu'])->prefix('users')->name('users.')->group(
         // Ruangan routes (view-only)
         Route::prefix('ruangan')->name('ruangan.')->group(function () {
             Route::get('/', [UsersRuanganController::class, 'index'])->name('index');
+            Route::get('/ketersediaan', [UsersRuanganController::class, 'ketersediaan'])->name('ketersediaan');
             Route::get('/{id}/details', [UsersRuanganController::class, 'getDetails'])->name('details');
             Route::get('/{slug}', [UsersRuanganController::class, 'show'])->name('show');
         });

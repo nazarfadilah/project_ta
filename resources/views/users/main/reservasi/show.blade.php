@@ -222,7 +222,7 @@
                 @foreach($reservasi->ruangan->mediaFiles as $media)
                 <div class="col-6 col-sm-4 col-md-3">
                     <div class="rounded overflow-hidden border" style="aspect-ratio: 1;">
-                        <img src="{{ asset($media->path) }}" alt="Foto {{ $reservasi->ruangan->nama_ruangan }}" class="w-100 h-100 object-fit-cover" onerror="this.src='https://via.placeholder.com/300?text=Foto+Ruangan'">
+                        <img src="{{ asset($media->path) }}" alt="Foto {{ $reservasi->ruangan->nama_ruangan }}" class="w-100 h-100 object-fit-cover" onerror="this.src='https://placehold.co/300?text=Foto+Ruangan'; this.onerror=null;">
                     </div>
                 </div>
                 @endforeach

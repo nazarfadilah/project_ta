@@ -31,9 +31,17 @@
 
             <!-- Daftar Ruangan -->
             <li class="nav-item">
-                <a href="{{ route('users.main.ruangan.index') }}" class="nav-link {{ request()->routeIs('users.main.ruangan.*') ? 'active' : '' }}" title="Daftar Ruangan">
+                <a href="{{ route('users.main.ruangan.index') }}" class="nav-link {{ (request()->routeIs('users.main.ruangan.index') || request()->routeIs('users.main.ruangan.show')) ? 'active' : '' }}" title="Daftar Ruangan">
                     <i class="fas fa-door-open menu-icon"></i>
                     <span class="menu-text">Daftar Ruangan</span>
+                </a>
+            </li>
+
+            <!-- Cek Ketersediaan -->
+            <li class="nav-item">
+                <a href="{{ route('users.main.ruangan.ketersediaan') }}" class="nav-link {{ request()->routeIs('users.main.ruangan.ketersediaan') ? 'active' : '' }}" title="Cek Ketersediaan">
+                    <i class="fas fa-calendar-days menu-icon"></i>
+                    <span class="menu-text">Cek Ketersediaan</span>
                 </a>
             </li>
 

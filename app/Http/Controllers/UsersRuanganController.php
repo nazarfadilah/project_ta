@@ -72,4 +72,46 @@ class UsersRuanganController extends Controller
             'booked' => $bookedRanges
         ]);
     }
+
+    /**
+     * Check availability of rooms on a selected date and room category
+     */
+    public function ketersediaan(Request $request)
+    {
+        $tanggal = $request->input('tanggal', Carbon::today()->toDateString());
+        $kategori = $request->input('kategori', 'ALL');
+
+        // Prepare room query
+        $query = Ruangan::with(['gedung', 'mediaFiles']);
+
+        // Filter by category
+        if ($kategori !== 'ALL') {
+            if ($kategori === 'KAMAR') {
+                $query->whereIn('tipe_ruangan', ['KAMAR_STANDAR', 'KAMAR_VIP', 'KAMAR_PREMIUM']);
+            } else {
+                $query->where('tipe_ruangan', $kategori);
+            }
+        }
+
+        // Filter out rooms that have active/approved booking on the selected date
+        if ($tanggal) {
+            $bookedRoomIds = PeminjamanTransaksi::whereDate('tanggal', $tanggal)
+                ->whereIn('statusApproval', ['APPROVED'])
+                ->whereIn('statusPeminjaman', ['RESERVASI', 'CHECK_IN', 'SELESAI'])
+                ->whereHas('paketRuangan')
+                ->get()
+                ->map(function ($t) {
+                    return $t->paketRuangan->ruangan_id ?? null;
+                })
+                ->filter()
+                ->unique()
+                ->toArray();
+
+            $query->whereNotIn('id_ruangan', $bookedRoomIds);
+        }
+
+        $ruangans = $query->get();
+
+        return view('users.main.ruangan.ketersediaan', compact('ruangans', 'tanggal', 'kategori'));
+    }
 }

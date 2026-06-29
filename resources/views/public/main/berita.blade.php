@@ -33,7 +33,7 @@
             <div class="news-carousel-item">
               <div class="news-card-carousel">
                 <div class="news-image-carousel">
-                  <img src="{{ filter_var($berita->gambar, FILTER_VALIDATE_URL) ? $berita->gambar : asset(ltrim($berita->gambar, '/')) }}" onerror="this.src='{{ asset('gambar_dashboard/berita_placeholder.jpg') }}'; this.onerror=null;" alt="{{ $berita->judul }}" style="width: 100%; height: 100%; object-fit: cover;">
+                  <img src="{{ filter_var($berita->gambar, FILTER_VALIDATE_URL) ? $berita->gambar : asset(ltrim($berita->gambar, '/')) }}" onerror="this.src='https://placehold.co/500x300?text=Berita+Asrama+Haji'; this.onerror=null;" alt="{{ $berita->judul }}" style="width: 100%; height: 100%; object-fit: cover;">
                   <span class="news-date-badge">{{ \Carbon\Carbon::parse($berita->tanggal_publish)->translatedFormat('d F Y') }}</span>
                 </div>
                 <div class="news-body-carousel">

@@ -112,7 +112,7 @@ class LandingPageController extends Controller
             'tentang' => $settings['tentang'] ?? '',
         ];
 
-        $brandLogo = isset($settings['logo']) && $settings['logo'] ? asset(ltrim($settings['logo'], '/')) : '';
+        $brandLogo = $this->resolveImage($settings['logo'] ?? null, 'logo');
         
         $mapsUrl = $settings['link_google_maps'] ?? '';
         if ($mapsUrl && ! str_contains($mapsUrl, 'output=embed')) {
@@ -126,15 +126,16 @@ class LandingPageController extends Controller
             ->orderBy('posisi')
             ->get()
             ->map(function ($slide) {
-                $slide->resolved_path = $slide->path ? (filter_var($slide->path, FILTER_VALIDATE_URL) ? $slide->path : (str_starts_with($slide->path, 'storage/') ? asset($slide->path) : asset('storage/' . $slide->path))) : '';
+                $slide->resolved_path = $this->resolveImage($slide->path, 'slide', $slide->posisi);
                 return $slide;
             });
 
         $galleryItems = Galeri::query()
             ->orderByDesc('created_at')
             ->get()
-            ->map(function ($item) {
-                $item->resolved_image = $item->gambar ? asset(ltrim($item->gambar, '/')) : '';
+            ->values()
+            ->map(function ($item, $index) {
+                $item->resolved_image = $this->resolveImage($item->gambar, 'galeri', $index);
                 return $item;
             });
 
@@ -142,8 +143,9 @@ class LandingPageController extends Controller
             ->where('status', 'approved')
             ->orderByDesc('tanggal_publish')
             ->get()
-            ->map(function ($berita) {
-                $berita->resolved_image = $berita->gambar ? asset(ltrim($berita->gambar, '/')) : '';
+            ->values()
+            ->map(function ($berita, $index) {
+                $berita->resolved_image = $this->resolveImage($berita->gambar, 'berita', $index);
                 return $berita;
             });
 
@@ -172,5 +174,96 @@ class LandingPageController extends Controller
             'termConditions', 
             'privacyItems'
         );
+    }
+
+    /**
+     * Memvalidasi file gambar dari database. 
+     * Prioritas utama: File dari database. 
+     * Fallback: Gambar lokal yang valid jika file tidak ditemukan.
+     */
+    private function resolveImage(?string $path, string $fallbackType, int $index = 0): string
+    {
+        if (!$path) {
+            return $this->getFallbackImage($fallbackType, $index);
+        }
+
+        // Jika path sudah berupa URL utuh (seperti placehold.co), langsung gunakan
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
+        }
+
+        // Bersihkan string path (hapus 'storage/' di awal jika ada)
+        $cleanPath = ltrim($path, '/');
+        if (str_starts_with($cleanPath, 'storage/')) {
+            $cleanPath = substr($cleanPath, 8);
+        }
+
+        // 1. Cek apakah file fisik ada di folder storage/app/public/
+        if (file_exists(storage_path('app/public/' . $cleanPath))) {
+            return asset('storage/' . $cleanPath);
+        }
+
+        // 2. Cek alternatif di folder public/storage/ (antisipasi jika symlink terputus tapi file ada)
+        if (file_exists(public_path('storage/' . $cleanPath))) {
+            return asset('storage/' . $cleanPath);
+        }
+
+        // 3. Jika file fisik BENAR-BENAR TIDAK ADA di server, jalankan fallback
+        return $this->getFallbackImage($fallbackType, $index);
+    }
+
+    /**
+     * Menyediakan gambar cadangan lokal dari folder public/assets/landing
+     */
+    private function getFallbackImage(string $type, int $index = 0): string
+    {
+        $slides = [
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.44.42.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.44.43.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.44.44.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.44.44 (1).jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.44.45.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.44.45 (1).jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.44.46.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.45.02.jpeg'
+        ];
+
+        $galeri = [
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.40.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.41.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.42.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.43.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.43 (1).jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.44.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.44 (1).jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.45.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.46.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.46 (1).jpeg'
+        ];
+
+        $berita = [
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.46 (2).jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.47.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.48.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.49.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.49 (1).jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.52.jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.52 (1).jpeg',
+            'assets/landing/WhatsApp Image 2026-04-28 at 13.46.53.jpeg'
+        ];
+
+        if ($type === 'slide') {
+            $path = $slides[$index % count($slides)];
+        } elseif ($type === 'galeri') {
+            $path = $galeri[$index % count($galeri)];
+        } elseif ($type === 'berita') {
+            $path = $berita[$index % count($berita)];
+        } elseif ($type === 'logo') {
+            $path = 'assets/landing/logo.png';
+        } else {
+            $path = 'assets/image/icon.png';
+        }
+
+        return asset($path);
     }
 }

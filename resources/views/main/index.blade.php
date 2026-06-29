@@ -17,253 +17,257 @@
         </div>
     </div>
 
-    <!-- Collapsible Calendar Container -->
-    <div class="collapse" id="calendarCollapse">
-        <div class="card border-0 shadow-sm rounded-3 mb-4" style="background: #fff; border: 1px solid #eef2f5 !important; overflow: hidden;">
-            <div class="card-body p-0">
-                <div class="row g-0">
-                    <!-- Kolom Kiri: Kalender -->
-                    <div class="col-xl-7 col-lg-7 col-md-12 p-4 border-end border-light">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="fw-bold mb-0 text-dark" id="calendarMonthYear" style="font-family: 'Outfit', sans-serif; font-size: 18px;"></h5>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center" id="prevMonthBtn" style="width: 34px; height: 34px; border: 1px solid #dee2e6;">
-                                    <i class="fas fa-chevron-left text-secondary" style="font-size: 12px;"></i>
-                                </button>
-                                <button class="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center" id="nextMonthBtn" style="width: 34px; height: 34px; border: 1px solid #dee2e6;">
-                                    <i class="fas fa-chevron-right text-secondary" style="font-size: 12px;"></i>
-                                </button>
+    <!-- Main Content Row -->
+    <div class="row">
+        <!-- Kolom Kiri: Kartu Statistik (Dapat Menyusut) -->
+        <div class="col-xl-12 col-lg-12 col-md-12 transition-all-layout" id="mainCardsContainer">
+            <div class="row">
+                <!-- Card Pengguna -->
+                @if(in_array(Auth::user()->roleId, [1, 2]))
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
+                    @if(Auth::user()->roleId == 2)
+                        <div class="card border-0 rounded-3 shadow-sm" style="background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%); min-height: 150px; cursor: default;">
+                            <div class="card-body d-flex flex-column justify-content-between h-100">
+                                <div class="d-flex justify-content-between align-items-flex-start">
+                                    <div>
+                                        <h3 class="card-title fw-bold display-4 mb-2 text-dark">
+                                            {{ $users }}
+                                        </h3>
+                                        <p class="card-text text-dark fw-semibold mb-0">Total Pengguna</p>
+                                    </div>
+                                    <i class="fas fa-users fa-3x" style="color: rgba(0,0,0,0.1);"></i>
+                                </div>
                             </div>
                         </div>
+                    @else
+                        <a href="{{ route('main.users.index') }}" class="text-decoration-none">
+                            <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%); min-height: 150px;">
+                                <div class="card-body d-flex flex-column justify-content-between h-100">
+                                    <div class="d-flex justify-content-between align-items-flex-start">
+                                        <div>
+                                            <h3 class="card-title fw-bold display-4 mb-2 text-dark">
+                                                {{ $users }}
+                                            </h3>
+                                            <p class="card-text text-dark fw-semibold mb-0">Kelola Pengguna</p>
+                                        </div>
+                                        <i class="fas fa-users fa-3x" style="color: rgba(0,0,0,0.1);"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    @endif
+                </div>
+                @endif
 
-                        <!-- Weekdays Grid -->
-                        <div class="calendar-weekdays-grid mb-2">
-                            <div>Min</div>
-                            <div>Sen</div>
-                            <div>Sel</div>
-                            <div>Rab</div>
-                            <div>Kam</div>
-                            <div>Jum</div>
-                            <div>Sab</div>
+                <!-- Card Tamu -->
+                @if(in_array(Auth::user()->roleId, [1, 2, 3]))
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <a href="{{ route('main.tamu.index') }}" class="text-decoration-none">
+                        <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #17A2B8 0%, #138496 100%); min-height: 150px;">
+                            <div class="card-body d-flex flex-column justify-content-between h-100">
+                                <div class="d-flex justify-content-between align-items-flex-start">
+                                    <div>
+                                        <h3 class="card-title fw-bold display-4 mb-2 text-white">
+                                            {{ $guests }}
+                                        </h3>
+                                        <p class="card-text text-white fw-semibold mb-0">Kelola Tamu</p>
+                                    </div>
+                                    <i class="fas fa-user-tie fa-3x" style="color: rgba(255,255,255,0.2);"></i>
+                                </div>
+                            </div>
                         </div>
+                    </a>
+                </div>
+                @endif
 
-                        <!-- Days Grid -->
-                        <div class="calendar-days-grid" id="calendarDaysContainer">
-                            <!-- Days will be loaded here dynamically -->
+                <!-- Card Gedung -->
+                @if(in_array(Auth::user()->roleId, [2, 3]))
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <a href="{{ route('main.gedung.index') }}" class="text-decoration-none">
+                        <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #6C757D 0%, #5A6268 100%); min-height: 150px;">
+                            <div class="card-body d-flex flex-column justify-content-between h-100">
+                                <div class="d-flex justify-content-between align-items-flex-start">
+                                    <div>
+                                        <h3 class="card-title fw-bold display-4 mb-2 text-white">
+                                            {{ $buildings }}
+                                        </h3>
+                                        <p class="card-text text-white fw-semibold mb-0">Kelola Gedung</p>
+                                    </div>
+                                    <i class="fas fa-building fa-3x" style="color: rgba(255,255,255,0.2);"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endif
+
+                <!-- Card Ruangan -->
+                @if(in_array(Auth::user()->roleId, [2, 3]))
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <a href="{{ route('main.ruangan.index') }}" class="text-decoration-none">
+                        <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #4E73DF 0%, #224ABE 100%); min-height: 150px;">
+                            <div class="card-body d-flex flex-column justify-content-between h-100">
+                                <div class="d-flex justify-content-between align-items-flex-start">
+                                    <div>
+                                        <h3 class="card-title fw-bold display-4 mb-2 text-white">
+                                            {{ $rooms }}
+                                        </h3>
+                                        <p class="card-text text-white fw-semibold mb-0">Kelola Ruangan</p>
+                                    </div>
+                                    <i class="fas fa-door-open fa-3x" style="color: rgba(255,255,255,0.2);"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endif
+
+                <!-- Card Sarana & Prasarana -->
+                @if(in_array(Auth::user()->roleId, [2, 3]))
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <a href="{{ route('main.sarana.index') }}" class="text-decoration-none">
+                        <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #20C997 0%, #17A2B8 100%); min-height: 150px;">
+                            <div class="card-body d-flex flex-column justify-content-between h-100">
+                                <div class="d-flex justify-content-between align-items-flex-start">
+                                    <div>
+                                        <h3 class="card-title fw-bold display-4 mb-2 text-white">
+                                            {{ $saranas }}
+                                        </h3>
+                                        <p class="card-text text-white fw-semibold mb-0">Kelola Sarana</p>
+                                    </div>
+                                    <i class="fas fa-tools fa-3x" style="color: rgba(255,255,255,0.2);"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endif
+
+                <!-- Card Paket Ruangan -->
+                @if(in_array(Auth::user()->roleId, [2, 3]))
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <a href="{{ route('main.paket_ruangan.index') }}" class="text-decoration-none">
+                        <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #E83E8C 0%, #D81B60 100%); min-height: 150px;">
+                            <div class="card-body d-flex flex-column justify-content-between h-100">
+                                <div class="d-flex justify-content-between align-items-flex-start">
+                                    <div>
+                                        <h3 class="card-title fw-bold display-4 mb-2 text-white">
+                                            {{ $packages }}
+                                        </h3>
+                                        <p class="card-text text-white fw-semibold mb-0">Kelola Paket Ruangan</p>
+                                    </div>
+                                    <i class="fas fa-box-open fa-3x" style="color: rgba(255,255,255,0.2);"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endif
+
+                <!-- Card Peminjaman Ruangan -->
+                @if(in_array(Auth::user()->roleId, [2, 3]))
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <a href="{{ route('main.transaksi.peminjaman.index') }}" class="text-decoration-none">
+                        <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #6F42C1 0%, #593196 100%); min-height: 150px;">
+                            <div class="card-body d-flex flex-column justify-content-between h-100">
+                                <div class="d-flex justify-content-between align-items-flex-start">
+                                    <div>
+                                        <h3 class="card-title fw-bold display-4 mb-2 text-white">
+                                            {{ $bookings }}
+                                        </h3>
+                                        <p class="card-text text-white fw-semibold mb-0">Peminjaman Ruangan</p>
+                                    </div>
+                                    <i class="fas fa-calendar-check fa-3x" style="color: rgba(255,255,255,0.2);"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endif
+
+                <!-- Card Berita -->
+                @if(in_array(Auth::user()->roleId, [1, 2, 3]))
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <a href="{{ route('main.berita.index') }}" class="text-decoration-none">
+                        <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #28A745 0%, #218838 100%); min-height: 150px;">
+                            <div class="card-body d-flex flex-column justify-content-between h-100">
+                                <div class="d-flex justify-content-between align-items-flex-start">
+                                    <div>
+                                        <h3 class="card-title fw-bold display-4 mb-2 text-white">
+                                            {{ $beritas }}
+                                        </h3>
+                                        <p class="card-text text-white fw-semibold mb-0">Kelola Berita</p>
+                                    </div>
+                                    <i class="fas fa-newspaper fa-3x" style="color: rgba(255,255,255,0.2);"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Kolom Kanan: Collapsible Calendar (Col-xl-4) -->
+        <div class="col-xl-4 col-lg-4 col-md-12 collapse mb-4" id="calendarCollapse">
+            <!-- Card Kalender -->
+            <div class="card border-0 shadow-sm rounded-3 mb-3" style="background: #fff; border: 1px solid #eef2f5 !important; overflow: hidden;">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0 text-dark" id="calendarMonthYear" style="font-family: 'Outfit', sans-serif; font-size: 15px;"></h6>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center" id="prevMonthBtn" style="width: 28px; height: 28px; border: 1px solid #dee2e6; padding: 0;">
+                                <i class="fas fa-chevron-left text-secondary" style="font-size: 10px;"></i>
+                            </button>
+                            <button class="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center" id="nextMonthBtn" style="width: 28px; height: 28px; border: 1px solid #dee2e6; padding: 0;">
+                                <i class="fas fa-chevron-right text-secondary" style="font-size: 10px;"></i>
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Kolom Kanan: Detail Reservasi pada Tanggal Terpilih -->
-                    <div class="col-xl-5 col-lg-5 col-md-12 p-4 bg-light-subtle d-flex flex-column" style="min-height: 350px;">
-                        <h6 class="fw-bold text-dark border-bottom pb-2 mb-3" style="font-family: 'Outfit', sans-serif; font-size: 15px;">
-                            <i class="fas fa-info-circle text-primary me-2"></i>Detail Reservasi: <span id="selectedDateLabel" class="text-secondary fw-semibold">Pilih Tanggal</span>
-                        </h6>
-                        <div class="flex-grow-1 overflow-auto" id="selectedDateReservations" style="max-height: 280px;">
-                            <div class="text-center text-muted py-5">
-                                <i class="far fa-calendar-check fa-3x mb-3" style="color: #ddd;"></i>
-                                <p class="mb-0" style="font-size: 13px;">Pilih tanggal dengan indikator peminjaman untuk melihat rincian.</p>
-                            </div>
-                        </div>
-                        <!-- Petunjuk Indikator -->
-                        <div class="mt-3 pt-3 border-top" style="font-size: 12px;">
-                            <span class="fw-semibold text-dark me-2">Petunjuk Indikator:</span>
-                            <span class="d-inline-flex align-items-center me-3">
-                                <span class="indicator-dot pending me-1"></span> Diajukan (Pending)
-                            </span>
-                            <span class="d-inline-flex align-items-center">
-                                <span class="indicator-dot approved me-1"></span> Disetujui (Approved)
-                            </span>
+                    <!-- Weekdays Grid -->
+                    <div class="calendar-weekdays-grid mb-2">
+                        <div>Min</div>
+                        <div>Sen</div>
+                        <div>Sel</div>
+                        <div>Rab</div>
+                        <div>Kam</div>
+                        <div>Jum</div>
+                        <div>Sab</div>
+                    </div>
+
+                    <!-- Days Grid -->
+                    <div class="calendar-days-grid" id="calendarDaysContainer">
+                        <!-- Days will be loaded here dynamically -->
+                    </div>
+                    
+                    <!-- Petunjuk Indikator -->
+                    <div class="mt-3 pt-2 border-top d-flex justify-content-between" style="font-size: 11px;">
+                        <span class="d-flex align-items-center">
+                            <span class="indicator-dot pending me-1"></span> Diajukan
+                        </span>
+                        <span class="d-flex align-items-center">
+                            <span class="indicator-dot approved me-1"></span> Disetujui
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card Detail Reservasi -->
+            <div class="card border-0 shadow-sm rounded-3 bg-light-subtle" style="border: 1px solid #eef2f5 !important; overflow: hidden;">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-3" style="font-family: 'Outfit', sans-serif; font-size: 14px;">
+                        <i class="fas fa-info-circle text-primary me-2"></i>Detail Reservasi: <span id="selectedDateLabel" class="text-secondary fw-semibold">Pilih Tanggal</span>
+                    </h6>
+                    <div class="overflow-auto" id="selectedDateReservations" style="max-height: 250px;">
+                        <div class="text-center text-muted py-4">
+                            <i class="far fa-calendar-check fa-2x mb-2" style="color: #ddd;"></i>
+                            <p class="mb-0" style="font-size: 12px;">Pilih tanggal dengan indikator untuk melihat rincian.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="row mb-2">
-        <!-- Card Pengguna -->
-        @if(in_array(Auth::user()->roleId, [1, 2]))
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
-            @if(Auth::user()->roleId == 2)
-                <div class="card border-0 rounded-3 shadow-sm" style="background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%); min-height: 150px; cursor: default;">
-                    <div class="card-body d-flex flex-column justify-content-between h-100">
-                        <div class="d-flex justify-content-between align-items-flex-start">
-                            <div>
-                                <h3 class="card-title fw-bold display-4 mb-2 text-dark">
-                                    {{ $users }}
-                                </h3>
-                                <p class="card-text text-dark fw-semibold mb-0">Total Pengguna</p>
-                            </div>
-                            <i class="fas fa-users fa-3x" style="color: rgba(0,0,0,0.1);"></i>
-                        </div>
-                    </div>
-                </div>
-            @else
-                <a href="{{ route('main.users.index') }}" class="text-decoration-none">
-                    <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%); min-height: 150px;">
-                        <div class="card-body d-flex flex-column justify-content-between h-100">
-                            <div class="d-flex justify-content-between align-items-flex-start">
-                                <div>
-                                    <h3 class="card-title fw-bold display-4 mb-2 text-dark">
-                                        {{ $users }}
-                                    </h3>
-                                    <p class="card-text text-dark fw-semibold mb-0">Kelola Pengguna</p>
-                                </div>
-                                <i class="fas fa-users fa-3x" style="color: rgba(0,0,0,0.1);"></i>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            @endif
-        </div>
-        @endif
-
-        <!-- Card Tamu -->
-        @if(in_array(Auth::user()->roleId, [1, 2, 3]))
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
-            <a href="{{ route('main.tamu.index') }}" class="text-decoration-none">
-                <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #17A2B8 0%, #138496 100%); min-height: 150px;">
-                    <div class="card-body d-flex flex-column justify-content-between h-100">
-                        <div class="d-flex justify-content-between align-items-flex-start">
-                            <div>
-                                <h3 class="card-title fw-bold display-4 mb-2 text-white">
-                                    {{ $guests }}
-                                </h3>
-                                <p class="card-text text-white fw-semibold mb-0">Kelola Tamu</p>
-                            </div>
-                            <i class="fas fa-user-tie fa-3x" style="color: rgba(255,255,255,0.2);"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endif
-
-        <!-- Card Gedung -->
-        @if(in_array(Auth::user()->roleId, [2, 3]))
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
-            <a href="{{ route('main.gedung.index') }}" class="text-decoration-none">
-                <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #6C757D 0%, #5A6268 100%); min-height: 150px;">
-                    <div class="card-body d-flex flex-column justify-content-between h-100">
-                        <div class="d-flex justify-content-between align-items-flex-start">
-                            <div>
-                                <h3 class="card-title fw-bold display-4 mb-2 text-white">
-                                    {{ $buildings }}
-                                </h3>
-                                <p class="card-text text-white fw-semibold mb-0">Kelola Gedung</p>
-                            </div>
-                            <i class="fas fa-building fa-3x" style="color: rgba(255,255,255,0.2);"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endif
-
-        <!-- Card Ruangan -->
-        @if(in_array(Auth::user()->roleId, [2, 3]))
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
-            <a href="{{ route('main.ruangan.index') }}" class="text-decoration-none">
-                <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #4E73DF 0%, #224ABE 100%); min-height: 150px;">
-                    <div class="card-body d-flex flex-column justify-content-between h-100">
-                        <div class="d-flex justify-content-between align-items-flex-start">
-                            <div>
-                                <h3 class="card-title fw-bold display-4 mb-2 text-white">
-                                    {{ $rooms }}
-                                </h3>
-                                <p class="card-text text-white fw-semibold mb-0">Kelola Ruangan</p>
-                            </div>
-                            <i class="fas fa-door-open fa-3x" style="color: rgba(255,255,255,0.2);"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endif
-
-        <!-- Card Sarana & Prasarana -->
-        @if(in_array(Auth::user()->roleId, [2, 3]))
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
-            <a href="{{ route('main.sarana.index') }}" class="text-decoration-none">
-                <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #20C997 0%, #17A2B8 100%); min-height: 150px;">
-                    <div class="card-body d-flex flex-column justify-content-between h-100">
-                        <div class="d-flex justify-content-between align-items-flex-start">
-                            <div>
-                                <h3 class="card-title fw-bold display-4 mb-2 text-white">
-                                    {{ $saranas }}
-                                </h3>
-                                <p class="card-text text-white fw-semibold mb-0">Kelola Sarana</p>
-                            </div>
-                            <i class="fas fa-tools fa-3x" style="color: rgba(255,255,255,0.2);"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endif
-
-        <!-- Card Paket Ruangan -->
-        @if(in_array(Auth::user()->roleId, [2, 3]))
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
-            <a href="{{ route('main.paket_ruangan.index') }}" class="text-decoration-none">
-                <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #E83E8C 0%, #D81B60 100%); min-height: 150px;">
-                    <div class="card-body d-flex flex-column justify-content-between h-100">
-                        <div class="d-flex justify-content-between align-items-flex-start">
-                            <div>
-                                <h3 class="card-title fw-bold display-4 mb-2 text-white">
-                                    {{ $packages }}
-                                </h3>
-                                <p class="card-text text-white fw-semibold mb-0">Kelola Paket Ruangan</p>
-                            </div>
-                            <i class="fas fa-box-open fa-3x" style="color: rgba(255,255,255,0.2);"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endif
-
-        <!-- Card Peminjaman Ruangan -->
-        @if(in_array(Auth::user()->roleId, [2, 3]))
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
-            <a href="{{ route('main.transaksi.peminjaman.index') }}" class="text-decoration-none">
-                <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #6F42C1 0%, #593196 100%); min-height: 150px;">
-                    <div class="card-body d-flex flex-column justify-content-between h-100">
-                        <div class="d-flex justify-content-between align-items-flex-start">
-                            <div>
-                                <h3 class="card-title fw-bold display-4 mb-2 text-white">
-                                    {{ $bookings }}
-                                </h3>
-                                <p class="card-text text-white fw-semibold mb-0">Peminjaman Ruangan</p>
-                            </div>
-                            <i class="fas fa-calendar-check fa-3x" style="color: rgba(255,255,255,0.2);"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endif
-
-        <!-- Card Berita -->
-        @if(in_array(Auth::user()->roleId, [1, 2, 3]))
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
-            <a href="{{ route('main.berita.index') }}" class="text-decoration-none">
-                <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #28A745 0%, #218838 100%); min-height: 150px;">
-                    <div class="card-body d-flex flex-column justify-content-between h-100">
-                        <div class="d-flex justify-content-between align-items-flex-start">
-                            <div>
-                                <h3 class="card-title fw-bold display-4 mb-2 text-white">
-                                    {{ $beritas }}
-                                </h3>
-                                <p class="card-text text-white fw-semibold mb-0">Kelola Berita</p>
-                            </div>
-                            <i class="fas fa-newspaper fa-3x" style="color: rgba(255,255,255,0.2);"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endif
     </div>
 
     <!-- Section Datatables Monitoring -->
@@ -680,6 +684,9 @@
 
 @push('styles')
 <style>
+    .transition-all-layout {
+        transition: all 0.35s ease-in-out;
+    }
     .calendar-weekdays-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
@@ -766,12 +773,12 @@
         const userRoleId = {{ Auth::user()->roleId }};
         let currentYear = new Date().getFullYear();
         let currentMonth = new Date().getMonth(); // 0-indexed
-
+ 
         const monthNames = [
             "Januari", "Februari", "Maret", "April", "Mei", "Juni",
             "Juli", "Agustus", "September", "Oktober", "November", "Desember"
         ];
-
+ 
         // Element Selectors
         const calendarMonthYear = document.getElementById('calendarMonthYear');
         const calendarDaysContainer = document.getElementById('calendarDaysContainer');
@@ -781,17 +788,31 @@
         const selectedDateReservations = document.getElementById('selectedDateReservations');
         const btnToggleCalendar = document.getElementById('btnToggleCalendar');
         const calendarToggleText = document.getElementById('calendarToggleText');
-
-        // Toggle Button Text changes
+ 
+        // Toggle Button Text and Layout changes
         const calendarCollapse = document.getElementById('calendarCollapse');
         if (calendarCollapse) {
             calendarCollapse.addEventListener('show.bs.collapse', function () {
                 if (calendarToggleText) calendarToggleText.textContent = 'Tutup Kalender';
                 if (btnToggleCalendar) btnToggleCalendar.style.background = 'linear-gradient(135deg, #6c757d 0%, #5a6268 100%)';
+                
+                // Shrink stat cards container to col-xl-8
+                const mainCardsContainer = document.getElementById('mainCardsContainer');
+                if (mainCardsContainer) {
+                    mainCardsContainer.classList.remove('col-xl-12', 'col-lg-12');
+                    mainCardsContainer.classList.add('col-xl-8', 'col-lg-8');
+                }
             });
             calendarCollapse.addEventListener('hide.bs.collapse', function () {
                 if (calendarToggleText) calendarToggleText.textContent = 'Buka Kalender';
                 if (btnToggleCalendar) btnToggleCalendar.style.background = 'linear-gradient(135deg, #C9A961 0%, #B89750 100%)';
+                
+                // Expand stat cards container back to col-xl-12
+                const mainCardsContainer = document.getElementById('mainCardsContainer');
+                if (mainCardsContainer) {
+                    mainCardsContainer.classList.remove('col-xl-8', 'col-lg-8');
+                    mainCardsContainer.classList.add('col-xl-12', 'col-lg-12');
+                }
             });
         }
 
