@@ -141,7 +141,17 @@
 
                 <div class="col-md-6 col-lg-3 detail-item">
                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Durasi Peminjaman</label>
-                    <div class="fw-semibold text-dark value" style="font-size: 14px;">{{ $invoice->peminjamanTransaksi->durasi }} jam</div>
+                    <div class="fw-semibold text-dark value" style="font-size: 14px;">
+                        @php
+                            $pjm = $invoice->peminjamanTransaksi;
+                            $isHarian = ($pjm->paketRuangan && (stripos($pjm->paketRuangan->nama_paket, 'hari') !== false || stripos($pjm->paketRuangan->nama_paket, 'harian') !== false));
+                        @endphp
+                        @if($isHarian)
+                            {{ $pjm->durasi }} hari
+                        @else
+                            {{ $pjm->durasi ? $pjm->durasi . ' jam' : 'Fleksibel' }}
+                        @endif
+                    </div>
                 </div>
 
                 <div class="col-md-6 col-lg-3 detail-item">

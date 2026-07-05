@@ -97,10 +97,27 @@ class UsersReservasiController extends Controller
             'sarana' => 'nullable|array',
             'sarana.*.sarana_id' => 'required|exists:sarana,id',
             'sarana.*.jumlah' => 'required|integer|min:1',
+            'durasi_hari' => 'nullable|integer|min:1',
         ]);
         
         $ruangan = Ruangan::findOrFail($validated['ruangan_id']);
         $paket = PaketRuangan::findOrFail($validated['paket_id']);
+
+        // Deteksi apakah paket harian
+        $isHarian = false;
+        if ($paket->nama_paket && (stripos($paket->nama_paket, 'hari') !== false || stripos($paket->nama_paket, 'harian') !== false)) {
+            $isHarian = true;
+        }
+
+        // Tentukan durasi transaksi
+        if ($isHarian) {
+            $durasi = isset($validated['durasi_hari']) ? (int)$validated['durasi_hari'] : 1;
+        } else {
+            $durasi = $paket->durasi; // dalam jam
+        }
+
+        // Total harga paket dikalikan durasi jika harian
+        $totalHargaPaket = $isHarian ? ($paket->harga * $durasi) : $paket->harga;
 
         // 1. Verifikasi kapasitas ruangan
         if ($validated['estimasi_peserta'] > $ruangan->kapasitas) {
@@ -109,7 +126,11 @@ class UsersReservasiController extends Controller
 
         // 2. Hitung waktu mulai dan selesai berdasarkan paket ruangan
         $startDateTime = Carbon::parse($validated['tanggal'] . ' ' . $validated['jam_mulai']);
-        $endDateTime = $startDateTime->copy()->addHours($paket->durasi);
+        if ($isHarian) {
+            $endDateTime = $startDateTime->copy()->addDays($durasi);
+        } else {
+            $endDateTime = $startDateTime->copy()->addHours($durasi);
+        }
 
         // 3. Verifikasi bentrok jadwal dengan pesanan ter-approve milik user lain
         $overlapping = PeminjamanTransaksi::whereHas('paketRuangan', function ($q) use ($validated) {
@@ -120,7 +141,12 @@ class UsersReservasiController extends Controller
             ->get()
             ->filter(function ($item) use ($startDateTime, $endDateTime) {
                 $itemStart = Carbon::parse($item->jamMulai);
-                $itemEnd = $itemStart->copy()->addHours($item->durasi);
+                $itemIsHarian = ($item->paketRuangan && (stripos($item->paketRuangan->nama_paket, 'hari') !== false || stripos($item->paketRuangan->nama_paket, 'harian') !== false));
+                if ($itemIsHarian) {
+                    $itemEnd = $itemStart->copy()->addDays($item->durasi);
+                } else {
+                    $itemEnd = $itemStart->copy()->addHours($item->durasi);
+                }
                 return $itemEnd->greaterThan($startDateTime) && $itemStart->lessThan($endDateTime);
             })
             ->first();
@@ -148,7 +174,7 @@ class UsersReservasiController extends Controller
             'facilityId' => $validated['paket_id'],
             'tanggal' => $validated['tanggal'],
             'jamMulai' => $startDateTime->format('Y-m-d H:i:s'),
-            'durasi' => $paket->durasi,
+            'durasi' => $durasi,
             'statusPeminjaman' => 'RESERVASI',
             'statusApproval' => 'PENDING',
             'keterangan' => $validated['keperluan'],
@@ -160,9 +186,9 @@ class UsersReservasiController extends Controller
         Invoice::create([
             'noInvoice' => 'INV/' . Carbon::parse($validated['tanggal'])->format('Ymd') . '/' . sprintf('%04d', $peminjaman->id),
             'peminjamanId' => $peminjaman->id,
-            'subtotal' => $paket->harga,
+            'subtotal' => $totalHargaPaket,
             'biayaTambahan' => 0.00,
-            'totalHarga' => $paket->harga,
+            'totalHarga' => $totalHargaPaket,
             'statusInvoice' => 'UNPAID',
             'status_pembayaran' => 'BELUM_BAYAR',
             'tglInvoice' => now(),
@@ -210,7 +236,12 @@ class UsersReservasiController extends Controller
             $item->id = $item->id;
             $item->ruangan = $item->paketRuangan->ruangan ?? new Ruangan();
             $item->tanggal_mulai = $item->tanggal;
-            $item->tanggal_selesai = Carbon::parse($item->jamMulai)->addHours($item->durasi)->format('Y-m-d');
+            $itemIsHarian = ($item->paketRuangan && (stripos($item->paketRuangan->nama_paket, 'hari') !== false || stripos($item->paketRuangan->nama_paket, 'harian') !== false));
+            if ($itemIsHarian) {
+                $item->tanggal_selesai = Carbon::parse($item->jamMulai)->addDays($item->durasi)->format('Y-m-d');
+            } else {
+                $item->tanggal_selesai = Carbon::parse($item->jamMulai)->addHours($item->durasi)->format('Y-m-d');
+            }
             $item->estimasi_peserta = $item->paketRuangan->ruangan->kapasitas ?? 1;
             
             // Map approval statuses: PENDING, APPROVED, REJECTED
@@ -249,7 +280,12 @@ class UsersReservasiController extends Controller
         $reservasi = $peminjaman;
         $reservasi->ruangan = $peminjaman->paketRuangan->ruangan ?? new Ruangan();
         $reservasi->tanggal_mulai = $peminjaman->tanggal;
-        $reservasi->tanggal_selesai = Carbon::parse($peminjaman->jamMulai)->addHours($peminjaman->durasi)->format('Y-m-d');
+        $pjmIsHarian = ($peminjaman->paketRuangan && (stripos($peminjaman->paketRuangan->nama_paket, 'hari') !== false || stripos($peminjaman->paketRuangan->nama_paket, 'harian') !== false));
+        if ($pjmIsHarian) {
+            $reservasi->tanggal_selesai = Carbon::parse($peminjaman->jamMulai)->addDays($peminjaman->durasi)->format('Y-m-d');
+        } else {
+            $reservasi->tanggal_selesai = Carbon::parse($peminjaman->jamMulai)->addHours($peminjaman->durasi)->format('Y-m-d');
+        }
         $reservasi->estimasi_peserta = $peminjaman->paketRuangan->ruangan->kapasitas ?? 1;
         if ($peminjaman->statusPeminjaman === 'SELESAI') {
             $reservasi->status = 'COMPLETED';

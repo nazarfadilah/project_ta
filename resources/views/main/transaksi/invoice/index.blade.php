@@ -170,7 +170,16 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Durasi Peminjaman</label>
-                                <div class="fw-semibold text-dark" style="font-size: 14px;">{{ $peminjaman->durasi }} jam</div>
+                                <div class="fw-semibold text-dark" style="font-size: 14px;">
+                                    @php
+                                        $isHarian = ($peminjaman->paketRuangan && (stripos($peminjaman->paketRuangan->nama_paket, 'hari') !== false || stripos($peminjaman->paketRuangan->nama_paket, 'harian') !== false));
+                                    @endphp
+                                    @if($isHarian)
+                                        {{ $peminjaman->durasi }} hari
+                                    @else
+                                        {{ $peminjaman->durasi ? $peminjaman->durasi . ' jam' : 'Fleksibel' }}
+                                    @endif
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Kode Peminjaman</label>

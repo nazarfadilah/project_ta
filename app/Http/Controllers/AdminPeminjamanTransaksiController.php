@@ -267,7 +267,12 @@ class AdminPeminjamanTransaksiController extends Controller
             ->get()
             ->map(function($item) {
                 $start = Carbon::parse($item->jamMulai);
-                $end = $start->copy()->addHours($item->durasi);
+                $itemIsHarian = ($item->paketRuangan && (stripos($item->paketRuangan->nama_paket, 'hari') !== false || stripos($item->paketRuangan->nama_paket, 'harian') !== false));
+                if ($itemIsHarian) {
+                    $end = $start->copy()->addDays($item->durasi);
+                } else {
+                    $end = $start->copy()->addHours($item->durasi);
+                }
                 return [
                     'start' => $start->format('Y-m-d H:i'),
                     'end' => $end->format('Y-m-d H:i'),
@@ -306,6 +311,7 @@ class AdminPeminjamanTransaksiController extends Controller
             'sarana' => 'nullable|array',
             'sarana.*.sarana_id' => 'required|exists:sarana,id',
             'sarana.*.jumlah' => 'required|integer|min:1',
+            'durasi_hari' => 'nullable|integer|min:1',
         ]);
 
         $guest = \App\Models\Guest::where('nik', $validated['nik'])->first();
@@ -316,6 +322,22 @@ class AdminPeminjamanTransaksiController extends Controller
         $ruangan = \App\Models\Ruangan::findOrFail($validated['ruangan_id']);
         $paket = \App\Models\PaketRuangan::findOrFail($validated['paket_id']);
 
+        // Deteksi apakah paket harian
+        $isHarian = false;
+        if ($paket->nama_paket && (stripos($paket->nama_paket, 'hari') !== false || stripos($paket->nama_paket, 'harian') !== false)) {
+            $isHarian = true;
+        }
+
+        // Tentukan durasi transaksi
+        if ($isHarian) {
+            $durasi = isset($validated['durasi_hari']) ? (int)$validated['durasi_hari'] : 1;
+        } else {
+            $durasi = $paket->durasi; // dalam jam
+        }
+
+        // Total harga paket dikalikan durasi jika harian
+        $totalHargaPaket = $isHarian ? ($paket->harga * $durasi) : $paket->harga;
+
         // 1. Verifikasi kapasitas ruangan
         if ($validated['estimasi_peserta'] > $ruangan->kapasitas) {
             return back()->withErrors(['estimasi_peserta' => 'Estimasi peserta tidak boleh melebihi kapasitas ruangan (' . $ruangan->kapasitas . ' orang).'])->withInput();
@@ -323,7 +345,11 @@ class AdminPeminjamanTransaksiController extends Controller
 
         // 2. Hitung waktu mulai dan selesai berdasarkan paket ruangan
         $startDateTime = Carbon::parse($validated['tanggal'] . ' ' . $validated['jam_mulai']);
-        $endDateTime = $startDateTime->copy()->addHours($paket->durasi);
+        if ($isHarian) {
+            $endDateTime = $startDateTime->copy()->addDays($durasi);
+        } else {
+            $endDateTime = $startDateTime->copy()->addHours($durasi);
+        }
 
         // 3. Verifikasi bentrok jadwal dengan pesanan ter-approve milik user lain
         $overlapping = PeminjamanTransaksi::whereHas('paketRuangan', function ($q) use ($validated) {
@@ -334,7 +360,12 @@ class AdminPeminjamanTransaksiController extends Controller
             ->get()
             ->filter(function ($item) use ($startDateTime, $endDateTime) {
                 $itemStart = Carbon::parse($item->jamMulai);
-                $itemEnd = $itemStart->copy()->addHours($item->durasi);
+                $itemIsHarian = ($item->paketRuangan && (stripos($item->paketRuangan->nama_paket, 'hari') !== false || stripos($item->paketRuangan->nama_paket, 'harian') !== false));
+                if ($itemIsHarian) {
+                    $itemEnd = $itemStart->copy()->addDays($item->durasi);
+                } else {
+                    $itemEnd = $itemStart->copy()->addHours($item->durasi);
+                }
                 return $itemEnd->greaterThan($startDateTime) && $itemStart->lessThan($endDateTime);
             })
             ->first();
@@ -364,7 +395,7 @@ class AdminPeminjamanTransaksiController extends Controller
             'facilityId' => $validated['paket_id'],
             'tanggal' => $validated['tanggal'],
             'jamMulai' => $startDateTime->format('Y-m-d H:i:s'),
-            'durasi' => $paket->durasi,
+            'durasi' => $durasi,
             'statusPeminjaman' => 'RESERVASI',
             'statusApproval' => 'APPROVED',
             'catatanApproval' => 'Dibuat langsung oleh Petugas.',
@@ -378,9 +409,9 @@ class AdminPeminjamanTransaksiController extends Controller
         Invoice::create([
             'noInvoice' => 'INV/' . Carbon::parse($validated['tanggal'])->format('Ymd') . '/' . sprintf('%04d', $peminjaman->id),
             'peminjamanId' => $peminjaman->id,
-            'subtotal' => $paket->harga,
+            'subtotal' => $totalHargaPaket,
             'biayaTambahan' => 0.00,
-            'totalHarga' => $paket->harga,
+            'totalHarga' => $totalHargaPaket,
             'statusInvoice' => 'UNPAID',
             'status_pembayaran' => 'BELUM_BAYAR',
             'tglInvoice' => now(),

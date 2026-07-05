@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->dateTime('jamMulai');
             $table->dateTime('checkIn')->nullable();
             $table->dateTime('checkOut')->nullable();
-            $table->integer('durasi');
+            $table->integer('durasi')->nullable();
             $table->enum('statusPeminjaman', ['RESERVASI','CHECK_IN','CHECK_OUT','BATAL','SELESAI'])->default('RESERVASI');
             $table->text('keterangan')->nullable();
             $table->unsignedBigInteger('userId')->nullable();

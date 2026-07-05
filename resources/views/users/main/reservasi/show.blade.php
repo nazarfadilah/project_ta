@@ -141,7 +141,14 @@
                 <div class="col-md-6 col-lg-3 detail-item">
                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Durasi Peminjaman</label>
                     <div class="fw-semibold text-dark value" style="font-size: 14px;">
-                        {{ \Carbon\Carbon::parse($reservasi->tanggal_mulai)->diffInDays(\Carbon\Carbon::parse($reservasi->tanggal_selesai)) }} hari
+                        @php
+                            $isHarian = ($reservasi->paketRuangan && (stripos($reservasi->paketRuangan->nama_paket, 'hari') !== false || stripos($reservasi->paketRuangan->nama_paket, 'harian') !== false));
+                        @endphp
+                        @if($isHarian)
+                            {{ $reservasi->durasi }} hari
+                        @else
+                            {{ $reservasi->durasi ? $reservasi->durasi . ' jam' : 'Fleksibel' }}
+                        @endif
                     </div>
                 </div>
 

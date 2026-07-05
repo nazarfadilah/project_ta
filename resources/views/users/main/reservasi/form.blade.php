@@ -180,6 +180,15 @@
                     </div>
                 </div>
 
+                {{-- Input Durasi Hari (Khusus Paket Harian) --}}
+                <div class="row g-3 mb-3" id="container_durasi_hari" style="display: none;">
+                    <div class="col-md-4">
+                        <label for="durasi_hari" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Durasi Sewa (Hari) *</label>
+                        <input type="number" name="durasi_hari" id="durasi_hari" class="form-control" value="1" min="1" placeholder="Masukkan jumlah hari menginap">
+                        <small class="text-muted" style="font-size: 11px;">Masukkan jumlah hari menginap (opsional, default: 1 hari).</small>
+                    </div>
+                </div>
+
                 <!-- Estimasi Durasi, Selesai, & Biaya -->
                 <div id="estimasi_section" style="display: none;">
                     <div class="p-3 bg-light rounded border-start border-info border-4 mt-3">
@@ -469,7 +478,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     data.packages.forEach(pkg => {
                         const opt = document.createElement('option');
                         opt.value = pkg.id;
-                        opt.textContent = `${pkg.nama_paket} - Rp ${formatRupiah(pkg.harga)} (${pkg.durasi} Jam)`;
+                        const isHarian = pkg.nama_paket.toLowerCase().includes('hari') || pkg.nama_paket.toLowerCase().includes('harian');
+                        const durasiDisplay = isHarian ? 'Harian' : `${pkg.durasi} Jam`;
+                        opt.textContent = `${pkg.nama_paket} - Rp ${formatRupiah(pkg.harga)} (${durasiDisplay})`;
                         paketSelect.appendChild(opt);
                     });
                 }
@@ -524,9 +535,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedPkg = activePackages.find(p => p.id == pId);
         if (!selectedPkg) return;
 
+        const isHarian = selectedPkg.nama_paket.toLowerCase().includes('hari') || selectedPkg.nama_paket.toLowerCase().includes('harian');
+        const durasiHariVal = parseInt(document.getElementById('durasi_hari').value) || 1;
+
         // Calculate estimated end datetime
         const startDt = new Date(tgl + 'T' + jam);
-        const endDt = new Date(startDt.getTime() + selectedPkg.durasi * 60 * 60 * 1000);
+        let endDt;
+        let durasiText = '';
+        let totalHargaPaket = selectedPkg.harga;
+
+        if (isHarian) {
+            endDt = new Date(startDt.getTime() + durasiHariVal * 24 * 60 * 60 * 1000);
+            durasiText = durasiHariVal + ' Hari';
+            totalHargaPaket = selectedPkg.harga * durasiHariVal;
+        } else {
+            endDt = new Date(startDt.getTime() + selectedPkg.durasi * 60 * 60 * 1000);
+            durasiText = selectedPkg.durasi + ' Jam';
+            totalHargaPaket = selectedPkg.harga;
+        }
 
         // Format dates
         const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -542,9 +568,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Render calculations
         estNama.textContent = selectedPkg.nama_paket;
-        estDurasi.textContent = selectedPkg.durasi + ' Jam';
+        estDurasi.textContent = durasiText;
         estSelesai.textContent = estSelesaiLabel;
-        estHarga.textContent = 'Rp ' + formatRupiah(selectedPkg.harga);
+        estHarga.textContent = 'Rp ' + formatRupiah(totalHargaPaket);
         
         estSection.style.display = 'block';
 
@@ -553,7 +579,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Bind event listeners for calculation
-    paketSelect.addEventListener('change', calculateEstimasi);
+    paketSelect.addEventListener('change', function() {
+        const pId = this.value;
+        const selectedPkg = activePackages.find(p => p.id == pId);
+        const containerDurasiHari = document.getElementById('container_durasi_hari');
+        const inputDurasiHari = document.getElementById('durasi_hari');
+        if (selectedPkg) {
+            const isHarian = selectedPkg.nama_paket.toLowerCase().includes('hari') || selectedPkg.nama_paket.toLowerCase().includes('harian');
+            if (isHarian) {
+                containerDurasiHari.style.display = 'block';
+            } else {
+                containerDurasiHari.style.display = 'none';
+                inputDurasiHari.value = '1';
+            }
+        } else {
+            containerDurasiHari.style.display = 'none';
+            inputDurasiHari.value = '1';
+        }
+        calculateEstimasi();
+    });
+    document.getElementById('durasi_hari').addEventListener('input', calculateEstimasi);
     tanggalInput.addEventListener('change', calculateEstimasi);
     jamMulaiSelect.addEventListener('change', calculateEstimasi);
 
