@@ -8,11 +8,14 @@ use Illuminate\Http\Request;
 
 class PaketRuanganController extends Controller
 {
+    public function index()
+    {
         // Code Lama:
         // $paketRuangans = PaketRuangan::with('ruangan.gedung')->orderBy('id', 'desc')->get();
         // Code Baru:
         $paketRuangans = PaketRuangan::with('ruangan')->orderBy('id', 'desc')->get();
         return view('main.master.paket_ruangan.index', compact('paketRuangans'));
+    }
 
     public function create()
     {
