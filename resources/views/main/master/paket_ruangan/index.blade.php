@@ -39,8 +39,8 @@
                     <thead style="background-color: #f8f9fa;">
                         <tr>
                             <th style="width: 50px; text-align: center;">No</th>
-                            <th>Nama Paket</th>
                             <th>Ruangan</th>
+                            <th>Nama Paket</th>
                             {{-- Gedung - DISABLED
                             <th>Gedung</th>
                             --}}
@@ -56,10 +56,10 @@
                         @forelse($paketRuangans as $index => $paket)
                         <tr>
                             <td style="text-align: center;">{{ $index + 1 }}</td>
+                            <td>{{ $paket->ruangan->nama_ruangan ?? 'N/A' }}</td>
                             <td>
                                 <strong class="text-dark">{{ $paket->nama_paket }}</strong>
                             </td>
-                            <td>{{ $paket->ruangan->nama_ruangan ?? 'N/A' }}</td>
                             {{-- Gedung - DISABLED
                             <td>
                                 <span class="badge bg-light text-dark border">{{ $paket->ruangan->gedung->nama_gedung ?? 'N/A' }}</span>
@@ -102,7 +102,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="{{ Auth::user()->roleId == 2 ? 7 : 8 }}" style="text-align: center; color: #999; padding: 30px;">
+                            <td colspan="{{ Auth::user()->roleId == 2 ? 6 : 7 }}" style="text-align: center; color: #999; padding: 30px;">
                                 <i class="fas fa-inbox d-block mb-2 text-secondary" style="font-size: 24px;"></i>
                                 Belum ada data paket ruangan.
                             </td>
@@ -218,8 +218,8 @@
             ordering: true,
             responsive: true,
             columnDefs: [
-                { orderable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 7] @endif },
-                { searchable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 7] @endif }
+                { orderable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 6] @endif },
+                { searchable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 6] @endif }
             ]
         });
     });
