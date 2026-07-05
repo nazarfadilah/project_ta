@@ -210,5 +210,20 @@
                 { searchable: false, targets: [0, 4] }
             ]
         });
+    });
+
+    function hapusData(url) {
+        if (confirm('Apakah Anda yakin ingin menghapus berita ini?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = url;
+            form.innerHTML = `
+                @csrf
+                <input type="hidden" name="_method" value="DELETE">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
 </script>
 @endpush

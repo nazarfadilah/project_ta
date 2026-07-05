@@ -86,7 +86,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="{{ Auth::user()->roleId == 2 ? 5 : 6 }}" style="text-align: center; color: #999; padding: 30px;">
+                            <td colspan="{{ Auth::user()->roleId == 2 ? 4 : 5 }}" style="text-align: center; color: #999; padding: 30px;">
                                 <i class="fas fa-inbox" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
                                 Belum ada data ruangan
                             </td>
@@ -207,8 +207,8 @@
             ordering: true,
             responsive: true,
             columnDefs: [
-                { orderable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 5] @endif },
-                { searchable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 5] @endif }
+                { orderable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 4] @endif },
+                { searchable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 4] @endif }
             ]
         });
     });

@@ -199,5 +199,20 @@
                 { searchable: false, targets: [0, 5] }
             ]
         });
+    });
+
+    function hapusData(url) {
+        if (confirm('Apakah Anda yakin ingin menghapus data tamu ini? Semua reservasi terkait tamu ini juga akan dihapus.')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = url;
+            form.innerHTML = `
+                @csrf
+                <input type="hidden" name="_method" value="DELETE">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
 </script>
 @endpush
