@@ -17,7 +17,10 @@ class AdminPeminjamanTransaksiController extends Controller
      */
     public function index()
     {
-        $peminjaman = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan.gedung', 'user')
+        // Code Lama:
+        // $peminjaman = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan.gedung', 'user')
+        // Code Baru:
+        $peminjaman = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan', 'user')
             ->whereIn('statusApproval', ['PENDING', 'APPROVED'])
             ->whereIn('statusPeminjaman', ['RESERVASI', 'CHECK_IN'])
             ->orderBy('createdAt', 'DESC')
@@ -33,7 +36,10 @@ class AdminPeminjamanTransaksiController extends Controller
      */
     public function history()
     {
-        $peminjaman = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan.gedung', 'user')
+        // Code Lama:
+        // $peminjaman = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan.gedung', 'user')
+        // Code Baru:
+        $peminjaman = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan', 'user')
             ->where(function ($query) {
                 $query->whereIn('statusPeminjaman', ['SELESAI', 'BATAL'])
                       ->orWhere('statusApproval', 'REJECTED');
@@ -52,7 +58,10 @@ class AdminPeminjamanTransaksiController extends Controller
     public function show($id)
     {
         $peminjaman = PeminjamanTransaksi::findOrFail($id);
-        $peminjaman->load('guest.user', 'paketRuangan.ruangan.gedung', 'user', 'invoice', 'detailSaranas.sarana');
+        // Code Lama:
+        // $peminjaman->load('guest.user', 'paketRuangan.ruangan.gedung', 'user', 'invoice', 'detailSaranas.sarana');
+        // Code Baru:
+        $peminjaman->load('guest.user', 'paketRuangan.ruangan', 'user', 'invoice', 'detailSaranas.sarana');
 
         // Check if invoice exists
         $invoice = Invoice::where('peminjamanId', $id)->first();
@@ -210,7 +219,10 @@ class AdminPeminjamanTransaksiController extends Controller
      */
     public function create()
     {
-        $ruangans = \App\Models\Ruangan::with('gedung')->orderBy('nama_ruangan', 'asc')->get();
+        // Code Lama:
+        // $ruangans = \App\Models\Ruangan::with('gedung')->orderBy('nama_ruangan', 'asc')->get();
+        // Code Baru:
+        $ruangans = \App\Models\Ruangan::orderBy('nama_ruangan', 'asc')->get();
         $saranas = \App\Models\Sarana::orderBy('nama', 'asc')->get();
         return view('main.transaksi.peminjaman.create', compact('ruangans', 'saranas'));
     }
@@ -238,7 +250,10 @@ class AdminPeminjamanTransaksiController extends Controller
      */
     public function getRuanganDetails($id)
     {
-        $ruangan = \App\Models\Ruangan::with(['gedung', 'mediaFiles', 'paketRuangans' => function($q) {
+        // Code Lama:
+        // $ruangan = \App\Models\Ruangan::with(['gedung', 'mediaFiles', 'paketRuangans' => function($q) { $q->where('status', 'ACTIVE'); }])->findOrFail($id);
+        // Code Baru:
+        $ruangan = \App\Models\Ruangan::with(['mediaFiles', 'paketRuangans' => function($q) {
             $q->where('status', 'ACTIVE');
         }])->findOrFail($id);
 
@@ -264,7 +279,10 @@ class AdminPeminjamanTransaksiController extends Controller
             'id_ruangan' => $ruangan->id_ruangan,
             'nama_ruangan' => $ruangan->nama_ruangan,
             'tipe_ruangan' => str_replace('_', ' ', $ruangan->tipe_ruangan),
-            'gedung' => $ruangan->gedung->nama_gedung ?? '-',
+            // Code Lama:
+            // 'gedung' => $ruangan->gedung->nama_gedung ?? '-',
+            // Code Baru:
+            'gedung' => '-',
             'kapasitas' => $ruangan->kapasitas,
             'packages' => $ruangan->paketRuangans,
             'photos' => $ruangan->mediaFiles,

@@ -95,10 +95,12 @@
                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Jenis Ruangan</label>
                     <div class="fw-semibold text-dark value" style="font-size: 14px;">{{ str_replace('_', ' ', $reservasi->ruangan->tipe_ruangan) }}</div>
                 </div>
+                {{-- Gedung - DISABLED
                 <div class="col-md-6 col-lg-4 detail-item">
                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Gedung</label>
                     <div class="fw-semibold text-dark value" style="font-size: 14px;">{{ $reservasi->ruangan->gedung->nama_gedung ?? '-' }}</div>
                 </div>
+                --}}
                 <div class="col-md-6 col-lg-4 detail-item">
                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Lantai</label>
                     <div class="fw-semibold text-dark value" style="font-size: 14px;">{{ $reservasi->ruangan->lantai ? 'Lantai ' . $reservasi->ruangan->lantai : '-' }}</div>

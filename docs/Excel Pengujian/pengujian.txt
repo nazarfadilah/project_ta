@@ -1,0 +1,25 @@
+Tabel 3.28    Pengujian Sistem
+No	Fitur yang Diuji	Skenario Pengujian	Data Masukan	Hasil yang Diharapkan	Hasil Pengujian	Status
+1	Login dan Logout	User melakukan login dengan email dan password valid, lalu melakukan logout	Login dan logout	Sistem menerima login, menampilkan dashboard sesuai role, dan kembali ke halaman utama setelah logout	Sesuai harapan	
+2	Kelola Data Users	Admin melakukan kelola data users (tambah, lihat, ubah, hapus)	Kelola data users	Sistem menyimpan, menampilkan, memperbarui, dan menghapus data users	Sesuai harapan	
+3	Kelola Data Tentang/Landing Page	Admin melakukan kelola data tentang/landing page (tambah, lihat, ubah, hapus)	Kelola data tentang/landing page	Sistem menyimpan, menampilkan, memperbarui, dan menampilkan informasi tentang/landing page terbaru	Sesuai harapan	
+4	Kelola Data Tamu	Admin dan Petugas melakukan kelola data tamu (tambah, lihat, ubah, hapus)	Kelola data tamu	Sistem menyimpan, menampilkan, memperbarui, dan menghapus data tamu	Sesuai harapan	
+5	Kelola Data Gedung	Petugas melakukan kelola data gedung (tambah, lihat, ubah, hapus)	Kelola data gedung	Sistem menyimpan, menampilkan, memperbarui, dan menghapus data gedung	Sesuai harapan	
+6	Kelola Data Ruangan	Petugas melakukan kelola data ruangan (tambah, lihat, ubah, hapus)	Kelola data ruangan	Sistem menyimpan, menampilkan, memperbarui, dan menghapus data ruangan	Sesuai harapan	
+7	Kelola Data Sarana	Petugas melakukan kelola data sarana (tambah, lihat, ubah, hapus)	Kelola data sarana	Sistem menyimpan, menampilkan, memperbarui, dan menghapus data sarana	Sesuai harapan	
+8	Kelola Data Paket Ruangan	Petugas melakukan kelola data paket ruangan (tambah, lihat, ubah, hapus)	Kelola data paket ruangan	Sistem menyimpan, menampilkan, memperbarui, dan menghapus data paket ruangan	Sesuai harapan	
+9	Kelola Data Invoice	Petugas melakukan kelola data invoice (tambah, lihat, ubah, hapus, cetak)	Kelola data invoice	Sistem membuat, menampilkan, memperbarui, menghapus, dan mencetak invoice peminjaman	Sesuai harapan	
+10	Check-in Peminjaman	Petugas melakukan check-in peminjaman	Check-in peminjaman	Sistem memperbarui status peminjaman menjadi check-in/sedang digunakan dan mencatat waktu check-in	Sesuai harapan	
+11	Check-out Peminjaman	Petugas melakukan check-out peminjaman	Check-out peminjaman	Sistem memperbarui status peminjaman menjadi selesai/check-out dan mencatat waktu check-out	Sesuai harapan	
+12	Verifikasi Peminjaman	Petugas melakukan verifikasi peminjaman	Verifikasi peminjaman	Sistem mengubah status verifikasi peminjaman (disetujui/ditolak) sesuai tindakan petugas	Sesuai harapan	
+13	Permohonan Peminjaman	Peminjam/tamu melakukan permohonan peminjaman ruangan/fasilitas	Permohonan peminjaman	Sistem menyimpan permohonan peminjaman dan meneruskan ke petugas untuk diverifikasi	Sesuai harapan	
+14	Pembatalan Peminjaman	Peminjam/tamu melakukan pembatalan permohonan peminjaman yang telah diajukan	Pembatalan peminjaman	Sistem memperbarui status peminjaman menjadi dibatalkan oleh peminjam	Sesuai harapan	
+15	Kelola Profil Pribadi	Peminjam mengelola data pribadi/profil (lihat, ubah password/data profil)	Kelola data pribadi/profil	Sistem memperbarui informasi profil peminjam secara dinamis	Sesuai harapan	
+16	Laporan Peminjaman	Admin dan Pimpinan melihat dan mencetak laporan peminjaman	Laporan peminjaman	Sistem menampilkan data laporan peminjaman secara akurat dan mendukung cetak laporan	Sesuai harapan	
+17	Kelola Berita	Admin dan Petugas melakukan kelola berita (tambah, lihat, ubah, hapus)	Kelola data berita	Sistem menyimpan, menampilkan, memperbarui, dan menghapus berita di portal	Sesuai harapan	
+18	Enkripsi Password (Bcrypt)	Menyimpan dan memverifikasi password pengguna saat registrasi/login	Data password pengguna	Password tersimpan di database dalam bentuk hash Bcrypt dan tidak dapat dibaca secara langsung	Sesuai harapan	
+19	Antarmuka Menarik & Responsif	Membuka antarmuka pengguna pada browser dan mengecek konsistensi serta kerapihan visual	Tampilan antarmuka sistem	Tampilan menarik, rapi, dan mudah dimengerti menggunakan framework Bootstrap	Sesuai harapan	
+20	Akses Multiperangkat	Mengakses sistem melalui berbagai perangkat (smartphone, tablet, laptop) dan berbagai browser	Akses multiperangkat	Sistem dapat diakses dengan baik dan tampil secara responsif di semua perangkat	Sesuai harapan	
+21	Login Menggunakan Google	Melakukan login menggunakan opsi tombol Google Sign-In	Pilihan login Google	Pengguna berhasil login ke dalam sistem menggunakan akun Google yang terintegrasi	Sesuai harapan	
+22	Keamanan Form (Captcha)	Mengirimkan form (seperti login atau registrasi) dengan memverifikasi Captcha	Validasi Captcha	Sistem menolak pengiriman form jika Captcha tidak valid, dan menerima jika Captcha valid	Sesuai harapan	
+23	Notifikasi Email (SMTP)	Mengirim notifikasi email otomatis saat peminjaman diajukan/diupdate	Pengiriman email notifikasi	Sistem mengirimkan email pemberitahuan ke alamat email peminjam melalui protokol SMTP	Sesuai harapan	

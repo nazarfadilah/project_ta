@@ -47,11 +47,14 @@
                                 name="ruangan_id" 
                                 style="font-size: 14px; padding: 10px 14px;" required>
                             <option value="">-- Pilih Ruangan --</option>
-                            @foreach($ruangans as $ruangan)
-                                <option value="{{ $ruangan->id_ruangan }}" {{ old('ruangan_id', $paketRuangan?->ruangan_id) == $ruangan->id_ruangan ? 'selected' : '' }}>
-                                    {{ $ruangan->nama_ruangan }} (Gedung: {{ $ruangan->gedung->nama_gedung ?? 'N/A' }})
-                                </option>
-                            @endforeach
+                             @foreach($ruangans as $ruangan)
+                                 <option value="{{ $ruangan->id_ruangan }}" {{ old('ruangan_id', $paketRuangan?->ruangan_id) == $ruangan->id_ruangan ? 'selected' : '' }}>
+                                     {{-- Code Lama:
+                                     {{ $ruangan->nama_ruangan }} (Gedung: {{ $ruangan->gedung->nama_gedung ?? 'N/A' }})
+                                     --}}
+                                     {{ $ruangan->nama_ruangan }}
+                                 </option>
+                             @endforeach
                         </select>
                         @error('ruangan_id')
                             <div class="invalid-feedback">{{ $message }}</div>

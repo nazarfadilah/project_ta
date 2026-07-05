@@ -180,10 +180,12 @@
                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Tipe Ruangan</label>
                     <div class="fw-semibold text-dark" style="font-size: 14px;">{{ str_replace('_', ' ', $peminjaman->paketRuangan->ruangan->tipe_ruangan ?? '-') }}</div>
                 </div>
+                {{-- Gedung - DISABLED
                 <div class="col-md-6">
                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Gedung</label>
                     <div class="fw-semibold text-dark" style="font-size: 14px;">{{ $peminjaman->paketRuangan->ruangan->gedung->nama_gedung ?? '-' }}</div>
                 </div>
+                --}}
                 <div class="col-md-6">
                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Lantai</label>
                     <div class="fw-semibold text-dark" style="font-size: 14px;">{{ $peminjaman->paketRuangan->ruangan->lantai ? 'Lantai ' . $peminjaman->paketRuangan->ruangan->lantai : '-' }}</div>

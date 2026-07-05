@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Guest;
 use App\Models\Berita;
-use App\Models\Gedung;
+// use App\Models\Gedung;
 use App\Models\Ruangan;
 use App\Models\Sarana;
 use App\Models\PaketRuangan;
@@ -22,7 +22,10 @@ class DashboardController extends Controller
         $stats = [
             'users' => User::count(),
             'guests' => Guest::count(),
-            'buildings' => Gedung::count(),
+            // Code Lama:
+            // 'buildings' => Gedung::count(),
+            // Code Baru:
+            'buildings' => 0,
             'beritas' => ($user && $user->roleId == 3) ? Berita::where('userId', $user->id)->count() : Berita::count(),
             'rooms' => Ruangan::count(),
             'saranas' => Sarana::count(),
@@ -30,7 +33,10 @@ class DashboardController extends Controller
             'bookings' => PeminjamanTransaksi::count(),
         ];
 
-        $pendingBookings = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan.gedung')
+        // Code Lama:
+        // $pendingBookings = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan.gedung')
+        // Code Baru:
+        $pendingBookings = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan')
             ->where('statusApproval', 'PENDING')
             ->orderBy('createdAt', 'desc')
             ->get();
@@ -46,7 +52,10 @@ class DashboardController extends Controller
 
         $todayCheckins = [];
         if ($user && $user->roleId == 3) {
-            $todayCheckins = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan.gedung')
+            // Code Lama:
+            // $todayCheckins = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan.gedung')
+            // Code Baru:
+            $todayCheckins = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan')
                 ->where('tanggal', date('Y-m-d'))
                 ->where('statusApproval', 'APPROVED')
                 ->where('statusPeminjaman', 'RESERVASI')
@@ -56,7 +65,10 @@ class DashboardController extends Controller
 
         $isAdminOrPimpinan = $user ? in_array($user->roleId, [1, 2]) : true;
 
-        $calendarBookings = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan.gedung')
+        // Code Lama:
+        // $calendarBookings = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan.gedung')
+        // Code Baru:
+        $calendarBookings = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan')
             ->whereIn('statusApproval', ['PENDING', 'APPROVED'])
             ->get()
             ->map(function ($booking) use ($isAdminOrPimpinan) {
@@ -67,7 +79,10 @@ class DashboardController extends Controller
                     'status_peminjaman' => $booking->statusPeminjaman,
                     'guest_name' => $isAdminOrPimpinan ? null : ($booking->guest->name ?? 'Tamu'),
                     'ruangan' => $isAdminOrPimpinan ? null : ($booking->paketRuangan->ruangan->nama_ruangan ?? 'Ruangan'),
-                    'gedung' => $isAdminOrPimpinan ? null : ($booking->paketRuangan->ruangan->gedung->nama_gedung ?? 'Gedung'),
+                    // Code Lama:
+                    // 'gedung' => $isAdminOrPimpinan ? null : ($booking->paketRuangan->ruangan->gedung->nama_gedung ?? 'Gedung'),
+                    // Code Baru:
+                    'gedung' => null,
                     'jam_mulai' => $isAdminOrPimpinan ? null : ($booking->jamMulai ? $booking->jamMulai->format('H:i') : null),
                     'durasi' => $isAdminOrPimpinan ? null : ($booking->durasi . ' Jam'),
                 ];
@@ -92,7 +107,10 @@ class DashboardController extends Controller
         $stats = [
             'users' => User::count(),
             'guests' => Guest::count(),
-            'buildings' => Gedung::count(),
+            // Code Lama:
+            // 'buildings' => Gedung::count(),
+            // Code Baru:
+            'buildings' => 0,
             'beritas' => Berita::count(),
         ];
 
@@ -103,7 +121,10 @@ class DashboardController extends Controller
     public function usersindex()
     {
         $stats = [
-            'buildings' => Gedung::count(),
+            // Code Lama:
+            // 'buildings' => Gedung::count(),
+            // Code Baru:
+            'buildings' => 0,
             'rooms' => Ruangan::count(),
             'saranas' => Sarana::count(),
         ];

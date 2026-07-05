@@ -31,7 +31,9 @@
             <input type="hidden" name="nama_ruangan" value="{{ $ruangan->nama_ruangan }}">
             <input type="hidden" name="tipe_ruangan" value="{{ $ruangan->tipe_ruangan }}">
             <input type="hidden" name="kapasitas" value="{{ $ruangan->kapasitas }}">
+            {{-- Gedung - DISABLED
             <input type="hidden" name="gedung_id" value="{{ $ruangan->gedung_id }}">
+            --}}
             @if($tanggal)
                 <input type="hidden" name="tanggal" value="{{ $tanggal }}">
             @endif
@@ -72,10 +74,12 @@
                     </div>
                 </div>
 
+                {{-- Disabled Gedung Detail Item
                 <div class="col-md-6 col-lg-4 detail-item">
                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Gedung</label>
                     <div class="fw-semibold text-dark value" style="font-size: 14px;">{{ $ruangan->gedung->nama_gedung ?? '-' }}</div>
                 </div>
+                --}}
 
                 <div class="col-md-6 col-lg-4 detail-item">
                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Lantai</label>

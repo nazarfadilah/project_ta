@@ -45,8 +45,10 @@
                         <tr>
                             <td>
                                 <strong>{{ $reservasi->ruangan->nama_ruangan }}</strong>
+                                {{-- Gedung - DISABLED
                                 <br>
                                 <small class="text-muted">{{ $reservasi->ruangan->gedung->nama_gedung ?? '-' }}</small>
+                                --}}
                             </td>
                             <td>
                                 {{ \Carbon\Carbon::parse($reservasi->tanggal_mulai)->format('d/m/Y') }}

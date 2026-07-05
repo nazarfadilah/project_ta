@@ -45,13 +45,14 @@
                 </a>
             </li>
 
-            <!-- Daftar Gedung -->
+            {{-- Disabled Daftar Gedung Sidebar Link
             <li class="nav-item">
                 <a href="{{ route('users.main.gedung.index') }}" class="nav-link {{ request()->routeIs('users.main.gedung.*') ? 'active' : '' }}" title="Daftar Gedung">
                     <i class="fas fa-building menu-icon"></i>
                     <span class="menu-text">Daftar Gedung</span>
                 </a>
             </li>
+            --}}
 
             <!-- Daftar Sarana -->
             <li class="nav-item">

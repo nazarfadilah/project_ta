@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PeminjamanTransaksi;
 use App\Models\Ruangan;
-use App\Models\Gedung;
+// use App\Models\Gedung;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -15,10 +15,16 @@ class LaporanController extends Controller
     {
         // 1. Get Room and Building data for filters
         $ruangans = Ruangan::orderBy('nama_ruangan')->get();
-        $gedungs = Gedung::orderBy('nama_gedung')->get();
+        // Code Lama:
+        // $gedungs = Gedung::orderBy('nama_gedung')->get();
+        // Code Baru:
+        $gedungs = collect();
 
         // 2. Fetch all transaction data with relationships for DataTables
-        $peminjaman = PeminjamanTransaksi::with(['guest', 'paketRuangan.ruangan.gedung', 'user'])
+        // Code Lama:
+        // $peminjaman = PeminjamanTransaksi::with(['guest', 'paketRuangan.ruangan.gedung', 'user'])
+        // Code Baru:
+        $peminjaman = PeminjamanTransaksi::with(['guest', 'paketRuangan.ruangan', 'user'])
             ->orderBy('tanggal', 'desc')
             ->get();
 
@@ -87,14 +93,19 @@ class LaporanController extends Controller
 
     public function export(Request $request)
     {
-        $query = PeminjamanTransaksi::with(['guest', 'paketRuangan.ruangan.gedung', 'user']);
+        // Code Lama:
+        // $query = PeminjamanTransaksi::with(['guest', 'paketRuangan.ruangan.gedung', 'user']);
+        // Code Baru:
+        $query = PeminjamanTransaksi::with(['guest', 'paketRuangan.ruangan', 'user']);
 
-        // Filter based on Building (Gedung)
+        // Filter based on Building (Gedung) - DISABLED
+        /*
         if ($request->filled('gedung_id')) {
             $query->whereHas('paketRuangan.ruangan', function ($q) use ($request) {
                 $q->where('gedung_id', $request->gedung_id);
             });
         }
+        */
 
         // Filter based on Room (Ruangan)
         if ($request->filled('ruangan_id')) {
@@ -159,7 +170,10 @@ class LaporanController extends Controller
                     $index + 1,
                     $row->kodePeminjaman,
                     $row->guest->name ?? 'N/A',
-                    $row->paketRuangan->ruangan->gedung->nama_gedung ?? 'N/A',
+                    // Code Lama:
+                    // $row->paketRuangan->ruangan->gedung->nama_gedung ?? 'N/A',
+                    // Code Baru:
+                    '-',
                     $row->paketRuangan->ruangan->nama_ruangan ?? 'N/A',
                     Carbon::parse($row->tanggal)->format('d-m-Y'),
                     Carbon::parse($row->jamMulai)->format('H:i'),

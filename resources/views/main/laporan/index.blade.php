@@ -141,7 +141,7 @@
                             <th style="width: 50px; text-align: center;">No</th>
                             <th>Kode Peminjaman</th>
                             <th>Nama Guest</th>
-                            <th>Gedung</th>
+                            {{-- <th>Gedung</th> --}}
                             <th>Ruangan</th>
                             <th>Tanggal</th>
                             <th>Waktu Mulai</th>
@@ -157,7 +157,7 @@
                                 <span class="fw-bold text-dark">{{ $item->kodePeminjaman }}</span>
                             </td>
                             <td>{{ $item->guest->name ?? 'N/A' }}</td>
-                            <td>{{ $item->paketRuangan->ruangan->gedung->nama_gedung ?? 'N/A' }}</td>
+                            {{-- <td>{{ $item->paketRuangan->ruangan->gedung->nama_gedung ?? 'N/A' }}</td> --}}
                             <td>
                                 <span class="badge bg-light text-dark border">{{ $item->paketRuangan->ruangan->nama_ruangan ?? 'N/A' }}</span>
                             </td>
@@ -220,7 +220,7 @@
                 <div class="modal-body p-4">
                     <p class="text-muted mb-4" style="font-size: 13px;">Silakan tentukan kriteria penyaringan data peminjaman yang ingin Anda ekspor ke bentuk Microsoft Excel (.csv).</p>
                     
-                    <!-- 1. Filter Gedung -->
+                    <!-- 1. Filter Gedung - DISABLED
                     <div class="mb-3">
                         <label for="gedung_id" class="form-label fw-semibold text-dark" style="font-size: 13px;">Gedung</label>
                         <select class="form-select border-grey" id="gedung_id" name="gedung_id" style="font-size: 13px;">
@@ -230,6 +230,7 @@
                             @endforeach
                         </select>
                     </div>
+                    -->
 
                     <!-- 2. Filter Ruangan -->
                     <div class="mb-3">
@@ -237,7 +238,7 @@
                         <select class="form-select border-grey" id="ruangan_id" name="ruangan_id" style="font-size: 13px;">
                             <option value="">-- Semua Ruangan --</option>
                             @foreach($ruangans as $ruangan)
-                                <option value="{{ $ruangan->id_ruangan }}" data-gedung="{{ $ruangan->gedung_id }}">{{ $ruangan->nama_ruangan }}</option>
+                                <option value="{{ $ruangan->id_ruangan }}" data-gedung="">{{ $ruangan->nama_ruangan }}</option>
                             @endforeach
                         </select>
                     </div>

@@ -18,12 +18,12 @@ use App\Http\Controllers\UsersRuanganController;
 use App\Http\Controllers\UsersReservasiController;
 use App\Http\Controllers\UsersInvoiceController;
 use App\Http\Controllers\UsersProfilController;
-use App\Http\Controllers\UsersGedungController;
+// use App\Http\Controllers\UsersGedungController;
 use App\Http\Controllers\UsersSaranaController;
 use App\Http\Controllers\SaranaController;
 use App\Http\Controllers\SaranaAvailabilityController;
 use App\Http\Controllers\PeminjamanSaranaController;
-use App\Http\Controllers\GedungController;
+// use App\Http\Controllers\GedungController;
 use App\Http\Controllers\AdminPeminjamanTransaksiController;
 use App\Http\Controllers\AdminInvoiceController;
 use App\Http\Controllers\LaporanController;
@@ -205,6 +205,7 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->group(function () {
         Route::post('/{id}/update-status', [AdminInvoiceController::class, 'updateStatus'])->name('updateStatus');
     });
 
+    /*
     Route::prefix('data-master/gedung')->name('main.gedung.')->group(function () {
         Route::get('/', [GedungController::class, 'index'])->name('index');
         Route::get('/create', [GedungController::class, 'create'])->name('create');
@@ -214,6 +215,7 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->group(function () {
         Route::put('/{id}', [GedungController::class, 'update'])->name('update');
         Route::delete('/{id}', [GedungController::class, 'destroy'])->name('destroy');
     });
+    */
 
     Route::prefix('data-master/paket-ruangan')->name('main.paket_ruangan.')->group(function () {
         Route::get('/', [PaketRuanganController::class, 'index'])->name('index');
@@ -262,10 +264,12 @@ Route::middleware(['auth:web', 'tamu'])->prefix('users')->name('users.')->group(
             Route::get('/{id}/details', [UsersRuanganController::class, 'getDetails'])->name('details');
             Route::get('/{slug}', [UsersRuanganController::class, 'show'])->name('show');
         });
-        // Gedung routes (view-only)
+        // Gedung routes (view-only) - DISABLED
+        /*
         Route::prefix('gedung')->name('gedung.')->group(function () {
             Route::get('/', [UsersGedungController::class, 'index'])->name('index');
         });
+        */
 
         // Sarana routes (view-only)
         Route::prefix('sarana')->name('sarana.')->group(function () {

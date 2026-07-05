@@ -109,33 +109,37 @@
                                 @endphp
                                 @foreach($grouped as $groupName => $items)
                                     <optgroup label="{{ $groupName }}">
-                                        @foreach($items as $item)
-                                            <option value="{{ $item->id_ruangan }}" data-tipe="{{ $item->tipe_ruangan }}" {{ old('ruangan_id') == $item->id_ruangan ? 'selected' : '' }}>
-                                                {{ $item->nama_ruangan }} - {{ $item->gedung->nama_gedung ?? '-' }} (Lantai {{ $item->lantai ?? '1' }}, Kapasitas: {{ $item->kapasitas }} Orang)
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- AJAX LOADER BOX (INFO DETAIL RUANGAN) -->
-                    <div id="ajax_details_section" style="display: none;">
-                        <div class="p-3 bg-light rounded border-start border-warning border-4 mb-3">
-                            <div class="row g-3">
-                                <div class="col-md-6 col-lg-3">
-                                    <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Nama Ruangan</label>
-                                    <div class="fw-semibold text-dark" style="font-size: 14px;" id="detail_nama_ruangan">-</div>
-                                </div>
-                                <div class="col-md-6 col-lg-3">
-                                    <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Kategori / Tipe</label>
-                                    <div class="fw-semibold text-dark" style="font-size: 14px;" id="detail_tipe_ruangan">-</div>
-                                </div>
-                                <div class="col-md-6 col-lg-3">
-                                    <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Gedung</label>
-                                    <div class="fw-semibold text-dark" style="font-size: 14px;" id="detail_gedung">-</div>
-                                </div>
+                                         @foreach($items as $item)
+                                             <option value="{{ $item->id_ruangan }}" data-tipe="{{ $item->tipe_ruangan }}" {{ old('ruangan_id') == $item->id_ruangan ? 'selected' : '' }}>
+                                                 {{-- Code Lama:
+                                                 {{ $item->nama_ruangan }} - {{ $item->gedung->nama_gedung ?? '-' }} (Lantai {{ $item->lantai ?? '1' }}, Kapasitas: {{ $item->kapasitas }} Orang)
+                                                 --}}
+                                                 {{ $item->nama_ruangan }} (Lantai {{ $item->lantai ?? '1' }}, Kapasitas: {{ $item->kapasitas }} Orang)
+                                             </option>
+                                         @endforeach
+                                     </optgroup>
+                                 @endforeach
+                             </select>
+                         </div>
+                     </div>
+ 
+                     <!-- AJAX LOADER BOX (INFO DETAIL RUANGAN) -->
+                     <div id="ajax_details_section" style="display: none;">
+                         <div class="p-3 bg-light rounded border-start border-warning border-4 mb-3">
+                             <div class="row g-3">
+                                 <div class="col-md-6 col-lg-3">
+                                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Nama Ruangan</label>
+                                     <div class="fw-semibold text-dark" style="font-size: 14px;" id="detail_nama_ruangan">-</div>
+                                 </div>
+                                 <div class="col-md-6 col-lg-3">
+                                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Kategori / Tipe</label>
+                                     <div class="fw-semibold text-dark" style="font-size: 14px;" id="detail_tipe_ruangan">-</div>
+                                 </div>
+                                 {{-- Gedung - DISABLED --}}
+                                 <div class="col-md-6 col-lg-3" style="display: none;">
+                                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Gedung</label>
+                                     <div class="fw-semibold text-dark" style="font-size: 14px;" id="detail_gedung">-</div>
+                                 </div>
                                 <div class="col-md-6 col-lg-3">
                                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Kapasitas Maksimal</label>
                                     <div class="fw-semibold text-dark" style="font-size: 14px;" id="detail_kapasitas">-</div>

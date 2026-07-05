@@ -6,7 +6,7 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('ruangan', function (Blueprint $table) {
             $table->integer('id_ruangan')->autoIncrement();
-            $table->integer('gedung_id');
+            $table->integer('gedung_id')->nullable();
             $table->string('nama_ruangan', 255);
             $table->enum('tipe_ruangan', ['KAMAR_STANDAR','KAMAR_VIP','KAMAR_PREMIUM','AULA','RUANG_MEETING','RUANG_LAINNYA'])->default('KAMAR_STANDAR');
             $table->integer('lantai')->nullable();
@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->timestamp('createdAt')->useCurrent();
             $table->timestamp('updatedAt')->useCurrent()->useCurrentOnUpdate();
             
-            $table->foreign('gedung_id')->references('id_gedung')->on('gedung')->onDelete('cascade');
+            // $table->foreign('gedung_id')->references('id_gedung')->on('gedung')->onDelete('cascade');
         });
     }
     public function down(): void {

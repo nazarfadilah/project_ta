@@ -41,7 +41,9 @@
                             <th style="width: 50px; text-align: center;">No</th>
                             <th>Nama Paket</th>
                             <th>Ruangan</th>
+                            {{-- Gedung - DISABLED
                             <th>Gedung</th>
+                            --}}
                             <th style="width: 120px; text-align: center;">Durasi (Jam)</th>
                             <th style="width: 150px; text-align: right;">Harga Sewa</th>
                             <th style="width: 120px; text-align: center;">Status</th>
@@ -58,9 +60,11 @@
                                 <strong class="text-dark">{{ $paket->nama_paket }}</strong>
                             </td>
                             <td>{{ $paket->ruangan->nama_ruangan ?? 'N/A' }}</td>
+                            {{-- Gedung - DISABLED
                             <td>
                                 <span class="badge bg-light text-dark border">{{ $paket->ruangan->gedung->nama_gedung ?? 'N/A' }}</span>
                             </td>
+                            --}}
                             <td style="text-align: center;">
                                 {{ $paket->durasi ? $paket->durasi . ' Jam' : 'Fleksibel' }}
                             </td>

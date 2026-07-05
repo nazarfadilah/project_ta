@@ -13,7 +13,10 @@ class UsersRuanganController extends Controller
      */
     public function index()
     {
-        $ruangans = Ruangan::with('gedung')->get();
+        // Code Lama:
+        // $ruangans = Ruangan::with('gedung')->get();
+        // Code Baru:
+        $ruangans = Ruangan::all();
         return view('users.main.ruangan.index', compact('ruangans'));
     }
 
@@ -26,8 +29,11 @@ class UsersRuanganController extends Controller
         $namaRuangan = str_replace('-', ' ', $slug);
         
         // Search for ruangan by name
+        // Code Lama:
+        // $ruangan = Ruangan::where('nama_ruangan', 'like', '%' . $namaRuangan . '%')->with('gedung', 'mediaFiles')->firstOrFail();
+        // Code Baru:
         $ruangan = Ruangan::where('nama_ruangan', 'like', '%' . $namaRuangan . '%')
-                          ->with('gedung', 'mediaFiles')
+                          ->with('mediaFiles')
                           ->firstOrFail();
         
         return view('users.main.ruangan.form', compact('ruangan'));
@@ -38,7 +44,10 @@ class UsersRuanganController extends Controller
      */
     public function getDetails($id)
     {
-        $ruangan = Ruangan::with(['gedung', 'mediaFiles', 'paketRuangans' => function($q) {
+        // Code Lama:
+        // $ruangan = Ruangan::with(['gedung', 'mediaFiles', 'paketRuangans' => function($q) { $q->where('status', 'ACTIVE'); }])->findOrFail($id);
+        // Code Baru:
+        $ruangan = Ruangan::with(['mediaFiles', 'paketRuangans' => function($q) {
             $q->where('status', 'ACTIVE');
         }])->findOrFail($id);
 
@@ -65,7 +74,10 @@ class UsersRuanganController extends Controller
             'id_ruangan' => $ruangan->id_ruangan,
             'nama_ruangan' => $ruangan->nama_ruangan,
             'tipe_ruangan' => str_replace('_', ' ', $ruangan->tipe_ruangan),
-            'gedung' => $ruangan->gedung->nama_gedung ?? '-',
+            // Code Lama:
+            // 'gedung' => $ruangan->gedung->nama_gedung ?? '-',
+            // Code Baru:
+            'gedung' => '-',
             'kapasitas' => $ruangan->kapasitas,
             'packages' => $ruangan->paketRuangans,
             'photos' => $ruangan->mediaFiles,
@@ -82,7 +94,10 @@ class UsersRuanganController extends Controller
         $kategori = $request->input('kategori', 'ALL');
 
         // Prepare room query
-        $query = Ruangan::with(['gedung', 'mediaFiles']);
+        // Code Lama:
+        // $query = Ruangan::with(['gedung', 'mediaFiles']);
+        // Code Baru:
+        $query = Ruangan::with(['mediaFiles']);
 
         // Filter by category
         if ($kategori !== 'ALL') {

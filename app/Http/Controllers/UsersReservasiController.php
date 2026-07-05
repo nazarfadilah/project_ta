@@ -40,11 +40,17 @@ class UsersReservasiController extends Controller
         $ruangan = null;
         
         if ($ruanganId) {
-            $ruangan = Ruangan::with(['gedung', 'paketRuangans', 'mediaFiles'])->findOrFail($ruanganId);
+            // Code Lama:
+            // $ruangan = Ruangan::with(['gedung', 'paketRuangans', 'mediaFiles'])->findOrFail($ruanganId);
+            // Code Baru:
+            $ruangan = Ruangan::with(['paketRuangans', 'mediaFiles'])->findOrFail($ruanganId);
         }
 
         // Fetch all rooms with buildings for room selection dropdown
-        $ruangans = Ruangan::with('gedung')->orderBy('nama_ruangan', 'asc')->get();
+        // Code Lama:
+        // $ruangans = Ruangan::with('gedung')->orderBy('nama_ruangan', 'asc')->get();
+        // Code Baru:
+        $ruangans = Ruangan::orderBy('nama_ruangan', 'asc')->get();
         
         // Fetch all equipment/sarana with available stock
         $saranas = Sarana::orderBy('nama', 'asc')->get();
@@ -191,8 +197,11 @@ class UsersReservasiController extends Controller
             return view('users.main.reservasi.index', compact('reservasis'));
         }
 
+        // Code Lama:
+        // $peminjamans = PeminjamanTransaksi::where('guestId', $guestId)->with(['paketRuangan.ruangan.gedung'])->orderBy('tanggal', 'desc')->get();
+        // Code Baru:
         $peminjamans = PeminjamanTransaksi::where('guestId', $guestId)
-            ->with(['paketRuangan.ruangan.gedung'])
+            ->with(['paketRuangan.ruangan'])
             ->orderBy('tanggal', 'desc')
             ->get();
 
@@ -229,8 +238,11 @@ class UsersReservasiController extends Controller
         $user = auth()->user();
         $guestId = $user->guestId;
         
+        // Code Lama:
+        // $peminjaman = PeminjamanTransaksi::where('guestId', $guestId)->with(['paketRuangan.ruangan.gedung', 'paketRuangan.ruangan.mediaFiles', 'detailSaranas.sarana'])->findOrFail($id);
+        // Code Baru:
         $peminjaman = PeminjamanTransaksi::where('guestId', $guestId)
-            ->with(['paketRuangan.ruangan.gedung', 'paketRuangan.ruangan.mediaFiles', 'detailSaranas.sarana'])
+            ->with(['paketRuangan.ruangan.mediaFiles', 'detailSaranas.sarana'])
             ->findOrFail($id);
             
         // Compatibility mapping layer to match Reservasi schema expected by Blade views

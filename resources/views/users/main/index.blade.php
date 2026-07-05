@@ -249,7 +249,7 @@
 
     <!-- Stat Cards Row -->
     <div class="row g-4 mb-5">
-        <!-- Card Gedung -->
+        {{-- Card Gedung - DISABLED
         <div class="col-md-4">
             <a href="{{ route('users.main.gedung.index') }}" class="stat-card card-gedung" style="background: linear-gradient(135deg, #3A6073 0%, #16222F 100%);">
                 <div class="stat-body">
@@ -263,9 +263,10 @@
                 </div>
             </a>
         </div>
+        --}}
 
         <!-- Card Ruangan -->
-        <div class="col-md-4">
+        <div class="col-md-6">
             <a href="{{ route('users.main.ruangan.index') }}" class="stat-card card-ruangan" style="background: linear-gradient(135deg, #C9A961 0%, #856404 100%);">
                 <div class="stat-body">
                     <div>
@@ -280,7 +281,7 @@
         </div>
 
         <!-- Card Sarana -->
-        <div class="col-md-4">
+        <div class="col-md-6">
             <a href="{{ route('users.main.sarana.index') }}" class="stat-card card-sarana" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
                 <div class="stat-body">
                     <div>

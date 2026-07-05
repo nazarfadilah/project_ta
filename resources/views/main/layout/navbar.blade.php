@@ -152,11 +152,11 @@
             <!-- Data Master Dropdown -->
             @if(in_array(Auth::user()->roleId, [2, 3]))
             <li class="nav-item">
-                <a href="#dataMasterMenu" class="nav-link dropdown-toggle {{ request()->routeIs('main.ruangan.*') || request()->routeIs('main.sarana.*') || request()->routeIs('main.gedung.*') || request()->routeIs('main.paket_ruangan.*') ? 'active' : '' }}" data-bs-toggle="collapse" title="Data Master">
+                <a href="#dataMasterMenu" class="nav-link dropdown-toggle {{ request()->routeIs('main.ruangan.*') || request()->routeIs('main.sarana.*') || request()->routeIs('main.paket_ruangan.*') ? 'active' : '' }}" data-bs-toggle="collapse" title="Data Master">
                     <i class="fas fa-database menu-icon"></i>
                     <span class="menu-text">Data Master</span>
                 </a>
-                <div class="collapse {{ request()->routeIs('main.ruangan.*') || request()->routeIs('main.sarana.*') || request()->routeIs('main.gedung.*') || request()->routeIs('main.paket_ruangan.*') ? 'show' : '' }}" id="dataMasterMenu">
+                <div class="collapse {{ request()->routeIs('main.ruangan.*') || request()->routeIs('main.sarana.*') || request()->routeIs('main.paket_ruangan.*') ? 'show' : '' }}" id="dataMasterMenu">
                     <ul class="nav flex-column ps-4">
                         @if(in_array(Auth::user()->roleId, [2, 3]))
                         <li class="nav-item">
@@ -174,6 +174,7 @@
                             </a>
                         </li>
                         @endif
+                        {{-- Disabled Gedung Menu Link
                         @if(in_array(Auth::user()->roleId, [2, 3]))
                         <li class="nav-item">
                             <a href="{{ route('main.gedung.index') }}" class="nav-link {{ request()->routeIs('main.gedung.*') ? 'active' : '' }}" title="Gedung">
@@ -182,6 +183,7 @@
                             </a>
                         </li>
                         @endif
+                        --}}
                         @if(in_array(Auth::user()->roleId, [2, 3]))
                         <li class="nav-item">
                             <a href="{{ route('main.paket_ruangan.index') }}" class="nav-link {{ request()->routeIs('main.paket_ruangan.*') ? 'active' : '' }}" title="Paket Ruangan">

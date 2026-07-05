@@ -197,10 +197,12 @@
                     <div class="room-body">
                         <div>
                             <h5 class="room-title">{{ $ruangan->nama_ruangan }}</h5>
+                            {{-- Disabled Gedung Detail Item
                             <div class="room-meta">
                                 <i class="fas fa-building"></i>
                                 <span>Gedung: <strong>{{ $ruangan->gedung->nama_gedung ?? '-' }}</strong></span>
                             </div>
+                            --}}
                             <div class="room-meta">
                                 <i class="fas fa-users"></i>
                                 <span>Kapasitas: {{ $ruangan->kapasitas }} Orang</span>

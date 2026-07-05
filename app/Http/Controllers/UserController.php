@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PeminjamanTransaksi;
 use App\Models\DetailPeminjamanSarana;
-use App\Models\Gedung;
+// use App\Models\Gedung;
 use App\Models\Ruangan;
 use App\Models\Sarana;
 use Illuminate\Http\Request;
@@ -17,8 +17,11 @@ class UserController extends Controller
     {
         $email = Auth::guard('web')->user()->email_users;
 
+        // Code Lama:
+        // $peminjamanTerbaru = PeminjamanTransaksi::where('email_users', $email)->with(['ruangan.gedung'])->orderByDesc('tgl_peminjaman')->limit(6)->get();
+        // Code Baru:
         $peminjamanTerbaru = PeminjamanTransaksi::where('email_users', $email)
-            ->with(['ruangan.gedung'])
+            ->with(['ruangan'])
             ->orderByDesc('tgl_peminjaman')
             ->limit(6)
             ->get();
@@ -36,8 +39,11 @@ class UserController extends Controller
     public function history()
     {
         $email = Auth::guard('web')->user()->email_users;
+        // Code Lama:
+        // $peminjamanList = PeminjamanTransaksi::where('email_users', $email)->with(['ruangan.gedung', 'detailSaranas.sarana'])->orderByDesc('tgl_peminjaman')->paginate(10);
+        // Code Baru:
         $peminjamanList = PeminjamanTransaksi::where('email_users', $email)
-            ->with(['ruangan.gedung', 'detailSaranas.sarana'])
+            ->with(['ruangan', 'detailSaranas.sarana'])
             ->orderByDesc('tgl_peminjaman')
             ->paginate(10);
 
@@ -47,8 +53,12 @@ class UserController extends Controller
     // ─── BOOKING FORM ─────────────────────────────────────────
     public function bookingCreate()
     {
-        $gedungs = Gedung::orderBy('nama')->get();
-        $ruangans = Ruangan::with('gedung')->orderBy('nama_ruangan')->get();
+        // Code Lama:
+        // $gedungs = Gedung::orderBy('nama')->get();
+        // $ruangans = Ruangan::with('gedung')->orderBy('nama_ruangan')->get();
+        // Code Baru:
+        $gedungs = collect();
+        $ruangans = Ruangan::orderBy('nama_ruangan')->get();
         $saranas = Sarana::where('stok', '>', 0)->orderBy('nama')->get();
 
         return view('user.booking', compact('gedungs', 'ruangans', 'saranas'));

@@ -15,7 +15,7 @@ class RuanganSeeder extends Seeder {
             $nomor = 100 + $i;
             $ruangans[] = [
                 'id_ruangan' => $i,
-                'gedung_id' => 1,
+                'gedung_id' => null,
                 'nama_ruangan' => "Kamar Arafah " . $nomor,
                 'tipe_ruangan' => 'KAMAR_STANDAR',
                 'lantai' => $lantai,
@@ -30,7 +30,7 @@ class RuanganSeeder extends Seeder {
             $id = 10 + $i;
             $ruangans[] = [
                 'id_ruangan' => $id,
-                'gedung_id' => 2,
+                'gedung_id' => null,
                 'nama_ruangan' => "Kamar Mina VIP " . (200 + $i),
                 'tipe_ruangan' => 'KAMAR_VIP',
                 'lantai' => 1,
@@ -47,7 +47,7 @@ class RuanganSeeder extends Seeder {
             $nomor = 300 + $i;
             $ruangans[] = [
                 'id_ruangan' => $id,
-                'gedung_id' => 3,
+                'gedung_id' => null,
                 'nama_ruangan' => "Kamar Muzdalifah " . $nomor,
                 'tipe_ruangan' => 'KAMAR_STANDAR',
                 'lantai' => $lantai,
@@ -62,7 +62,7 @@ class RuanganSeeder extends Seeder {
             $id = 27 + $i;
             $ruangans[] = [
                 'id_ruangan' => $id,
-                'gedung_id' => 4,
+                'gedung_id' => null,
                 'nama_ruangan' => "Kamar Madinah Premium " . (400 + $i),
                 'tipe_ruangan' => 'KAMAR_PREMIUM',
                 'lantai' => 1,
@@ -75,7 +75,7 @@ class RuanganSeeder extends Seeder {
         // Gedung Makkah (id_gedung = 5) - 3 Ruangan
         $ruangans[] = [
             'id_ruangan' => 34,
-            'gedung_id' => 5,
+            'gedung_id' => null,
             'nama_ruangan' => 'Ruang Rapat Makkah',
             'tipe_ruangan' => 'RUANG_MEETING',
             'lantai' => 1,
@@ -85,7 +85,7 @@ class RuanganSeeder extends Seeder {
         ];
         $ruangans[] = [
             'id_ruangan' => 35,
-            'gedung_id' => 5,
+            'gedung_id' => null,
             'nama_ruangan' => 'Aula Makkah Kecil',
             'tipe_ruangan' => 'AULA',
             'lantai' => 1,
@@ -95,7 +95,7 @@ class RuanganSeeder extends Seeder {
         ];
         $ruangans[] = [
             'id_ruangan' => 36,
-            'gedung_id' => 5,
+            'gedung_id' => null,
             'nama_ruangan' => 'Ruang Transit Makkah',
             'tipe_ruangan' => 'RUANG_LAINNYA',
             'lantai' => 1,
@@ -107,7 +107,7 @@ class RuanganSeeder extends Seeder {
         // Gedung Multazam (id_gedung = 6) - Gedung Khusus 1 Ruangan
         $ruangans[] = [
             'id_ruangan' => 37,
-            'gedung_id' => 6,
+            'gedung_id' => null,
             'nama_ruangan' => 'Aula Akbar Multazam',
             'tipe_ruangan' => 'AULA',
             'lantai' => 1,
@@ -119,7 +119,7 @@ class RuanganSeeder extends Seeder {
         // Gedung Shafa (id_gedung = 7) - Gedung Khusus 1 Ruangan
         $ruangans[] = [
             'id_ruangan' => 38,
-            'gedung_id' => 7,
+            'gedung_id' => null,
             'nama_ruangan' => 'Executive Boardroom Shafa',
             'tipe_ruangan' => 'RUANG_MEETING',
             'lantai' => 1,
@@ -131,7 +131,7 @@ class RuanganSeeder extends Seeder {
         // Gedung Marwah (id_gedung = 8) - 2 Ruangan
         $ruangans[] = [
             'id_ruangan' => 39,
-            'gedung_id' => 8,
+            'gedung_id' => null,
             'nama_ruangan' => 'Ruang Rapat Marwah 1',
             'tipe_ruangan' => 'RUANG_MEETING',
             'lantai' => 1,
@@ -141,7 +141,7 @@ class RuanganSeeder extends Seeder {
         ];
         $ruangans[] = [
             'id_ruangan' => 40,
-            'gedung_id' => 8,
+            'gedung_id' => null,
             'nama_ruangan' => 'Ruang Rapat Marwah 2',
             'tipe_ruangan' => 'RUANG_MEETING',
             'lantai' => 1,

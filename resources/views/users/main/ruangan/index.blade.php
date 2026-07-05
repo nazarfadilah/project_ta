@@ -24,7 +24,7 @@
                         <tr>
                             <th style="width: 25%;">Nama Ruangan</th>
                             <th style="width: 15%;">Jenis Ruangan</th>
-                            <th style="width: 15%;">Gedung</th>
+                            {{-- <th style="width: 15%;">Gedung</th> --}}
                             <th style="width: 10%;">Lantai</th>
                             <th style="width: 12%;">Kapasitas</th>
                             <th style="width: 15%; text-align: center;">Aksi</th>
@@ -49,7 +49,7 @@
                                 @endphp
                                 <span class="badge {{ $badgeColor }} px-2 py-1">{{ $tipoLabel }}</span>
                             </td>
-                            <td>{{ $ruangan->gedung->nama_gedung ?? '-' }}</td>
+                            {{-- <td>{{ $ruangan->gedung->nama_gedung ?? '-' }}</td> --}}
                             <td>{{ $ruangan->lantai ?? '-' }}</td>
                             <td>
                                 <i class="fas fa-users me-1 text-muted"></i> {{ $ruangan->kapasitas }} orang

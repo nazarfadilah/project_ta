@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
 
         // Peminjaman Sarana Seeders
         $this->call([
-            GedungSeeder::class,
+            // GedungSeeder::class,
             RuanganSeeder::class,
             PaketRuanganSeeder::class,
             GuestSeeder::class,

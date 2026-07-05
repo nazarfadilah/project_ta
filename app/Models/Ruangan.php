@@ -12,9 +12,11 @@ class Ruangan extends Model {
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
 
+    /*
     public function gedung() {
         return $this->belongsTo(Gedung::class, 'gedung_id', 'id_gedung');
     }
+    */
 
     public function paketRuangans() {
         return $this->hasMany(PaketRuangan::class, 'ruangan_id', 'id_ruangan');

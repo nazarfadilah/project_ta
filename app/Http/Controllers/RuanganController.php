@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ruangan;
-use App\Models\Gedung;
+// use App\Models\Gedung;
 use App\Models\MediaFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -12,14 +12,20 @@ class RuanganController extends Controller
 {
     public function index()
     {
-        $ruangans = Ruangan::with('gedung')->orderBy('id_ruangan', 'desc')->get();
+        // Code Lama:
+        // $ruangans = Ruangan::with('gedung')->orderBy('id_ruangan', 'desc')->get();
+        // Code Baru:
+        $ruangans = Ruangan::orderBy('id_ruangan', 'desc')->get();
         return view('main.master.ruangan.index', compact('ruangans'));
     }
 
     public function create()
     {
         $ruangan = new Ruangan();
-        $gedungs = Gedung::orderBy('nama_gedung')->get();
+        // Code Lama:
+        // $gedungs = Gedung::orderBy('nama_gedung')->get();
+        // Code Baru:
+        $gedungs = collect();
         $mode = 'create';
         return view('main.master.ruangan.form', compact('ruangan', 'gedungs', 'mode'));
     }
@@ -27,7 +33,10 @@ class RuanganController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'gedung_id' => 'required|exists:gedung,id_gedung',
+            // Code Lama:
+            // 'gedung_id' => 'required|exists:gedung,id_gedung',
+            // Code Baru:
+            'gedung_id' => 'nullable|integer',
             'nama_ruangan' => 'required|string|max:255',
             'tipe_ruangan' => 'required|in:KAMAR_STANDAR,KAMAR_VIP,KAMAR_PREMIUM,AULA,RUANG_MEETING,RUANG_LAINNYA',
             'lantai' => 'nullable|integer',
@@ -66,7 +75,10 @@ class RuanganController extends Controller
     public function edit($id)
     {
         $ruangan = Ruangan::with('mediaFiles')->findOrFail($id);
-        $gedungs = Gedung::orderBy('nama_gedung')->get();
+        // Code Lama:
+        // $gedungs = Gedung::orderBy('nama_gedung')->get();
+        // Code Baru:
+        $gedungs = collect();
         $mode = 'edit';
         return view('main.master.ruangan.form', compact('ruangan', 'gedungs', 'mode'));
     }
@@ -74,7 +86,10 @@ class RuanganController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'gedung_id' => 'required|exists:gedung,id_gedung',
+            // Code Lama:
+            // 'gedung_id' => 'required|exists:gedung,id_gedung',
+            // Code Baru:
+            'gedung_id' => 'nullable|integer',
             'nama_ruangan' => 'required|string|max:255',
             'tipe_ruangan' => 'required|in:KAMAR_STANDAR,KAMAR_VIP,KAMAR_PREMIUM,AULA,RUANG_MEETING,RUANG_LAINNYA',
             'lantai' => 'nullable|integer',

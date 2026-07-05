@@ -37,7 +37,7 @@
                 @endif
 
                 <div class="row">
-                    {{-- Gedung --}}
+                    {{-- Gedung - DISABLED
                     <div class="col-md-6 mb-3">
                         <label for="gedung_id" class="form-label fw-semibold" style="font-size: 13px; color: #555;">
                             Gedung <span class="text-danger">*</span>
@@ -57,9 +57,10 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-
+                    --}}
+ 
                     {{-- Nama Ruangan --}}
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-12 mb-3">
                         <label for="nama_ruangan" class="form-label fw-semibold" style="font-size: 13px; color: #555;">
                             Nama Ruangan <span class="text-danger">*</span>
                         </label>

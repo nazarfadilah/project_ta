@@ -8,16 +8,19 @@ use Illuminate\Http\Request;
 
 class PaketRuanganController extends Controller
 {
-    public function index()
-    {
-        $paketRuangans = PaketRuangan::with('ruangan.gedung')->orderBy('id', 'desc')->get();
+        // Code Lama:
+        // $paketRuangans = PaketRuangan::with('ruangan.gedung')->orderBy('id', 'desc')->get();
+        // Code Baru:
+        $paketRuangans = PaketRuangan::with('ruangan')->orderBy('id', 'desc')->get();
         return view('main.master.paket_ruangan.index', compact('paketRuangans'));
-    }
 
     public function create()
     {
         $paketRuangan = new PaketRuangan();
-        $ruangans = Ruangan::with('gedung')->orderBy('nama_ruangan')->get();
+        // Code Lama:
+        // $ruangans = Ruangan::with('gedung')->orderBy('nama_ruangan')->get();
+        // Code Baru:
+        $ruangans = Ruangan::orderBy('nama_ruangan')->get();
         $mode = 'create';
         return view('main.master.paket_ruangan.form', compact('paketRuangan', 'ruangans', 'mode'));
     }
@@ -48,7 +51,10 @@ class PaketRuanganController extends Controller
     public function edit($id)
     {
         $paketRuangan = PaketRuangan::findOrFail($id);
-        $ruangans = Ruangan::with('gedung')->orderBy('nama_ruangan')->get();
+        // Code Lama:
+        // $ruangans = Ruangan::with('gedung')->orderBy('nama_ruangan')->get();
+        // Code Baru:
+        $ruangans = Ruangan::orderBy('nama_ruangan')->get();
         $mode = 'edit';
         return view('main.master.paket_ruangan.form', compact('paketRuangan', 'ruangans', 'mode'));
     }

@@ -40,7 +40,7 @@
                         <tr>
                             <th style="width: 50px; text-align: center;">No</th>
                             <th>Nama Ruangan</th>
-                            <th>Gedung</th>
+                            {{-- <th>Gedung</th> --}}
                             <th>Tipe Ruangan</th>
                             <th>Kapasitas</th>
                             @if(Auth::user()->roleId != 2)
@@ -59,7 +59,7 @@
                                     <small class="text-muted"><i class="fas fa-image me-1"></i> {{ $ruangan->mediaFiles->count() }} Foto</small>
                                 @endif
                             </td>
-                            <td>{{ $ruangan->gedung->nama_gedung ?? '-' }}</td>
+                            {{-- <td>{{ $ruangan->gedung->nama_gedung ?? '-' }}</td> --}}
                             <td>
                                 <span class="badge bg-secondary">{{ str_replace('_', ' ', $ruangan->tipe_ruangan) }}</span>
                             </td>
