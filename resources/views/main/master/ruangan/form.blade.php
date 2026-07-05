@@ -209,10 +209,87 @@
                     <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 mt-3"></div>
                 </div>
 
+                {{-- ======================= SECTION PAKET RUANGAN (Create Mode Only) ======================= --}}
+                @if($mode === 'create')
+                <hr class="my-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0" style="font-size: 14px; color: #333;">
+                        <i class="fas fa-box-open me-2" style="color: #C9A961;"></i>Paket Ruangan
+                        <span class="text-muted fw-normal" style="font-size: 12px;">(Opsional – bisa lebih dari satu)</span>
+                    </h6>
+                    <button type="button" class="btn btn-sm" id="btnTambahPaket"
+                        style="background-color: #C9A961; color: #fff; font-size: 12px; padding: 5px 12px; border: none; border-radius: 5px;">
+                        <i class="fas fa-plus me-1"></i> Tambah Paket
+                    </button>
+                </div>
+
+                <div id="paketContainer">
+                    {{-- Row paket pertama (default) --}}
+                    <div class="paket-row border rounded-3 p-3 mb-3" style="background-color: #fafafa; position: relative;">
+                        <button type="button" class="btn btn-sm btn-danger btn-hapus-paket"
+                            style="position: absolute; top: 10px; right: 10px; font-size: 11px; padding: 3px 8px; display: none;">
+                            <i class="fas fa-times"></i> Hapus
+                        </button>
+                        <div class="row">
+                            {{-- Nama Paket --}}
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label fw-semibold" style="font-size: 12px; color: #555;">
+                                    Nama Paket <span class="text-danger">*</span>
+                                </label>
+                                <input type="text"
+                                       class="form-control"
+                                       name="pakets[0][nama_paket]"
+                                       placeholder="Contoh: Paket Harian"
+                                       style="font-size: 13px; padding: 8px 12px;">
+                            </div>
+                            {{-- Status --}}
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label fw-semibold" style="font-size: 12px; color: #555;">
+                                    Status <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" name="pakets[0][status]" style="font-size: 13px; padding: 8px 12px;">
+                                    <option value="ACTIVE" selected>Aktif</option>
+                                    <option value="INACTIVE">Nonaktif</option>
+                                    <option value="MAINTENANCE">Perbaikan</option>
+                                </select>
+                            </div>
+                            {{-- Durasi --}}
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label fw-semibold" style="font-size: 12px; color: #555;">
+                                    Durasi Sewa (Jam – Opsional)
+                                </label>
+                                <input type="number"
+                                       class="form-control"
+                                       name="pakets[0][durasi]"
+                                       placeholder="Contoh: 8 (kosongkan jika fleksibel)"
+                                       min="1" max="999"
+                                       style="font-size: 13px; padding: 8px 12px;">
+                            </div>
+                            {{-- Harga --}}
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label fw-semibold" style="font-size: 12px; color: #555;">
+                                    Harga Sewa (IDR) <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text" style="font-size: 13px; background-color: #f8f9fa;">Rp</span>
+                                    <input type="number"
+                                           class="form-control"
+                                           name="pakets[0][harga]"
+                                           placeholder="Contoh: 1500000"
+                                           min="0" step="0.01"
+                                           style="font-size: 13px; padding: 8px 12px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+                {{-- ======================================================================================== --}}
+
                 {{-- Tombol --}}
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 mt-2">
                     <button type="submit" class="btn btn-sm px-4" style="background-color: #C9A961; color: #fff; font-size: 13px; padding: 8px 20px;">
-                        <i class="fas fa-save me-1"></i> 
+                        <i class="fas fa-save me-1"></i>
                         @if($mode === 'create')
                             Tambah
                         @else
@@ -233,7 +310,7 @@
     // Preview gambar sebelum upload
     document.getElementById('media_files').addEventListener('change', function(e) {
         const previewContainer = document.getElementById('imagePreviewContainer');
-        previewContainer.innerHTML = ''; // Bersihkan preview sebelumnya
+        previewContainer.innerHTML = '';
 
         if (this.files) {
             [].forEach.call(this.files, function(file) {
@@ -250,6 +327,86 @@
             });
         }
     });
+
+    @if($mode === 'create')
+    // ====== Paket Ruangan Dinamis ======
+    let paketIndex = 1;
+
+    function buatRowPaket(idx) {
+        return `
+        <div class="paket-row border rounded-3 p-3 mb-3" style="background-color: #fafafa; position: relative;">
+            <button type="button" class="btn btn-sm btn-danger btn-hapus-paket"
+                style="position: absolute; top: 10px; right: 10px; font-size: 11px; padding: 3px 8px;">
+                <i class="fas fa-times"></i> Hapus
+            </button>
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <label class="form-label fw-semibold" style="font-size: 12px; color: #555;">
+                        Nama Paket <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" class="form-control" name="pakets[${idx}][nama_paket]"
+                        placeholder="Contoh: Paket Harian" style="font-size: 13px; padding: 8px 12px;">
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label fw-semibold" style="font-size: 12px; color: #555;">
+                        Status <span class="text-danger">*</span>
+                    </label>
+                    <select class="form-select" name="pakets[${idx}][status]" style="font-size: 13px; padding: 8px 12px;">
+                        <option value="ACTIVE" selected>Aktif</option>
+                        <option value="INACTIVE">Nonaktif</option>
+                        <option value="MAINTENANCE">Perbaikan</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label fw-semibold" style="font-size: 12px; color: #555;">
+                        Durasi Sewa (Jam – Opsional)
+                    </label>
+                    <input type="number" class="form-control" name="pakets[${idx}][durasi]"
+                        placeholder="Kosongkan jika fleksibel" min="1" max="999"
+                        style="font-size: 13px; padding: 8px 12px;">
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label fw-semibold" style="font-size: 12px; color: #555;">
+                        Harga Sewa (IDR) <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text" style="font-size: 13px; background-color: #f8f9fa;">Rp</span>
+                        <input type="number" class="form-control" name="pakets[${idx}][harga]"
+                            placeholder="Contoh: 1500000" min="0" step="0.01"
+                            style="font-size: 13px; padding: 8px 12px;">
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    document.getElementById('btnTambahPaket').addEventListener('click', function () {
+        const container = document.getElementById('paketContainer');
+        container.insertAdjacentHTML('beforeend', buatRowPaket(paketIndex));
+        paketIndex++;
+        updateTombolHapus();
+    });
+
+    document.getElementById('paketContainer').addEventListener('click', function (e) {
+        if (e.target.closest('.btn-hapus-paket')) {
+            e.target.closest('.paket-row').remove();
+            updateTombolHapus();
+        }
+    });
+
+    function updateTombolHapus() {
+        const rows = document.querySelectorAll('.paket-row');
+        rows.forEach(function (row) {
+            const btn = row.querySelector('.btn-hapus-paket');
+            if (rows.length > 1) {
+                btn.style.display = 'inline-block';
+            } else {
+                btn.style.display = 'none';
+            }
+        });
+    }
+    @endif
 </script>
 @endpush
 @endsection
+

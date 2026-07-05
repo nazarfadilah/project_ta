@@ -211,5 +211,21 @@
                 { searchable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 5] @endif }
             ]
         });
+    });
+
+    function hapusData(url) {
+        if (confirm('Apakah Anda yakin ingin menghapus ruangan ini? Semua foto dan data terkait akan ikut terhapus.')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = url;
+            form.innerHTML = `
+                @csrf
+                <input type="hidden" name="_method" value="DELETE">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
 </script>
 @endpush
+

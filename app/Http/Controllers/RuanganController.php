@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ruangan;
 // use App\Models\Gedung;
 use App\Models\MediaFile;
+use App\Models\PaketRuangan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -36,18 +37,23 @@ class RuanganController extends Controller
             // Code Lama:
             // 'gedung_id' => 'required|exists:gedung,id_gedung',
             // Code Baru:
-            'gedung_id' => 'nullable|integer',
-            'nama_ruangan' => 'required|string|max:255',
-            'tipe_ruangan' => 'required|in:KAMAR_STANDAR,KAMAR_VIP,KAMAR_PREMIUM,AULA,RUANG_MEETING,RUANG_LAINNYA',
-            'lantai' => 'nullable|integer',
-            'kapasitas' => 'required|integer|min:1',
-            'gender_policy' => 'nullable|in:MALE_ONLY,FEMALE_ONLY,MIXED',
-            'keterangan' => 'nullable|string',
-            'media_files.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'gedung_id'       => 'nullable|integer',
+            'nama_ruangan'    => 'required|string|max:255',
+            'tipe_ruangan'    => 'required|in:KAMAR_STANDAR,KAMAR_VIP,KAMAR_PREMIUM,AULA,RUANG_MEETING,RUANG_LAINNYA',
+            'lantai'          => 'nullable|integer',
+            'kapasitas'       => 'required|integer|min:1',
+            'gender_policy'   => 'nullable|in:MALE_ONLY,FEMALE_ONLY,MIXED',
+            'keterangan'      => 'nullable|string',
+            'media_files.*'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'pakets'          => 'nullable|array',
+            'pakets.*.nama_paket' => 'nullable|string|max:255',
+            'pakets.*.harga'      => 'nullable|numeric|min:0',
+            'pakets.*.durasi'     => 'nullable|integer|min:1|max:999',
+            'pakets.*.status'     => 'nullable|in:ACTIVE,INACTIVE,MAINTENANCE',
         ]);
 
-        // Exclude media_files from Ruangan creation
-        $ruanganData = collect($validated)->except('media_files')->toArray();
+        // Exclude media_files & pakets from Ruangan creation
+        $ruanganData = collect($validated)->except(['media_files', 'pakets'])->toArray();
         $ruangan = Ruangan::create($ruanganData);
 
         // Handle file uploads
@@ -58,8 +64,23 @@ class RuanganController extends Controller
 
                 MediaFile::create([
                     'ruangan_id' => $ruangan->id_ruangan,
-                    'path' => $mediaPath
+                    'path'       => $mediaPath
                 ]);
+            }
+        }
+
+        // Handle Paket Ruangan (hanya jika nama_paket dan harga diisi)
+        if ($request->filled('pakets')) {
+            foreach ($request->input('pakets') as $paketData) {
+                if (!empty($paketData['nama_paket']) && isset($paketData['harga'])) {
+                    PaketRuangan::create([
+                        'ruangan_id' => $ruangan->id_ruangan,
+                        'nama_paket' => $paketData['nama_paket'],
+                        'harga'      => $paketData['harga'],
+                        'durasi'     => $paketData['durasi'] ?? null,
+                        'status'     => $paketData['status'] ?? 'ACTIVE',
+                    ]);
+                }
             }
         }
 

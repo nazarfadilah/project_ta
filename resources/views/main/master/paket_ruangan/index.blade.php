@@ -222,5 +222,21 @@
                 { searchable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 7] @endif }
             ]
         });
+    });
+
+    function confirmDelete(url) {
+        if (confirm('Apakah Anda yakin ingin menghapus paket ruangan ini?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = url;
+            form.innerHTML = `
+                @csrf
+                <input type="hidden" name="_method" value="DELETE">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
 </script>
 @endpush
+
