@@ -80,7 +80,7 @@
                 </div>
                 @endif
 
-                <!-- Card Gedung - DISABLED
+                {{-- Card Gedung - DISABLED
                 @if(in_array(Auth::user()->roleId, [2, 3]))
                 <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
                     <a href="{{ route('main.gedung.index') }}" class="text-decoration-none">
@@ -100,7 +100,7 @@
                     </a>
                 </div>
                 @endif
-                -->
+                --}}
 
                 <!-- Card Ruangan -->
                 @if(in_array(Auth::user()->roleId, [2, 3]))
