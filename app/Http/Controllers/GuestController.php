@@ -30,6 +30,7 @@ class GuestController extends Controller
             'address' => 'nullable|string',
             'bloodType' => 'nullable|string|max:5',
             'notes' => 'nullable|string',
+            'instansi' => 'nullable|string|max:255',
         ]);
 
         Guest::create($validated);
@@ -61,6 +62,7 @@ class GuestController extends Controller
             'address' => 'nullable|string',
             'bloodType' => 'nullable|string|max:5',
             'notes' => 'nullable|string',
+            'instansi' => 'nullable|string|max:255',
         ]);
 
         $guest = Guest::findOrFail($id);

@@ -266,6 +266,7 @@ class AuthController extends Controller
                     'name' => $googleUser->name ?? $username,
                     'gender' => 'MALE',
                     'address' => '-',
+                    'instansi' => '-',
                 ]);
 
                 // Create User record linked to the new Guest record
@@ -297,6 +298,7 @@ class AuthController extends Controller
                         'gender' => 'MALE',
                         'address' => '-',
                         'phone' => $user->phone,
+                        'instansi' => '-',
                     ]);
                     $updates['guestId'] = $guest->id;
                 }

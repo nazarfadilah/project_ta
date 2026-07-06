@@ -8,6 +8,8 @@ use App\Models\Ruangan;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class LaporanController extends Controller
 {
@@ -93,19 +95,7 @@ class LaporanController extends Controller
 
     public function export(Request $request)
     {
-        // Code Lama:
-        // $query = PeminjamanTransaksi::with(['guest', 'paketRuangan.ruangan.gedung', 'user']);
-        // Code Baru:
-        $query = PeminjamanTransaksi::with(['guest', 'paketRuangan.ruangan', 'user']);
-
-        // Filter based on Building (Gedung) - DISABLED
-        /*
-        if ($request->filled('gedung_id')) {
-            $query->whereHas('paketRuangan.ruangan', function ($q) use ($request) {
-                $q->where('gedung_id', $request->gedung_id);
-            });
-        }
-        */
+        $query = PeminjamanTransaksi::with(['guest.user', 'paketRuangan.ruangan', 'user']);
 
         // Filter based on Room (Ruangan)
         if ($request->filled('ruangan_id')) {
@@ -133,61 +123,113 @@ class LaporanController extends Controller
             return redirect()->back()->with('error', 'Tidak ada data peminjaman yang cocok dengan filter yang dipilih.');
         }
 
-        $filename = "Laporan_Peminjaman_" . Carbon::now()->format('Ymd_His') . ".csv";
+        // UPT name default or from tentang table key: nama_instansi
+        $namaInstansi = \App\Models\Tentang::where('key', 'nama_instansi')->first()?->value ?? 'UPT Asrama Haji Embarkasi Banjarmasin';
 
+        // Initialize Spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set Document Properties
+        $spreadsheet->getProperties()
+            ->setCreator('SIPRASA')
+            ->setLastModifiedBy('SIPRASA')
+            ->setTitle('Data Pesanan')
+            ->setSubject('Laporan SPI');
+
+        // Title rows matching Data Pesanan.xlsx template
+        $sheet->setCellValue('A4', 'DATA RESPONDEN EKSTERNAL');
+        $sheet->setCellValue('A5', 'KEGIATAN SURVEY PENILAIAN INTEGRITAS (SPI) TAHUN ' . Carbon::now()->year);
+        $sheet->setCellValue('A6', 'PADA ' . strtoupper($namaInstansi));
+
+        // Styling the titles (bold)
+        $sheet->getStyle('A4:A6')->getFont()->setBold(true)->setSize(11);
+
+        // Header fields
         $headers = [
-            "Content-type" => "text/csv; charset=utf-8",
-            "Content-Disposition" => "attachment; filename=$filename",
-            "Pragma" => "no-cache",
-            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-            "Expires" => "0"
+            'No',
+            'Unit Tempat Mengurus Layanan Publik',
+            'Nama Layanan yang Diterima',
+            'Tanggal/Bulan/Tahun Mengurus Layanan',
+            'Nama Pengguna Layanan',
+            'PIC',
+            'Nomor Telepon',
+            'E-mail (Aktif)'
         ];
 
-        $callback = function() use ($data) {
-            $file = fopen('php://output', 'w');
+        // Fill headers in row 8
+        foreach ($headers as $colIdx => $headerText) {
+            $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx + 1);
+            $cellCoord = $colLetter . '8';
+            $sheet->setCellValue($cellCoord, $headerText);
             
-            // Add UTF-8 BOM for Microsoft Excel compliance
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
-            // Header fields
-            fputcsv($file, [
-                'No',
-                'Kode Peminjaman',
-                'Nama Tamu (Guest)',
-                'Gedung',
-                'Ruangan',
-                'Tanggal Peminjaman',
-                'Jam Mulai',
-                'Durasi (Jam)',
-                'Biaya Tambahan (IDR)',
-                'Status Peminjaman',
-                'Status Approval',
-                'Keterangan'
-            ], ';');
-
-            foreach ($data as $index => $row) {
-                fputcsv($file, [
-                    $index + 1,
-                    $row->kodePeminjaman,
-                    $row->guest->name ?? 'N/A',
-                    // Code Lama:
-                    // $row->paketRuangan->ruangan->gedung->nama_gedung ?? 'N/A',
-                    // Code Baru:
-                    '-',
-                    $row->paketRuangan->ruangan->nama_ruangan ?? 'N/A',
-                    Carbon::parse($row->tanggal)->format('d-m-Y'),
-                    Carbon::parse($row->jamMulai)->format('H:i'),
-                    $row->durasi,
-                    number_format($row->biayaTambahan, 2, ',', '.'),
-                    $row->statusPeminjaman,
-                    $row->statusApproval,
-                    $row->keterangan ?? '-'
-                ], ';');
+            // Set header styling: bold, light gray background, thin borders
+            $sheet->getStyle($cellCoord)->getFont()->setBold(true);
+            $sheet->getStyle($cellCoord)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+            if ($colIdx === 0) {
+                $sheet->getStyle($cellCoord)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
             }
-            
-            fclose($file);
-        };
+        }
 
-        return response()->stream($callback, 200, $headers);
+        // Add thin border to headers and style them nicely
+        $headerRange = 'A8:H8';
+        $sheet->getStyle($headerRange)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $sheet->getStyle($headerRange)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FFF2F2F2');
+        $sheet->getRowDimension(8)->setRowHeight(25);
+
+        // Fill data starting at row 9
+        $rowNum = 9;
+        foreach ($data as $index => $row) {
+            $sheet->setCellValue('A' . $rowNum, $index + 1);
+            $sheet->setCellValue('B' . $rowNum, $namaInstansi);
+            $sheet->setCellValue('C' . $rowNum, $row->paketRuangan->ruangan->nama_ruangan ?? '-');
+
+            // Format Tanggal: d/m/Y - d/m/Y or d/m/Y depending on duration
+            $start = Carbon::parse($row->jamMulai);
+            $isHarian = ($row->paketRuangan && (stripos($row->paketRuangan->nama_paket, 'hari') !== false || stripos($row->paketRuangan->nama_paket, 'harian') !== false));
+            if ($isHarian && $row->durasi > 1) {
+                $end = $start->copy()->addDays($row->durasi - 1);
+                $tanggalStr = $start->format('d/m/Y') . ' - ' . $end->format('d/m/Y');
+            } elseif ($isHarian && $row->durasi == 1) {
+                $tanggalStr = $start->format('d/m/Y');
+            } else {
+                $tanggalStr = $start->format('d/m/Y');
+            }
+            $sheet->setCellValue('D' . $rowNum, $tanggalStr);
+
+            // Nama Pengguna Layanan (instansi guest)
+            $sheet->setCellValue('E' . $rowNum, $row->guest->instansi ?? '-');
+            // PIC
+            $sheet->setCellValue('F' . $rowNum, $row->guest->name ?? '-');
+            // Nomor telepon
+            $sheet->setCellValue('G' . $rowNum, $row->guest->phone ?? '-');
+            // E-mail (Aktif)
+            $sheet->setCellValue('H' . $rowNum, $row->guest->user->email ?? ($row->user->email ?? '-'));
+
+            // Apply borders and alignment to current row
+            $rowRange = 'A' . $rowNum . ':H' . $rowNum;
+            $sheet->getStyle($rowRange)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $sheet->getStyle('A' . $rowNum)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+            
+            $rowNum++;
+        }
+
+        // Auto size columns for readability
+        foreach (range(1, 8) as $colIdx) {
+            $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx);
+            $sheet->getColumnDimension($colLetter)->setAutoSize(true);
+        }
+
+        // Set response headers to download .xlsx with filename "Data Pesanan.xlsx"
+        $filename = "Data Pesanan.xlsx";
+        
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
     }
 }

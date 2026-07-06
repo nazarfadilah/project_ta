@@ -102,6 +102,14 @@
                         @enderror
                     </div>
 
+                    <div class="col-md-6 mb-3">
+                        <label for="instansi" class="form-label" style="font-size: 13px; font-weight: 600; color: #555;">Instansi</label>
+                        <input type="text" class="form-control @error('instansi') is-invalid @enderror" id="instansi" name="instansi" value="{{ old('instansi', $guest->instansi) }}" {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;" placeholder="Contoh: LPTQ Kalsel, UIN Antasari, Personal">
+                        @error('instansi')
+                            <div class="invalid-feedback"><strong>{{ $message }}</strong></div>
+                        @enderror
+                    </div>
+
                     <div class="col-md-12 mb-3">
                         <label for="address" class="form-label" style="font-size: 13px; font-weight: 600; color: #555;">Alamat Lengkap</label>
                         <textarea class="form-control @error('address') is-invalid @enderror" id="address" name="address" rows="3" {{ $isDetail ? 'disabled' : '' }} style="font-size: 14px;">{{ old('address', $guest->address) }}</textarea>

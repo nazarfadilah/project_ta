@@ -11,7 +11,148 @@ class PeminjamanTransaksiSeeder extends Seeder {
         $transaksis = [];
         $baseDate = Carbon::create(2026, 1, 1);
 
-        for ($i = 1; $i <= 100; $i++) {
+        $specificBookings = [
+            [
+                'kodePeminjaman' => 'PJM/20260619/0001',
+                'guestId' => 1, // Ibu Niswati (LPTQ PROV. Kalsel)
+                'facilityId' => 37, // Aula Akbar Multazam
+                'tanggal' => '2026-06-19',
+                'jamMulai' => '2026-06-19 08:00:00',
+                'checkIn' => '2026-06-19 14:00:00',
+                'checkOut' => '2026-06-22 12:00:00',
+                'durasi' => 4,
+                'statusPeminjaman' => 'SELESAI',
+                'statusApproval' => 'APPROVED',
+                'userId' => 3,
+                'catatanApproval' => 'Sesuai agenda LPTQ',
+                'tanggalApproval' => '2026-06-18 09:00:00',
+                'keterangan' => 'Kegiatan MTQ Provinsi',
+            ],
+            [
+                'kodePeminjaman' => 'PJM/20260619/0002',
+                'guestId' => 3, // Bpk Haris Fadillah (LPTQ PROV. Kalsel)
+                'facilityId' => 37, // Aula Akbar Multazam
+                'tanggal' => '2026-06-19',
+                'jamMulai' => '2026-06-19 08:00:00',
+                'checkIn' => '2026-06-19 14:00:00',
+                'checkOut' => '2026-06-22 12:00:00',
+                'durasi' => 4,
+                'statusPeminjaman' => 'SELESAI',
+                'statusApproval' => 'APPROVED',
+                'userId' => 3,
+                'catatanApproval' => 'Sesuai agenda LPTQ',
+                'tanggalApproval' => '2026-06-18 09:10:00',
+                'keterangan' => 'Kegiatan Evaluasi LPTQ',
+            ],
+            [
+                'kodePeminjaman' => 'PJM/20260726/0001',
+                'guestId' => 2, // Bpk Ahmad Maki (Kanwil Kemenag Prov. Kalteng)
+                'facilityId' => 35, // Aula Makkah Kecil
+                'tanggal' => '2026-07-26',
+                'jamMulai' => '2026-07-26 08:00:00',
+                'checkIn' => '2026-07-26 14:30:00',
+                'checkOut' => '2026-07-28 12:00:00',
+                'durasi' => 3,
+                'statusPeminjaman' => 'SELESAI',
+                'statusApproval' => 'APPROVED',
+                'userId' => 4,
+                'catatanApproval' => 'Disetujui',
+                'tanggalApproval' => '2026-07-25 10:00:00',
+                'keterangan' => 'Bimtek Penmad',
+            ],
+            [
+                'kodePeminjaman' => 'PJM/20260809/0001',
+                'guestId' => 4, // Bpk Bahar (Travel Mahabbah)
+                'facilityId' => 38, // Executive Boardroom Shafa
+                'tanggal' => '2026-08-09',
+                'jamMulai' => '2026-08-09 09:00:00',
+                'checkIn' => '2026-08-09 09:00:00',
+                'checkOut' => '2026-08-10 17:00:00',
+                'durasi' => 2,
+                'statusPeminjaman' => 'SELESAI',
+                'statusApproval' => 'APPROVED',
+                'userId' => 4,
+                'catatanApproval' => 'Disetujui',
+                'tanggalApproval' => '2026-08-08 14:00:00',
+                'keterangan' => 'Rapat Koordinasi Travel Haji',
+            ],
+            [
+                'kodePeminjaman' => 'PJM/20260812/0001',
+                'guestId' => 5, // Ibu Chrisna (CV. Rpy Production)
+                'facilityId' => 34, // Ruang Rapat Makkah
+                'tanggal' => '2026-08-12',
+                'jamMulai' => '2026-08-12 08:00:00',
+                'checkIn' => '2026-08-12 08:30:00',
+                'checkOut' => '2026-08-14 16:00:00',
+                'durasi' => 3,
+                'statusPeminjaman' => 'SELESAI',
+                'statusApproval' => 'APPROVED',
+                'userId' => 5,
+                'catatanApproval' => 'OK',
+                'tanggalApproval' => '2026-08-11 15:00:00',
+                'keterangan' => 'Pelatihan Rpy Crew',
+            ],
+            [
+                'kodePeminjaman' => 'PJM/20260821/0001',
+                'guestId' => 6, // Ibu Munisah (UIN Antasari Banjarmasin)
+                'facilityId' => 35, // Aula Makkah Kecil
+                'tanggal' => '2026-08-21',
+                'jamMulai' => '2026-08-21 08:00:00',
+                'checkIn' => '2026-08-21 08:00:00',
+                'checkOut' => '2026-08-23 18:00:00',
+                'durasi' => 3,
+                'statusPeminjaman' => 'SELESAI',
+                'statusApproval' => 'APPROVED',
+                'userId' => 3,
+                'catatanApproval' => 'Rekomendasi Rektorat',
+                'tanggalApproval' => '2026-08-20 10:00:00',
+                'keterangan' => 'LDK Mahasiswa',
+            ],
+            [
+                'kodePeminjaman' => 'PJM/20260822/0001',
+                'guestId' => 7, // Bpk Lutfi Hakim (Bpk Lutfi Hakim/ Saiun)
+                'facilityId' => 36, // Ruang Transit Makkah
+                'tanggal' => '2026-08-22',
+                'jamMulai' => '2026-08-22 08:00:00',
+                'checkIn' => '2026-08-22 08:00:00',
+                'checkOut' => '2026-08-23 20:00:00',
+                'durasi' => 2,
+                'statusPeminjaman' => 'SELESAI',
+                'statusApproval' => 'APPROVED',
+                'userId' => 5,
+                'catatanApproval' => 'Disetujui',
+                'tanggalApproval' => '2026-08-21 16:00:00',
+                'keterangan' => 'Transit Tokoh Agama',
+            ]
+        ];
+
+        foreach ($specificBookings as $idx => $sb) {
+            $transaksis[] = [
+                'id' => $idx + 1,
+                'kodePeminjaman' => $sb['kodePeminjaman'],
+                'guestId' => $sb['guestId'],
+                'facilityId' => $sb['facilityId'],
+                'tanggal' => $sb['tanggal'],
+                'jamMulai' => $sb['jamMulai'],
+                'checkIn' => $sb['checkIn'],
+                'checkOut' => $sb['checkOut'],
+                'durasi' => $sb['durasi'],
+                'statusPeminjaman' => $sb['statusPeminjaman'],
+                'keterangan' => $sb['keterangan'],
+                'userId' => $sb['userId'],
+                'statusApproval' => $sb['statusApproval'],
+                'catatanApproval' => $sb['catatanApproval'],
+                'tanggalApproval' => $sb['tanggalApproval'],
+                'biayaTambahan' => 0,
+                'kondisiReturn' => 'BAIK',
+                'catatanKerusakan' => null,
+                'estimasiDamage' => null,
+                'createdAt' => Carbon::parse($sb['tanggal'])->subDays(5)->format('Y-m-d H:i:s'),
+                'updatedAt' => Carbon::parse($sb['tanggal'])->format('Y-m-d H:i:s'),
+            ];
+        }
+
+        for ($i = 8; $i <= 100; $i++) {
             // Generate a realistic date, spread throughout 2026
             $date = $baseDate->copy()->addDays(rand(0, 150));
             $tanggal = $date->format('Y-m-d');

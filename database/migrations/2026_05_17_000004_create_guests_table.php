@@ -10,6 +10,7 @@ return new class extends Migration {
             $table->string('name', 255);
             $table->enum('gender', ['MALE', 'FEMALE']);
             $table->char('phone', 15)->nullable();
+            $table->text('instansi')->nullable();
             $table->text('address')->nullable();
             $table->string('bloodType', 5)->nullable();
             $table->text('notes')->nullable();

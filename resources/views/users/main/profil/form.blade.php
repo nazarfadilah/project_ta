@@ -71,13 +71,23 @@
                             </div>
                         </div>
 
-                        <div class="d-flex align-items-center gap-3 mb-0">
+                        <div class="d-flex align-items-center gap-3 mb-3">
                             <div class="d-flex align-items-center justify-content-center rounded bg-warning bg-opacity-10 text-warning" style="width: 32px; height: 32px;">
                                 <i class="fas fa-phone"></i>
                             </div>
                             <div>
                                 <h6 class="text-muted small mb-0" style="font-size: 11px;">No. Telepon</h6>
                                 <div class="fw-bold text-dark" style="font-size: 13px;">{{ $user->phone ?? '-' }}</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3 mb-0">
+                            <div class="d-flex align-items-center justify-content-center rounded bg-warning bg-opacity-10 text-warning" style="width: 32px; height: 32px;">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted small mb-0" style="font-size: 11px;">Instansi / Lembaga</h6>
+                                <div class="fw-bold text-dark" style="font-size: 13px;">{{ $guest->instansi ?? '-' }}</div>
                             </div>
                         </div>
                     </div>
@@ -170,6 +180,14 @@
                                 <div class="input-group">
                                     <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-phone-alt"></i></span>
                                     <input type="text" class="form-control ps-2 border-start-0" id="phone" name="phone" value="{{ old('phone', $user->phone ?? '') }}" placeholder="Contoh: 08123456789" maxlength="15" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required style="font-size: 14px; padding: 10px 14px;">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="instansi" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Instansi / Lembaga</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-building"></i></span>
+                                    <input type="text" class="form-control ps-2 border-start-0" id="instansi" name="instansi" value="{{ old('instansi', $guest->instansi ?? '') }}" placeholder="Contoh: Universitas Lambung Mangkurat, LPTQ Kalsel, Personal" style="font-size: 14px; padding: 10px 14px;">
                                 </div>
                             </div>
 

@@ -218,7 +218,7 @@
             </div>
             <form action="{{ route('main.laporan.export') }}" method="GET">
                 <div class="modal-body p-4">
-                    <p class="text-muted mb-4" style="font-size: 13px;">Silakan tentukan kriteria penyaringan data peminjaman yang ingin Anda ekspor ke bentuk Microsoft Excel (.csv).</p>
+                    <p class="text-muted mb-4" style="font-size: 13px;">Silakan tentukan kriteria penyaringan data peminjaman yang ingin Anda ekspor ke bentuk Microsoft Excel (.xlsx).</p>
                     
                     <!-- 1. Filter Gedung - DISABLED
                     <div class="mb-3">

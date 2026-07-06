@@ -41,6 +41,7 @@
                             <th style="width: 50px; text-align: center;">No</th>
                             <th>NIK</th>
                             <th>Nama</th>
+                            <th>Instansi</th>
                             <th>Jenis Kelamin</th>
                             <th>No. Telepon</th>
                             <th style="width: 110px; text-align: center;">Aksi</th>
@@ -52,6 +53,7 @@
                             <td style="text-align: center;">{{ $index + 1 }}</td>
                             <td>{{ $guest->nik }}</td>
                             <td>{{ $guest->name }}</td>
+                            <td>{{ $guest->instansi ?? '-' }}</td>
                             <td>{{ $guest->gender == 'MALE' ? 'Laki-laki' : 'Perempuan' }}</td>
                             <td>{{ $guest->phone ?? ($guest->user->phone ?? '-') }}</td>
                             <td style="text-align: center;">
@@ -74,7 +76,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" style="text-align: center; color: #999; padding: 30px;">
+                            <td colspan="7" style="text-align: center; color: #999; padding: 30px;">
                                 <i class="fas fa-inbox" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
                                 Belum ada data tamu
                             </td>

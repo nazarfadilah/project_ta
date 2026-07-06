@@ -15,22 +15,93 @@ class GuestSeeder extends Seeder {
         $streets = ['Jl. Merdeka', 'Jl. Sudirman', 'Jl. Ahmad Yani', 'Jl. Kartini', 'Jl. Diponegoro', 'Jl. Hasanuddin', 'Jl. Gajah Mada', 'Jl. Pemuda', 'Jl. Pahlawan', 'Jl. Anggrek'];
         $cities = ['Banjarmasin', 'Banjarbaru', 'Martapura', 'Pelaihari', 'Rantau', 'Kandangan', 'Barabai', 'Amuntai', 'Tanjung', 'Batulicin'];
         $bloodTypes = ['A', 'B', 'AB', 'O'];
+        $instansis = [
+            'LPTQ PROV. Kalsel',
+            'Kanwil Kemenag Prov. Kalteng (Bid. Penmad)',
+            'Travel Mahabbah',
+            'CV. Rpy Production',
+            'UIN Antasari Banjarmasin',
+            'PT. Borneo Jaya Teknika',
+            'Dinas Pendidikan Prov. Kalsel',
+            'Bawaslu Kota Banjarmasin',
+            'Polda Kalimantan Selatan',
+            'Universitas Lambung Mangkurat',
+            'Dinas Kesehatan Banjarbaru',
+            'Kementerian Agama Kota Banjarmasin',
+            'Personal',
+            'MTs Negeri 2 Banjarmasin',
+            'MAN 1 Kota Banjarbaru'
+        ];
+
+        $specificGuests = [
+            1 => [
+                'name' => 'Ibu Niswati',
+                'gender' => 'FEMALE',
+                'phone' => '08525261001',
+                'instansi' => 'LPTQ PROV. Kalsel',
+            ],
+            2 => [
+                'name' => 'Bpk Ahmad Maki',
+                'gender' => 'MALE',
+                'phone' => '08135273002',
+                'instansi' => 'Kanwil Kemenag Prov. Kalteng (Bid. Penmad)',
+            ],
+            3 => [
+                'name' => 'Bpk Haris Fadillah',
+                'gender' => 'MALE',
+                'phone' => '08215496003',
+                'instansi' => 'LPTQ PROV. Kalsel',
+            ],
+            4 => [
+                'name' => 'Bpk Bahar',
+                'gender' => 'MALE',
+                'phone' => '08538680004',
+                'instansi' => 'Travel Mahabbah',
+            ],
+            5 => [
+                'name' => 'Ibu Chrisna',
+                'gender' => 'FEMALE',
+                'phone' => '08534800005',
+                'instansi' => 'CV. Rpy Production',
+            ],
+            6 => [
+                'name' => 'Ibu Munisah',
+                'gender' => 'FEMALE',
+                'phone' => '08125643006',
+                'instansi' => 'UIN Antasari Banjarmasin',
+            ],
+            7 => [
+                'name' => 'Bpk Lutfi Hakim',
+                'gender' => 'MALE',
+                'phone' => '08152273007',
+                'instansi' => 'Bpk Lutfi Hakim/ Saiun',
+            ]
+        ];
         
         $guests = [];
         
         for ($i = 1; $i <= 62; $i++) {
-            $isMale = ($i % 2 === 1);
-            $gender = $isMale ? 'MALE' : 'FEMALE';
-            $firstName = $isMale ? $firstNamesM[array_rand($firstNamesM)] : $firstNamesF[array_rand($firstNamesF)];
-            $lastName = $lastNames[array_rand($lastNames)];
-            
-            // Add Haji/Hajja for some realism
-            $title = '';
-            if ($i % 4 === 0) {
-                $title = $isMale ? 'Haji ' : 'Hajja ';
+            if (isset($specificGuests[$i])) {
+                $name = $specificGuests[$i]['name'];
+                $gender = $specificGuests[$i]['gender'];
+                $phone = $specificGuests[$i]['phone'];
+                $instansi = $specificGuests[$i]['instansi'];
+            } else {
+                $isMale = ($i % 2 === 1);
+                $gender = $isMale ? 'MALE' : 'FEMALE';
+                $firstName = $isMale ? $firstNamesM[array_rand($firstNamesM)] : $firstNamesF[array_rand($firstNamesF)];
+                $lastName = $lastNames[array_rand($lastNames)];
+                
+                // Add Haji/Hajja for some realism
+                $title = '';
+                if ($i % 4 === 0) {
+                    $title = $isMale ? 'Haji ' : 'Hajja ';
+                }
+                
+                $name = $title . $firstName . ' ' . $lastName;
+                $phone = '08' . rand(111111111, 999999999);
+                $instansi = $instansis[array_rand($instansis)];
             }
-            
-            $name = $title . $firstName . ' ' . $lastName;
             
             // Generate unique 16 digit NIK
             $nik = '6371' . sprintf('%02d', rand(1, 10)) . sprintf('%06d', rand(100000, 999999)) . sprintf('%04d', $i);
@@ -44,6 +115,8 @@ class GuestSeeder extends Seeder {
                 'gender' => $gender,
                 'address' => $address,
                 'bloodType' => $bloodTypes[array_rand($bloodTypes)],
+                'instansi' => $instansi,
+                'phone' => $phone,
                 'notes' => ($i % 5 === 0) ? 'Tamu rombongan dinas' : (($i % 7 === 0) ? 'Tamu reguler prioritas' : 'Tamu umum pendaftar web'),
                 'createdAt' => now(),
                 'updatedAt' => now(),
