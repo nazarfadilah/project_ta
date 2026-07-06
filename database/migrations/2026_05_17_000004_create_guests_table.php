@@ -16,8 +16,15 @@ return new class extends Migration {
             $table->timestamp('createdAt')->useCurrent();
             $table->timestamp('updatedAt')->useCurrent()->useCurrentOnUpdate();
         });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('guestId')->references('id')->on('guest')->onDelete('set null');
+        });
     }
     public function down(): void {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['guestId']);
+        });
         Schema::dropIfExists('guest');
     }
 };

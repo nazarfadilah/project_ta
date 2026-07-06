@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         // Core System Seeders
         $this->call([
             RoleSeeder::class,
+            GuestSeeder::class,
         ]);
 
         // Landing Page Seeders
@@ -30,7 +31,6 @@ class DatabaseSeeder extends Seeder
             // GedungSeeder::class,
             RuanganSeeder::class,
             PaketRuanganSeeder::class,
-            GuestSeeder::class,
             PeminjamanTransaksiSeeder::class,
             InvoiceSeeder::class,
             SaranaSeeder::class,

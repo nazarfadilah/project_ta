@@ -16,13 +16,15 @@ return new class extends Migration
             $table->string('username', 100)->unique();
             $table->string('email', 255)->unique();
             $table->string('password', 255);
-            $table->unsignedInteger('roleId');
+            $table->integer('roleId');
             $table->string('phone', 20)->nullable();
-            $table->unsignedInteger('guestId')->nullable();
+            $table->integer('guestId')->nullable();
             $table->enum('status', ['ACTIVE', 'INACTIVE', 'SUSPENDED'])->default('ACTIVE');
             $table->timestamp('lastLoginAt')->nullable();
             $table->timestamps();
             $table->comment('Tabel pengguna sistem (staff & tamu terdaftar)');
+
+            $table->foreign('roleId')->references('id')->on('role');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
