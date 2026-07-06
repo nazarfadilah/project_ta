@@ -138,12 +138,12 @@ class LaporanController extends Controller
             ->setSubject('Laporan SPI');
 
         // Title rows matching Data Pesanan.xlsx template
-        $sheet->setCellValue('A4', 'DATA RESPONDEN EKSTERNAL');
-        $sheet->setCellValue('A5', 'KEGIATAN SURVEY PENILAIAN INTEGRITAS (SPI) TAHUN ' . Carbon::now()->year);
-        $sheet->setCellValue('A6', 'PADA ' . strtoupper($namaInstansi));
+        $sheet->setCellValue('A1', 'DATA RESPONDEN EKSTERNAL');
+        $sheet->setCellValue('A2', 'KEGIATAN SURVEY PENILAIAN INTEGRITAS (SPI) TAHUN ' . Carbon::now()->year);
+        $sheet->setCellValue('A3', 'PADA ' . strtoupper($namaInstansi));
 
         // Styling the titles (bold)
-        $sheet->getStyle('A4:A6')->getFont()->setBold(true)->setSize(11);
+        $sheet->getStyle('A1:A3')->getFont()->setBold(true)->setSize(11);
 
         // Header fields
         $headers = [
@@ -157,10 +157,10 @@ class LaporanController extends Controller
             'E-mail (Aktif)'
         ];
 
-        // Fill headers in row 8
+        // Fill headers in row 5
         foreach ($headers as $colIdx => $headerText) {
             $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx + 1);
-            $cellCoord = $colLetter . '8';
+            $cellCoord = $colLetter . '5';
             $sheet->setCellValue($cellCoord, $headerText);
             
             // Set header styling: bold, light gray background, thin borders
@@ -172,14 +172,14 @@ class LaporanController extends Controller
         }
 
         // Add thin border to headers and style them nicely
-        $headerRange = 'A8:H8';
+        $headerRange = 'A5:H5';
         $sheet->getStyle($headerRange)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
         $sheet->getStyle($headerRange)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()->setARGB('FFF2F2F2');
-        $sheet->getRowDimension(8)->setRowHeight(25);
+        $sheet->getRowDimension(5)->setRowHeight(25);
 
-        // Fill data starting at row 9
-        $rowNum = 9;
+        // Fill data starting at row 6
+        $rowNum = 6;
         foreach ($data as $index => $row) {
             $sheet->setCellValue('A' . $rowNum, $index + 1);
             $sheet->setCellValue('B' . $rowNum, $namaInstansi);
