@@ -183,5 +183,6 @@
                 { searchable: false, targets: [0, 3] }
             ]
         });
+    });
 </script>
 @endpush

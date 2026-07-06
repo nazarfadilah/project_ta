@@ -104,7 +104,7 @@
 
                 <!-- Card Ruangan -->
                 @if(in_array(Auth::user()->roleId, [2, 3]))
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-4">
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
                     <a href="{{ route('main.ruangan.index') }}" class="text-decoration-none">
                         <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #4E73DF 0%, #224ABE 100%); min-height: 150px;">
                             <div class="card-body d-flex flex-column justify-content-between h-100">
@@ -125,7 +125,7 @@
 
                 <!-- Card Sarana & Prasarana -->
                 @if(in_array(Auth::user()->roleId, [2, 3]))
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-4">
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
                     <a href="{{ route('main.sarana.index') }}" class="text-decoration-none">
                         <div class="card stat-card border-0 rounded-3" style="background: linear-gradient(135deg, #20C997 0%, #17A2B8 100%); min-height: 150px;">
                             <div class="card-body d-flex flex-column justify-content-between h-100">
