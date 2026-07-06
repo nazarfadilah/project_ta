@@ -374,12 +374,13 @@ class AdminPeminjamanTransaksiController extends Controller
             return back()->withErrors(['tanggal' => 'Ruangan ini sudah dipesan oleh pengguna lain untuk rentang waktu tersebut (jadwal terbooking). Silakan pilih tanggal atau jam mulai lainnya.'])->withInput();
         }
 
-        // 4. Verifikasi ketersediaan stok sarana
+        // 4. Verifikasi ketersediaan stok sarana secara dinamis berdasarkan rentang tanggal/jam
         if (!empty($validated['sarana'])) {
             foreach ($validated['sarana'] as $item) {
                 $saranaModel = \App\Models\Sarana::findOrFail($item['sarana_id']);
-                if ($item['jumlah'] > $saranaModel->stok) {
-                    return back()->withErrors(['sarana' => 'Stok sarana "' . $saranaModel->nama . '" tidak mencukupi. Tersedia: ' . $saranaModel->stok . ' unit.'])->withInput();
+                $availableStock = $saranaModel->getAvailableStock($startDateTime, $endDateTime);
+                if ($item['jumlah'] > $availableStock) {
+                    return back()->withErrors(['sarana' => 'Stok sarana "' . $saranaModel->nama . '" tidak mencukupi untuk jadwal tersebut. Tersedia: ' . $availableStock . ' unit.'])->withInput();
                 }
             }
         }

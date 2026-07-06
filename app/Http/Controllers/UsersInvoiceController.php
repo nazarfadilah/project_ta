@@ -28,7 +28,7 @@ class UsersInvoiceController extends Controller
         $invoice = Invoice::where('peminjamanId', $peminjaman_id)->firstOrFail();
 
         // Eager load relasi
-        $invoice->load('peminjamanTransaksi.paketRuangan.ruangan.gedung', 
+        $invoice->load('peminjamanTransaksi.paketRuangan.ruangan', 
                        'peminjamanTransaksi.guest');
 
         return view('users.main.invoice.index', compact('invoice', 'peminjaman'));

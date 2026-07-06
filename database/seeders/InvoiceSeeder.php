@@ -22,7 +22,7 @@ class InvoiceSeeder extends Seeder {
 
             // Calculate subtotal based on duration multiplier for daily rooms
             if ($paketDurasi === 24) {
-                $multiplier = max(1, (int)($transaksi->durasi / 24));
+                $multiplier = $transaksi->durasi;
                 $subtotal = $baseHarga * $multiplier;
             } else {
                 $subtotal = $baseHarga;

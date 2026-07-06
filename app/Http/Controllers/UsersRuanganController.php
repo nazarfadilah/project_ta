@@ -62,7 +62,12 @@ class UsersRuanganController extends Controller
             ->get()
             ->map(function($item) {
                 $start = Carbon::parse($item->jamMulai);
-                $end = $start->copy()->addHours($item->durasi);
+                $isHarian = ($item->paketRuangan && (stripos($item->paketRuangan->nama_paket, 'hari') !== false || stripos($item->paketRuangan->nama_paket, 'harian') !== false));
+                if ($isHarian) {
+                    $end = $start->copy()->addDays($item->durasi);
+                } else {
+                    $end = $start->copy()->addHours($item->durasi);
+                }
                 return [
                     'start' => $start->format('Y-m-d H:i'),
                     'end' => $end->format('Y-m-d H:i'),

@@ -31,7 +31,7 @@ class PeminjamanTransaksiSeeder extends Seeder {
             } elseif ($facilityId === 34 || $facilityId === 38) {
                 $durasi = 8;
             } else {
-                $durasi = 24 * rand(1, 4); // Standard room rentals range from 1 to 4 days
+                $durasi = rand(1, 4); // Standard room rentals range from 1 to 4 days
             }
 
             // Status distribution:

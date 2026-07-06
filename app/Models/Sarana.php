@@ -45,8 +45,13 @@ class Sarana extends Model {
                 }
                 
                 // Gunakan jamMulai (bukan startOfDay) untuk akurasi jam
-                $pemStart = Carbon::parse($detail->peminjamanTransaksi->jamMulai);
-                $pemEnd = $pemStart->copy()->addHours($detail->peminjamanTransaksi->durasi ?? 24);
+                $pemStart = Carbon::parse($tx->jamMulai);
+                $itemIsHarian = ($tx->paketRuangan && (stripos($tx->paketRuangan->nama_paket, 'hari') !== false || stripos($tx->paketRuangan->nama_paket, 'harian') !== false));
+                if ($itemIsHarian) {
+                    $pemEnd = $pemStart->copy()->addDays($tx->durasi);
+                } else {
+                    $pemEnd = $pemStart->copy()->addHours($tx->durasi);
+                }
                 
                 // Cek overlapping: tidak overlap jika pemEnd <= requestStart OR pemStart >= requestEnd
                 // Overlap jika: pemEnd > requestStart AND pemStart < requestEnd
@@ -77,13 +82,22 @@ class Sarana extends Model {
             ->with('peminjamanTransaksi')
             ->get()
             ->filter(function ($detail) use ($startDate, $endDate) {
-                if (!$detail->peminjamanTransaksi) {
+                $tx = $detail->peminjamanTransaksi;
+                if (!$tx) {
+                    return false;
+                }
+                if ($tx->statusApproval === 'REJECTED' || $tx->statusPeminjaman === 'BATAL') {
                     return false;
                 }
                 
                 // Gunakan jamMulai (bukan startOfDay) untuk akurasi jam
-                $pemStart = Carbon::parse($detail->peminjamanTransaksi->jamMulai);
-                $pemEnd = $pemStart->copy()->addHours($detail->peminjamanTransaksi->durasi ?? 24);
+                $pemStart = Carbon::parse($tx->jamMulai);
+                $itemIsHarian = ($tx->paketRuangan && (stripos($tx->paketRuangan->nama_paket, 'hari') !== false || stripos($tx->paketRuangan->nama_paket, 'harian') !== false));
+                if ($itemIsHarian) {
+                    $pemEnd = $pemStart->copy()->addDays($tx->durasi);
+                } else {
+                    $pemEnd = $pemStart->copy()->addHours($tx->durasi);
+                }
                 
                 // Overlap jika: pemEnd > requestStart AND pemStart < requestEnd
                 return $pemEnd->greaterThan($startDate) && $pemStart->lessThan($endDate);

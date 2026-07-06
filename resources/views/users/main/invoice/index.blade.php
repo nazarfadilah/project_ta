@@ -109,7 +109,7 @@
                 <div class="col-md-6 col-lg-3 detail-item">
                     <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Gedung</label>
                     <div class="fw-semibold text-dark value" style="font-size: 14px;">
-                        {{ $invoice->peminjamanTransaksi->paketRuangan->ruangan->gedung->nama_gedung ?? '-' }}
+                        -
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-3 detail-item">

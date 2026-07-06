@@ -282,6 +282,7 @@ Route::middleware(['auth:web', 'tamu'])->prefix('users')->name('users.')->group(
             Route::match(['get', 'post'], '/create', [UsersReservasiController::class, 'create'])->name('create');
             Route::post('/', [UsersReservasiController::class, 'store'])->name('store');
             Route::get('/{id}', [UsersReservasiController::class, 'show'])->name('show');
+            Route::post('/{id}/cancel', [UsersReservasiController::class, 'cancel'])->name('cancel');
         });
 
         // Invoice routes

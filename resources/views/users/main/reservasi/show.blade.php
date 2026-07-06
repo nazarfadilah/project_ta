@@ -15,6 +15,11 @@
             <a href="{{ route('users.main.invoice.index', $reservasi->id) }}" class="btn btn-primary btn-sm text-white" style="background-color: #C9A961; border-color: #C9A961;">
                 <i class="fas fa-file-invoice-dollar me-1"></i> Lihat Invoice
             </a>
+            @if($reservasi->statusPeminjaman === 'RESERVASI')
+                <button type="button" class="btn btn-danger btn-sm text-white" data-bs-toggle="modal" data-bs-target="#modalCancelReservasi">
+                    <i class="fas fa-ban me-1"></i> Batalkan Reservasi
+                </button>
+            @endif
             @if($reservasi->status === 'COMPLETED')
                 @if($reservasi->ruangan && $reservasi->ruangan->id_ruangan)
                     <a href="{{ route('users.main.reservasi.create', ['ruangan_id' => $reservasi->ruangan->id_ruangan]) }}" class="btn btn-success btn-sm px-3">
@@ -64,14 +69,26 @@
             <span>Selamat! Reservasi Anda telah disetujui. Silakan hubungi petugas untuk konfirmasi lebih lanjut.</span>
         </div>
     @elseif($reservasi->status === 'REJECTED')
-        <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center gap-2 mb-4" style="font-size: 14px;">
-            <i class="fas fa-times-circle me-1"></i>
-            <span>Maaf, reservasi Anda telah ditolak. Silakan hubungi petugas untuk alasan penolakan.</span>
+        <div class="alert alert-danger border-0 shadow-sm d-flex align-items-start gap-2 mb-4" style="font-size: 14px;">
+            <i class="fas fa-times-circle mt-1 me-1"></i>
+            <div>
+                <div>Maaf, reservasi Anda telah ditolak. Silakan hubungi petugas untuk konfirmasi lebih lanjut.</div>
+                @if($reservasi->catatanApproval)
+                    <div class="mt-2 fw-semibold">Catatan Penolakan Admin:</div>
+                    <div class="text-dark opacity-75 font-monospace" style="font-size: 13px;">"{{ $reservasi->catatanApproval }}"</div>
+                @endif
+            </div>
         </div>
     @elseif($reservasi->status === 'BATAL')
-        <div class="alert alert-secondary border-0 shadow-sm d-flex align-items-center gap-2 mb-4" style="font-size: 14px;">
-            <i class="fas fa-ban me-1"></i>
-            <span>Reservasi ini telah dibatalkan. Anda dapat mengajukan ulang reservasi untuk ruangan ini jika diperlukan.</span>
+        <div class="alert alert-secondary border-0 shadow-sm d-flex align-items-start gap-2 mb-4" style="font-size: 14px;">
+            <i class="fas fa-ban mt-1 me-1"></i>
+            <div>
+                <div>Reservasi ini telah dibatalkan. Anda dapat mengajukan ulang reservasi untuk ruangan ini jika diperlukan.</div>
+                @if($reservasi->alasan_pembatalan)
+                    <div class="mt-2 fw-semibold">Alasan Pembatalan:</div>
+                    <div class="text-dark opacity-75 font-monospace" style="font-size: 13px;">"{{ $reservasi->alasan_pembatalan }}"</div>
+                @endif
+            </div>
         </div>
     @elseif($reservasi->status === 'COMPLETED')
         <div class="alert alert-info border-0 shadow-sm d-flex align-items-center gap-2 mb-4" style="font-size: 14px;">
@@ -274,6 +291,36 @@
             <a href="{{ route('users.main.reservasi.index') }}" class="btn btn-secondary mt-3">
                 <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar Reservasi
             </a>
+        </div>
+    </div>
+    @endif
+
+    @if($reservasi && $reservasi->statusPeminjaman === 'RESERVASI')
+    <!-- Modal Pembatalan Reservasi -->
+    <div class="modal fade" id="modalCancelReservasi" tabindex="-1" aria-labelledby="modalCancelReservasiLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-3">
+                <form action="{{ route('users.main.reservasi.cancel', $reservasi->id) }}" method="POST">
+                    @csrf
+                    <div class="modal-header text-white border-bottom-0" style="background-color: #dc3545; border-radius: 8px 8px 0 0; padding: 16px 20px;">
+                        <h5 class="modal-title fs-5 fw-semibold" id="modalCancelReservasiLabel">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Batalkan Peminjaman
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4" style="background-color: #fcfcfc;">
+                        <p class="text-dark" style="font-size: 14px;">Apakah Anda yakin ingin membatalkan peminjaman/reservasi ini? Tindakan ini tidak dapat dibatalkan.</p>
+                        <div class="mb-3">
+                            <label for="alasan_pembatalan" class="form-label fw-semibold text-muted" style="font-size: 13px;">Alasan Pembatalan (Opsional)</label>
+                            <textarea class="form-control" id="alasan_pembatalan" name="alasan_pembatalan" rows="3" placeholder="Masukkan alasan pembatalan..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top-0 bg-light rounded-bottom">
+                        <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal" style="font-size: 13px;">Kembali</button>
+                        <button type="submit" class="btn btn-sm btn-danger text-white px-3" style="font-size: 13px;">Batalkan Reservasi</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     @endif

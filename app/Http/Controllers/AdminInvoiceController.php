@@ -17,7 +17,7 @@ class AdminInvoiceController extends Controller
     public function show($peminjaman_id)
     {
         $peminjaman = PeminjamanTransaksi::findOrFail($peminjaman_id);
-        $peminjaman->load('guest', 'paketRuangan.ruangan.gedung', 'user');
+        $peminjaman->load('guest', 'paketRuangan.ruangan', 'user');
 
         // Get invoice
         $invoice = Invoice::where('peminjamanId', $peminjaman_id)->firstOrFail();

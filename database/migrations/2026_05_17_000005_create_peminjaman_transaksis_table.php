@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->integer('durasi')->nullable();
             $table->enum('statusPeminjaman', ['RESERVASI','CHECK_IN','CHECK_OUT','BATAL','SELESAI'])->default('RESERVASI');
             $table->text('keterangan')->nullable();
+            $table->text('alasan_pembatalan')->nullable();
             $table->unsignedBigInteger('userId')->nullable();
             $table->enum('statusApproval', ['PENDING','APPROVED','REJECTED'])->default('PENDING');
             $table->text('catatanApproval')->nullable();
