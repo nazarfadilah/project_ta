@@ -84,6 +84,7 @@ class UsersRuanganController extends Controller
             // Code Baru:
             'gedung' => '-',
             'kapasitas' => $ruangan->kapasitas,
+            'keterangan' => $ruangan->keterangan ?? '-',
             'packages' => $ruangan->paketRuangans,
             'photos' => $ruangan->mediaFiles,
             'booked' => $bookedRanges

@@ -7,147 +7,157 @@ class RuanganSeeder extends Seeder {
     public function run(): void {
         DB::table('ruangan')->delete();
         
-        $ruangans = [];
-        
-        // Gedung Arafah (id_gedung = 1) - 10 Kamar Standar
-        for ($i = 1; $i <= 10; $i++) {
-            $lantai = ($i <= 5) ? 1 : 2;
-            $nomor = 100 + $i;
-            $ruangans[] = [
-                'id_ruangan' => $i,
+        $ruangans = [
+            [
+                'id_ruangan' => 1,
                 'gedung_id' => null,
-                'nama_ruangan' => "Kamar Arafah " . $nomor,
-                'tipe_ruangan' => 'KAMAR_STANDAR',
-                'lantai' => $lantai,
-                'kapasitas' => 4,
-                'gender_policy' => ($i % 2 === 0) ? 'MALE_ONLY' : 'FEMALE_ONLY',
-                'keterangan' => "Kamar asrama standar lantai {$lantai} dengan kapasitas 4 orang, lengkap dengan kipas angin, lemari, dan kamar mandi dalam."
-            ];
-        }
-
-        // Gedung Mina (id_gedung = 2) - 5 Kamar VIP
-        for ($i = 1; $i <= 5; $i++) {
-            $id = 10 + $i;
-            $ruangans[] = [
-                'id_ruangan' => $id,
+                'nama_ruangan' => 'Aula Jabal Rahmah',
+                'tipe_ruangan' => 'AULA',
+                'lantai' => 1,
+                'kapasitas' => 500,
+                'gender_policy' => 'MIXED',
+                'keterangan' => 'Aula pertemuan besar berkapasitas hingga 500 orang, ber-AC, sound system lengkap, panggung, cocok untuk seminar, resepsi, atau pelatihan.'
+            ],
+            [
+                'id_ruangan' => 2,
                 'gedung_id' => null,
-                'nama_ruangan' => "Kamar Mina VIP " . (200 + $i),
+                'nama_ruangan' => 'Aula Jeddah',
+                'tipe_ruangan' => 'AULA',
+                'lantai' => 1,
+                'kapasitas' => 300,
+                'gender_policy' => 'MIXED',
+                'keterangan' => 'Aula berukuran sedang kapasitas 300 orang dengan fasilitas AC, sound system, meja kursi lipat.'
+            ],
+            [
+                'id_ruangan' => 3,
+                'gedung_id' => null,
+                'nama_ruangan' => 'Aula Mekkah',
+                'tipe_ruangan' => 'AULA',
+                'lantai' => 1,
+                'kapasitas' => 200,
+                'gender_policy' => 'MIXED',
+                'keterangan' => 'Aula sedang berkapasitas 200 orang, ber-AC, sound system, sangat pas untuk acara internal atau bimtek.'
+            ],
+            [
+                'id_ruangan' => 4,
+                'gedung_id' => null,
+                'nama_ruangan' => 'Aula Aziziyah',
+                'tipe_ruangan' => 'AULA',
+                'lantai' => 1,
+                'kapasitas' => 150,
+                'gender_policy' => 'MIXED',
+                'keterangan' => 'Aula Aziziyah berkapasitas 150 orang, AC, sound system, whiteboard.'
+            ],
+            [
+                'id_ruangan' => 5,
+                'gedung_id' => null,
+                'nama_ruangan' => 'Kamar Superior',
                 'tipe_ruangan' => 'KAMAR_VIP',
                 'lantai' => 1,
                 'kapasitas' => 2,
                 'gender_policy' => 'MIXED',
-                'keterangan' => "Kamar tipe VIP asrama haji dengan tempat tidur twin-bed premium, pendingin ruangan (AC), kulkas kecil, TV, dan pemanas air mandi."
-            ];
-        }
-
-        // Gedung Muzdalifah (id_gedung = 3) - 12 Kamar Standar
-        for ($i = 1; $i <= 12; $i++) {
-            $id = 15 + $i;
-            $lantai = ($i <= 6) ? 1 : 2;
-            $nomor = 300 + $i;
-            $ruangans[] = [
-                'id_ruangan' => $id,
+                'keterangan' => 'Kamar tipe VIP dengan tempat tidur twin-bed premium, pendingin ruangan (AC), kulkas kecil, TV, dan pemanas air mandi.'
+            ],
+            [
+                'id_ruangan' => 6,
                 'gedung_id' => null,
-                'nama_ruangan' => "Kamar Muzdalifah " . $nomor,
+                'nama_ruangan' => 'Kamar Standar',
                 'tipe_ruangan' => 'KAMAR_STANDAR',
-                'lantai' => $lantai,
-                'kapasitas' => 6,
-                'gender_policy' => ($i % 2 === 0) ? 'MALE_ONLY' : 'FEMALE_ONLY',
-                'keterangan' => "Kamar tipe asrama berkapasitas besar (6 orang) dengan tempat tidur bertingkat, pendingin ruangan (AC), dan loker penyimpanan barang."
-            ];
-        }
-
-        // Gedung Madinah (id_gedung = 4) - 6 Kamar Premium
-        for ($i = 1; $i <= 6; $i++) {
-            $id = 27 + $i;
-            $ruangans[] = [
-                'id_ruangan' => $id,
+                'lantai' => 1,
+                'kapasitas' => 4,
+                'gender_policy' => 'MIXED',
+                'keterangan' => 'Kamar asrama standar dengan kapasitas 4 orang, pendingin ruangan (AC), lemari pakaian, dan kamar mandi dalam.'
+            ],
+            [
+                'id_ruangan' => 7,
                 'gedung_id' => null,
-                'nama_ruangan' => "Kamar Madinah Premium " . (400 + $i),
-                'tipe_ruangan' => 'KAMAR_PREMIUM',
+                'nama_ruangan' => 'Kamar Ekonomi',
+                'tipe_ruangan' => 'KAMAR_STANDAR',
+                'lantai' => 1,
+                'kapasitas' => 6,
+                'gender_policy' => 'MIXED',
+                'keterangan' => 'Kamar tipe ekonomi berkapasitas 6 orang dengan tempat tidur tingkat, kipas angin, dan kamar mandi luar/dalam.'
+            ],
+            [
+                'id_ruangan' => 8,
+                'gedung_id' => null,
+                'nama_ruangan' => 'Kamar Standar Double Bed',
+                'tipe_ruangan' => 'KAMAR_STANDAR',
                 'lantai' => 1,
                 'kapasitas' => 2,
                 'gender_policy' => 'MIXED',
-                'keterangan' => "Kamar asrama eksklusif dengan single-bed ukuran King, AC, Smart TV, Wi-Fi kencang, sofa rileks, dan bath-tub."
-            ];
-        }
-
-        // Gedung Makkah (id_gedung = 5) - 3 Ruangan
-        $ruangans[] = [
-            'id_ruangan' => 34,
-            'gedung_id' => null,
-            'nama_ruangan' => 'Ruang Rapat Makkah',
-            'tipe_ruangan' => 'RUANG_MEETING',
-            'lantai' => 1,
-            'kapasitas' => 40,
-            'gender_policy' => 'MIXED',
-            'keterangan' => 'Ruang rapat kapasitas 40 orang dengan meja melingkar, proyektor, whiteboard, dan sound system standar.'
-        ];
-        $ruangans[] = [
-            'id_ruangan' => 35,
-            'gedung_id' => null,
-            'nama_ruangan' => 'Aula Makkah Kecil',
-            'tipe_ruangan' => 'AULA',
-            'lantai' => 1,
-            'kapasitas' => 100,
-            'gender_policy' => 'MIXED',
-            'keterangan' => 'Aula berukuran sedang cocok untuk acara seminar, syukuran, atau pelatihan dengan kapasitas hingga 100 orang.'
-        ];
-        $ruangans[] = [
-            'id_ruangan' => 36,
-            'gedung_id' => null,
-            'nama_ruangan' => 'Ruang Transit Makkah',
-            'tipe_ruangan' => 'RUANG_LAINNYA',
-            'lantai' => 1,
-            'kapasitas' => 10,
-            'gender_policy' => 'MIXED',
-            'keterangan' => 'Ruang tunggu ber-AC dengan sofa empuk yang diperuntukkan bagi tamu VIP atau pengisi acara.'
-        ];
-
-        // Gedung Multazam (id_gedung = 6) - Gedung Khusus 1 Ruangan
-        $ruangans[] = [
-            'id_ruangan' => 37,
-            'gedung_id' => null,
-            'nama_ruangan' => 'Aula Akbar Multazam',
-            'tipe_ruangan' => 'AULA',
-            'lantai' => 1,
-            'kapasitas' => 800,
-            'gender_policy' => 'MIXED',
-            'keterangan' => 'Aula utama Asrama Haji dengan kapasitas raksasa hingga 800 orang. Sangat ideal untuk pelepasan jamaah, resepsi pernikahan besar, dan wisuda.'
-        ];
-
-        // Gedung Shafa (id_gedung = 7) - Gedung Khusus 1 Ruangan
-        $ruangans[] = [
-            'id_ruangan' => 38,
-            'gedung_id' => null,
-            'nama_ruangan' => 'Executive Boardroom Shafa',
-            'tipe_ruangan' => 'RUANG_MEETING',
-            'lantai' => 1,
-            'kapasitas' => 30,
-            'gender_policy' => 'MIXED',
-            'keterangan' => 'Ruang pertemuan tingkat VVIP dengan kursi kulit mewah, sistem video conference canggih, proyektor laser ultra HD, dan AC central.'
-        ];
-
-        // Gedung Marwah (id_gedung = 8) - 2 Ruangan
-        $ruangans[] = [
-            'id_ruangan' => 39,
-            'gedung_id' => null,
-            'nama_ruangan' => 'Ruang Rapat Marwah 1',
-            'tipe_ruangan' => 'RUANG_MEETING',
-            'lantai' => 1,
-            'kapasitas' => 15,
-            'gender_policy' => 'MIXED',
-            'keterangan' => 'Ruang rapat berskala kecil untuk staf internal maupun eksternal.'
-        ];
-        $ruangans[] = [
-            'id_ruangan' => 40,
-            'gedung_id' => null,
-            'nama_ruangan' => 'Ruang Rapat Marwah 2',
-            'tipe_ruangan' => 'RUANG_MEETING',
-            'lantai' => 1,
-            'kapasitas' => 15,
-            'gender_policy' => 'MIXED',
-            'keterangan' => 'Ruang rapat cadangan di Gedung Administrasi.'
+                'keterangan' => 'Kamar standar dengan fasilitas 1 double-bed untuk 2 orang, AC, lemari, dan kamar mandi dalam.'
+            ],
+            [
+                'id_ruangan' => 9,
+                'gedung_id' => null,
+                'nama_ruangan' => 'Kamar Superior 4 Single Bed',
+                'tipe_ruangan' => 'KAMAR_PREMIUM',
+                'lantai' => 1,
+                'kapasitas' => 4,
+                'gender_policy' => 'MIXED',
+                'keterangan' => 'Kamar premium berkapasitas 4 orang dengan 4 single-bed, AC, Smart TV, kulkas, dan pemanas air mandi.'
+            ],
+            [
+                'id_ruangan' => 10,
+                'gedung_id' => null,
+                'nama_ruangan' => 'Ruang Belajar',
+                'tipe_ruangan' => 'RUANG_MEETING',
+                'lantai' => 1,
+                'kapasitas' => 40,
+                'gender_policy' => 'MIXED',
+                'keterangan' => 'Ruang belajar / kelas berkapasitas 40 orang dengan kursi belajar, AC, proyektor, dan whiteboard.'
+            ],
+            [
+                'id_ruangan' => 11,
+                'gedung_id' => null,
+                'nama_ruangan' => 'Ruang Belajar 3',
+                'tipe_ruangan' => 'RUANG_MEETING',
+                'lantai' => 1,
+                'kapasitas' => 30,
+                'gender_policy' => 'MIXED',
+                'keterangan' => 'Ruang kelas sedang dengan kapasitas 30 orang, dilengkapi AC, meja-kursi, whiteboard, dan proyektor.'
+            ],
+            [
+                'id_ruangan' => 12,
+                'gedung_id' => null,
+                'nama_ruangan' => 'Ruang Belajar 4',
+                'tipe_ruangan' => 'RUANG_MEETING',
+                'lantai' => 1,
+                'kapasitas' => 30,
+                'gender_policy' => 'MIXED',
+                'keterangan' => 'Ruang kelas sedang dengan kapasitas 30 orang, dilengkapi AC, meja-kursi, whiteboard, dan proyektor.'
+            ],
+            [
+                'id_ruangan' => 13,
+                'gedung_id' => null,
+                'nama_ruangan' => 'Ruang Kelas',
+                'tipe_ruangan' => 'RUANG_MEETING',
+                'lantai' => 1,
+                'kapasitas' => 50,
+                'gender_policy' => 'MIXED',
+                'keterangan' => 'Ruang kelas besar kapasitas 50 orang dengan meja-kursi lipat, AC, sound system mini, proyektor, dan whiteboard.'
+            ],
+            [
+                'id_ruangan' => 14,
+                'gedung_id' => null,
+                'nama_ruangan' => 'Area Manasik',
+                'tipe_ruangan' => 'RUANG_LAINNYA',
+                'lantai' => 1,
+                'kapasitas' => 100,
+                'gender_policy' => 'MIXED',
+                'keterangan' => 'Miniatur Kakbah dan area manasik haji outdoor untuk pelatihan peragaan ibadah haji/umrah.'
+            ],
+            [
+                'id_ruangan' => 15,
+                'gedung_id' => null,
+                'nama_ruangan' => 'Halaman',
+                'tipe_ruangan' => 'RUANG_LAINNYA',
+                'lantai' => 1,
+                'kapasitas' => 200,
+                'gender_policy' => 'MIXED',
+                'keterangan' => 'Halaman terbuka hijau yang luas, cocok untuk kegiatan outbound, pameran, senam, atau parkir tambahan.'
+            ]
         ];
 
         DB::table('ruangan')->insert($ruangans);

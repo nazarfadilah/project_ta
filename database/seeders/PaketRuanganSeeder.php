@@ -8,78 +8,30 @@ class PaketRuanganSeeder extends Seeder {
         DB::table('paket_ruangan')->delete();
         
         $pakets = [];
-        
-        // Kamar Standar Arafah (1 - 10)
-        for ($i = 1; $i <= 10; $i++) {
-            $pakets[] = [
-                'id' => $i,
-                'ruangan_id' => $i,
-                'nama_paket' => 'Sewa Harian Arafah',
-                'durasi' => 24,
-                'harga' => 150000.00,
-                'currency' => 'IDR',
-                'isExclusive' => 0,
-                'status' => 'ACTIVE'
-            ];
-        }
-
-        // Kamar VIP Mina (11 - 15)
-        for ($i = 11; $i <= 15; $i++) {
-            $pakets[] = [
-                'id' => $i,
-                'ruangan_id' => $i,
-                'nama_paket' => 'Sewa Harian VIP Mina',
-                'durasi' => 24,
-                'harga' => 450000.00,
-                'currency' => 'IDR',
-                'isExclusive' => 0,
-                'status' => 'ACTIVE'
-            ];
-        }
-
-        // Kamar Standar Muzdalifah (16 - 27)
-        for ($i = 16; $i <= 27; $i++) {
-            $pakets[] = [
-                'id' => $i,
-                'ruangan_id' => $i,
-                'nama_paket' => 'Sewa Harian Muzdalifah',
-                'durasi' => 24,
-                'harga' => 200000.00,
-                'currency' => 'IDR',
-                'isExclusive' => 0,
-                'status' => 'ACTIVE'
-            ];
-        }
-
-        // Kamar Premium Madinah (28 - 33)
-        for ($i = 28; $i <= 33; $i++) {
-            $pakets[] = [
-                'id' => $i,
-                'ruangan_id' => $i,
-                'nama_paket' => 'Sewa Harian Premium Madinah',
-                'durasi' => 24,
-                'harga' => 600000.00,
-                'currency' => 'IDR',
-                'isExclusive' => 0,
-                'status' => 'ACTIVE'
-            ];
-        }
-
-        // Ruangan Makkah (34, 35, 36)
         $pakets[] = [
-            'id' => 34,
-            'ruangan_id' => 34,
-            'nama_paket' => 'Paket Meeting Makkah (8 Jam)',
-            'durasi' => 8,
-            'harga' => 800000.00,
+            'id' => 1,
+            'ruangan_id' => 1,
+            'nama_paket' => 'Sewa Harian Aula Jabal Rahmah',
+            'durasi' => 24,
+            'harga' => 3000000.00,
             'currency' => 'IDR',
-            'isExclusive' => 0,
+            'isExclusive' => 1,
             'status' => 'ACTIVE'
         ];
         $pakets[] = [
-            'id' => 35,
-            'ruangan_id' => 35,
-            'nama_paket' => 'Sewa Harian Aula Makkah',
+            'id' => 2,
+            'ruangan_id' => 2,
+            'nama_paket' => 'Sewa Harian Aula Jeddah',
+            'durasi' => 24,
+            'harga' => 2000000.00,
+            'currency' => 'IDR',
+            'isExclusive' => 1,
+            'status' => 'ACTIVE'
+        ];
+        $pakets[] = [
+            'id' => 3,
+            'ruangan_id' => 3,
+            'nama_paket' => 'Sewa Harian Aula Mekkah',
             'durasi' => 24,
             'harga' => 1500000.00,
             'currency' => 'IDR',
@@ -87,59 +39,123 @@ class PaketRuanganSeeder extends Seeder {
             'status' => 'ACTIVE'
         ];
         $pakets[] = [
-            'id' => 36,
-            'ruangan_id' => 36,
-            'nama_paket' => 'Paket Transit VIP (12 Jam)',
-            'durasi' => 12,
-            'harga' => 250000.00,
-            'currency' => 'IDR',
-            'isExclusive' => 0,
-            'status' => 'ACTIVE'
-        ];
-
-        // Aula Akbar Multazam (37)
-        $pakets[] = [
-            'id' => 37,
-            'ruangan_id' => 37,
-            'nama_paket' => 'Sewa Harian Aula Multazam (Exclusive)',
+            'id' => 4,
+            'ruangan_id' => 4,
+            'nama_paket' => 'Sewa Harian Aula Aziziyah',
             'durasi' => 24,
-            'harga' => 5000000.00,
+            'harga' => 1200000.00,
             'currency' => 'IDR',
             'isExclusive' => 1,
             'status' => 'ACTIVE'
         ];
-
-        // Executive Boardroom Shafa (38)
         $pakets[] = [
-            'id' => 38,
-            'ruangan_id' => 38,
-            'nama_paket' => 'Paket VVIP Boardroom Shafa (8 Jam)',
-            'durasi' => 8,
-            'harga' => 2000000.00,
+            'id' => 5,
+            'ruangan_id' => 5,
+            'nama_paket' => 'Sewa Harian Kamar Superior',
+            'durasi' => 24,
+            'harga' => 400000.00,
             'currency' => 'IDR',
-            'isExclusive' => 1,
+            'isExclusive' => 0,
             'status' => 'ACTIVE'
         ];
-
-        // Marwah (39, 40)
         $pakets[] = [
-            'id' => 39,
-            'ruangan_id' => 39,
-            'nama_paket' => 'Sewa Rapat Marwah 1 (4 Jam)',
-            'durasi' => 4,
+            'id' => 6,
+            'ruangan_id' => 6,
+            'nama_paket' => 'Sewa Harian Kamar Standar',
+            'durasi' => 24,
+            'harga' => 150000.00,
+            'currency' => 'IDR',
+            'isExclusive' => 0,
+            'status' => 'ACTIVE'
+        ];
+        $pakets[] = [
+            'id' => 7,
+            'ruangan_id' => 7,
+            'nama_paket' => 'Sewa Harian Kamar Ekonomi',
+            'durasi' => 24,
+            'harga' => 100000.00,
+            'currency' => 'IDR',
+            'isExclusive' => 0,
+            'status' => 'ACTIVE'
+        ];
+        $pakets[] = [
+            'id' => 8,
+            'ruangan_id' => 8,
+            'nama_paket' => 'Sewa Harian Kamar Standar Double Bed',
+            'durasi' => 24,
+            'harga' => 200000.00,
+            'currency' => 'IDR',
+            'isExclusive' => 0,
+            'status' => 'ACTIVE'
+        ];
+        $pakets[] = [
+            'id' => 9,
+            'ruangan_id' => 9,
+            'nama_paket' => 'Sewa Harian Kamar Superior 4 Single Bed',
+            'durasi' => 24,
             'harga' => 300000.00,
             'currency' => 'IDR',
             'isExclusive' => 0,
             'status' => 'ACTIVE'
         ];
         $pakets[] = [
-            'id' => 40,
-            'ruangan_id' => 40,
-            'nama_paket' => 'Sewa Rapat Marwah 2 (4 Jam)',
-            'durasi' => 4,
-            'harga' => 300000.00,
+            'id' => 10,
+            'ruangan_id' => 10,
+            'nama_paket' => 'Paket Harian Ruang Belajar',
+            'durasi' => 24,
+            'harga' => 500000.00,
             'currency' => 'IDR',
             'isExclusive' => 0,
+            'status' => 'ACTIVE'
+        ];
+        $pakets[] = [
+            'id' => 11,
+            'ruangan_id' => 11,
+            'nama_paket' => 'Paket Harian Ruang Belajar 3',
+            'durasi' => 24,
+            'harga' => 400000.00,
+            'currency' => 'IDR',
+            'isExclusive' => 0,
+            'status' => 'ACTIVE'
+        ];
+        $pakets[] = [
+            'id' => 12,
+            'ruangan_id' => 12,
+            'nama_paket' => 'Paket Harian Ruang Belajar 4',
+            'durasi' => 24,
+            'harga' => 400000.00,
+            'currency' => 'IDR',
+            'isExclusive' => 0,
+            'status' => 'ACTIVE'
+        ];
+        $pakets[] = [
+            'id' => 13,
+            'ruangan_id' => 13,
+            'nama_paket' => 'Paket Harian Ruang Kelas',
+            'durasi' => 24,
+            'harga' => 600000.00,
+            'currency' => 'IDR',
+            'isExclusive' => 0,
+            'status' => 'ACTIVE'
+        ];
+        $pakets[] = [
+            'id' => 14,
+            'ruangan_id' => 14,
+            'nama_paket' => 'Paket Harian Area Manasik',
+            'durasi' => 24,
+            'harga' => 800000.00,
+            'currency' => 'IDR',
+            'isExclusive' => 1,
+            'status' => 'ACTIVE'
+        ];
+        $pakets[] = [
+            'id' => 15,
+            'ruangan_id' => 15,
+            'nama_paket' => 'Paket Harian Halaman',
+            'durasi' => 24,
+            'harga' => 1000000.00,
+            'currency' => 'IDR',
+            'isExclusive' => 1,
             'status' => 'ACTIVE'
         ];
 

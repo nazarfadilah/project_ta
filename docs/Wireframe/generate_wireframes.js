@@ -26,12 +26,8 @@ const obfuscateHTML = (html) => {
     return placeholder;
   });
 
-  // Obfuscate text nodes between tags
-  processed = processed.replace(/>([^<]+)</g, (match, text) => {
-    if (text.trim() === '') return match;
-    if (text.includes('___STYLE_BLOCK_') || text.includes('___SCRIPT_BLOCK_')) return match;
-
-    const obfuscated = text.split(/(\s+)/).map(word => {
+  const obfuscateText = (text) => {
+    return text.split(/(\s+)/).map(word => {
       if (word.trim() === '') return word;
       return word.replace(/[a-zA-Z0-9]/g, char => {
         if (/[A-Z]/.test(char)) return 'X';
@@ -40,25 +36,71 @@ const obfuscateHTML = (html) => {
         return char;
       });
     }).join('');
-    
-    return `>${obfuscated}<`;
-  });
-
-  // Obfuscate attributes like placeholder, value, title
-  const obfuscateAttr = (match, attrName, value) => {
-    if (value.startsWith('___STYLE_BLOCK_') || value.startsWith('___SCRIPT_BLOCK_')) return match;
-    const obfuscated = value.replace(/[a-zA-Z0-9]/g, char => {
-      if (/[A-Z]/.test(char)) return 'X';
-      if (/[a-z]/.test(char)) return 'x';
-      if (/[0-9]/.test(char)) return 'x';
-      return char;
-    });
-    return `${attrName}="${obfuscated}"`;
   };
 
-  processed = processed.replace(/(placeholder)="([^"]*)"/gi, obfuscateAttr);
-  processed = processed.replace(/(value)="([^"]*)"/gi, obfuscateAttr);
-  processed = processed.replace(/(title)="([^"]*)"/gi, obfuscateAttr);
+  // 1. Obfuscate <tbody>...</tbody> content (excluding action buttons/links)
+  processed = processed.replace(/<tbody[^>]*>([\s\S]*?)<\/tbody>/gi, (match, bodyContent) => {
+    const subBlocks = [];
+    let subProcessed = bodyContent;
+
+    // Extract buttons
+    subProcessed = subProcessed.replace(/<button[^>]*>([\s\S]*?)<\/button>/gi, (btnMatch) => {
+      const placeholder = `___SUB_BTN_${subBlocks.length}___`;
+      subBlocks.push({ placeholder, content: btnMatch });
+      return placeholder;
+    });
+
+    // Extract link buttons (a with wf-btn class)
+    subProcessed = subProcessed.replace(/<a[^>]*class="[^"]*wf-btn[^"]*"[^>]*>([\s\S]*?)<\/a>/gi, (linkMatch) => {
+      const placeholder = `___SUB_LINK_${subBlocks.length}___`;
+      subBlocks.push({ placeholder, content: linkMatch });
+      return placeholder;
+    });
+
+    // Obfuscate text nodes inside tbody
+    subProcessed = subProcessed.replace(/>([^<]+)</g, (textMatch, text) => {
+      const trimmed = text.trim();
+      if (trimmed === '') return textMatch;
+      if (text.includes('___SUB_BTN_') || text.includes('___SUB_LINK_')) return textMatch;
+      // Do not obfuscate row headers like "Subtotal", "Biaya Tambahan", "Total Harga"
+      if (trimmed === 'Subtotal' || trimmed === 'Biaya Tambahan' || trimmed === 'Total Harga') {
+        return textMatch;
+      }
+      return `>${obfuscateText(text)}<`;
+    });
+
+    // Re-inject buttons and link buttons
+    for (const block of subBlocks) {
+      subProcessed = subProcessed.replace(block.placeholder, block.content);
+    }
+
+    const openTag = match.match(/<tbody[^>]*>/i)[0];
+    return `${openTag}${subProcessed}</tbody>`;
+  });
+
+  // 2. Obfuscate option tags text content: <option...>TEXT</option>
+  processed = processed.replace(/(<option[^>]*>)([\s\S]*?)(<\/option>)/gi, (match, openTag, text, closeTag) => {
+    return `${openTag}${obfuscateText(text)}${closeTag}`;
+  });
+
+  // 3. Obfuscate textarea tags text content: <textarea...>TEXT</textarea>
+  processed = processed.replace(/(<textarea[^>]*>)([\s\S]*?)(<\/textarea>)/gi, (match, openTag, text, closeTag) => {
+    return `${openTag}${obfuscateText(text)}${closeTag}`;
+  });
+
+  // 4. Obfuscate attributes like placeholder, value, title inside inputs and textareas
+  const obfuscateAttr = (match, attrName, value) => {
+    if (value.startsWith('___STYLE_BLOCK_') || value.startsWith('___SCRIPT_BLOCK_')) return match;
+    return `${attrName}="${obfuscateText(value)}"`;
+  };
+
+  processed = processed.replace(/<(input|textarea|select)[^>]*>/gi, (tagMatch) => {
+    let tagProcessed = tagMatch;
+    tagProcessed = tagProcessed.replace(/(placeholder)="([^"]*)"/gi, obfuscateAttr);
+    tagProcessed = tagProcessed.replace(/(value)="([^"]*)"/gi, obfuscateAttr);
+    tagProcessed = tagProcessed.replace(/(title)="([^"]*)"/gi, obfuscateAttr);
+    return tagProcessed;
+  });
 
   // Re-inject style and script blocks
   for (const block of blocks) {

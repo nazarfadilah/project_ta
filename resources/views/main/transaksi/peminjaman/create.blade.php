@@ -155,6 +155,12 @@
                                 </div>
                             </div>
 
+                            <!-- Keterangan Ruangan -->
+                            <div class="mt-3 pt-3 border-top" id="detail_keterangan_container">
+                                <label class="text-muted small fw-semibold text-uppercase d-block mb-1" style="font-size: 11px;">Keterangan / Deskripsi Ruangan</label>
+                                <div class="text-dark small" style="line-height: 1.5; white-space: pre-line;" id="detail_keterangan">-</div>
+                            </div>
+
                             <!-- Booked Dates Warning -->
                             <div class="mt-3" id="booked_dates_container" style="display: none;">
                                 <label class="text-danger small fw-semibold text-uppercase d-block mb-2" style="font-size: 11px;">
@@ -347,6 +353,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const detTipe = document.getElementById('detail_tipe_ruangan');
     const detGedung = document.getElementById('detail_gedung');
     const detKapasitas = document.getElementById('detail_kapasitas');
+    const detKeterangan = document.getElementById('detail_keterangan');
     const bookedContainer = document.getElementById('booked_dates_container');
     const bookedList = document.getElementById('booked_dates_list');
     
@@ -519,6 +526,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 detTipe.textContent = data.tipe_ruangan;
                 detGedung.textContent = data.gedung;
                 detKapasitas.textContent = data.kapasitas + ' orang';
+                detKeterangan.textContent = data.keterangan || '-';
                 ajaxSection.style.display = 'block';
 
                 // Fill pre-reservations booked dates

@@ -15,7 +15,7 @@ class PeminjamanTransaksiSeeder extends Seeder {
             [
                 'kodePeminjaman' => 'PJM/20260619/0001',
                 'guestId' => 1, // Ibu Niswati (LPTQ PROV. Kalsel)
-                'facilityId' => 37, // Aula Akbar Multazam
+                'facilityId' => 1, // Aula Jabal Rahmah
                 'tanggal' => '2026-06-19',
                 'jamMulai' => '2026-06-19 08:00:00',
                 'checkIn' => '2026-06-19 14:00:00',
@@ -31,7 +31,7 @@ class PeminjamanTransaksiSeeder extends Seeder {
             [
                 'kodePeminjaman' => 'PJM/20260619/0002',
                 'guestId' => 3, // Bpk Haris Fadillah (LPTQ PROV. Kalsel)
-                'facilityId' => 37, // Aula Akbar Multazam
+                'facilityId' => 1, // Aula Jabal Rahmah
                 'tanggal' => '2026-06-19',
                 'jamMulai' => '2026-06-19 08:00:00',
                 'checkIn' => '2026-06-19 14:00:00',
@@ -47,7 +47,7 @@ class PeminjamanTransaksiSeeder extends Seeder {
             [
                 'kodePeminjaman' => 'PJM/20260726/0001',
                 'guestId' => 2, // Bpk Ahmad Maki (Kanwil Kemenag Prov. Kalteng)
-                'facilityId' => 35, // Aula Makkah Kecil
+                'facilityId' => 3, // Aula Mekkah
                 'tanggal' => '2026-07-26',
                 'jamMulai' => '2026-07-26 08:00:00',
                 'checkIn' => '2026-07-26 14:30:00',
@@ -63,7 +63,7 @@ class PeminjamanTransaksiSeeder extends Seeder {
             [
                 'kodePeminjaman' => 'PJM/20260809/0001',
                 'guestId' => 4, // Bpk Bahar (Travel Mahabbah)
-                'facilityId' => 38, // Executive Boardroom Shafa
+                'facilityId' => 10, // Ruang Belajar
                 'tanggal' => '2026-08-09',
                 'jamMulai' => '2026-08-09 09:00:00',
                 'checkIn' => '2026-08-09 09:00:00',
@@ -79,7 +79,7 @@ class PeminjamanTransaksiSeeder extends Seeder {
             [
                 'kodePeminjaman' => 'PJM/20260812/0001',
                 'guestId' => 5, // Ibu Chrisna (CV. Rpy Production)
-                'facilityId' => 34, // Ruang Rapat Makkah
+                'facilityId' => 11, // Ruang Belajar 3
                 'tanggal' => '2026-08-12',
                 'jamMulai' => '2026-08-12 08:00:00',
                 'checkIn' => '2026-08-12 08:30:00',
@@ -95,7 +95,7 @@ class PeminjamanTransaksiSeeder extends Seeder {
             [
                 'kodePeminjaman' => 'PJM/20260821/0001',
                 'guestId' => 6, // Ibu Munisah (UIN Antasari Banjarmasin)
-                'facilityId' => 35, // Aula Makkah Kecil
+                'facilityId' => 3, // Aula Mekkah
                 'tanggal' => '2026-08-21',
                 'jamMulai' => '2026-08-21 08:00:00',
                 'checkIn' => '2026-08-21 08:00:00',
@@ -111,7 +111,7 @@ class PeminjamanTransaksiSeeder extends Seeder {
             [
                 'kodePeminjaman' => 'PJM/20260822/0001',
                 'guestId' => 7, // Bpk Lutfi Hakim (Bpk Lutfi Hakim/ Saiun)
-                'facilityId' => 36, // Ruang Transit Makkah
+                'facilityId' => 14, // Area Manasik
                 'tanggal' => '2026-08-22',
                 'jamMulai' => '2026-08-22 08:00:00',
                 'checkIn' => '2026-08-22 08:00:00',
@@ -158,22 +158,12 @@ class PeminjamanTransaksiSeeder extends Seeder {
             $tanggal = $date->format('Y-m-d');
             $jamMulai = $tanggal . ' ' . sprintf('%02d', rand(8, 14)) . ':00:00';
             
-            // Randomly pick guest (1 to 62) and package/facility (1 to 40)
+            // Randomly pick guest (1 to 62) and package/facility (1 to 15)
             $guestId = rand(1, 62);
-            $facilityId = rand(1, 40);
+            $facilityId = rand(1, 15);
             
-            // Determine duration based on package/facility
-            // Facility/packages 1-33 are standard rooms (24 hrs)
-            // Facility 34, 38 (meeting - 8 hrs), 35 (aula - 24 hrs), 36 (transit - 12 hrs), 37 (aula - 24 hrs), 39-40 (meeting - 4 hrs)
-            if ($facilityId >= 39) {
-                $durasi = 4;
-            } elseif ($facilityId === 36) {
-                $durasi = 12;
-            } elseif ($facilityId === 34 || $facilityId === 38) {
-                $durasi = 8;
-            } else {
-                $durasi = rand(1, 4); // Standard room rentals range from 1 to 4 days
-            }
+            // All packages are daily (24 hrs)
+            $durasi = rand(1, 4);
 
             // Status distribution:
             // 1 to 60: Completed (SELESAI)
