@@ -218,13 +218,6 @@
         </div>
         @endforeach
       </div>
-
-      <div class="view-all-wrap">
-        <a href="{{ route('fasilitas') }}" class="btn-view-all" id="viewAllFacilities">
-          Lihat Semua Fasilitas
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
-      </div>
     </div>
   </section>
 
