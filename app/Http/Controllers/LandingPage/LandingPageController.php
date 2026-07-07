@@ -157,7 +157,18 @@ class LandingPageController extends Controller
             'youtube' => $settings['youtube'] ?? null,
             'telegram' => $settings['telegram'] ?? null,
             'twitter' => $settings['twitter/x'] ?? null,
+            'e-katalog' => $settings['e-katalog'] ?? null,
         ];
+
+        $subquery = \Illuminate\Support\Facades\DB::table('ruangan')
+            ->select('tipe_ruangan', \Illuminate\Support\Facades\DB::raw('MAX(id_ruangan) as max_id'))
+            ->groupBy('tipe_ruangan');
+
+        $ruangans = \App\Models\Ruangan::joinSub($subquery, 'max_ruangan', function ($join) {
+                $join->on('ruangan.id_ruangan', '=', 'max_ruangan.max_id');
+            })
+            ->with(['paketRuangans', 'mediaFiles'])
+            ->get();
 
         return compact(
             'settings',
@@ -172,7 +183,8 @@ class LandingPageController extends Controller
             'galleryCategories',
             'faqItems',
             'termConditions', 
-            'privacyItems'
+            'privacyItems',
+            'ruangans'
         );
     }
 

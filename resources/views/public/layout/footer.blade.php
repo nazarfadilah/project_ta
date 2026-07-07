@@ -17,6 +17,7 @@
               @if(!empty($globalSocial['whatsapp'])) <a href="{{ $globalSocial['whatsapp'] }}" class="social-link social-wa" id="socialWa" aria-label="WhatsApp" target="_blank"><i class="fab fa-whatsapp"></i></a> @endif
               @if(!empty($globalSocial['telegram'])) <a href="{{ $globalSocial['telegram'] }}" class="social-link social-tg" id="socialTg" aria-label="Telegram" target="_blank"><i class="fab fa-telegram-plane"></i></a> @endif
               @if(!empty($globalSocial['twitter'])) <a href="{{ $globalSocial['twitter'] }}" class="social-link social-x" id="socialX" aria-label="X" target="_blank"><i class="fab fa-x-twitter"></i></a> @endif
+              @if(!empty($globalSocial['e-katalog'])) <a href="{{ $globalSocial['e-katalog'] }}" class="social-link social-ekat" id="socialEkat" aria-label="E-Katalog" target="_blank"><i class="fa-solid fa-e"></i></a> @endif
             </div>
           </div>
 
@@ -37,8 +38,8 @@
     </div>
     <div class="footer-bottom">
       <div class="container">
-        <p>© 2026 Asrama Haji Emberkasi Landasan Ulin. Hak Cipta Dilindungi Undang-Undang.</p>
-        <p>Dibawah naungan <strong>Kementerian Agama RI</strong> · Kanwil Kalimantan Selatan</p>
+        <p>{!! $globalContact['copyright'] ?? '© 2026 Asrama Haji Emberkasi Landasan Ulin. Hak Cipta Dilindungi Undang-Undang.' !!}</p>
+        <p>{!! $globalContact['naungan'] ?? 'Dibawah naungan <strong>Kementerian Agama RI</strong> · Kanwil Kalimantan Selatan' !!}</p>
       </div>
     </div>
 </footer>

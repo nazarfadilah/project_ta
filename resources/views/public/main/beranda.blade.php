@@ -104,193 +104,119 @@
       </div>
 
       <div class="facility-grid" id="facilityGrid">
+        @foreach($ruangans as $ruangan)
+        @php
+          $category = 'fasum';
+          if (str_contains($ruangan->tipe_ruangan, 'KAMAR')) {
+              $category = 'kamar';
+          } elseif ($ruangan->tipe_ruangan === 'AULA' || $ruangan->tipe_ruangan === 'RUANG_MEETING') {
+              $category = 'aula';
+          }
 
-        <!-- Card 1 -->
-        <div class="facility-card" data-category="kamar">
+          $emoji = '🏢';
+          $gradient = 'linear-gradient(135deg, #1a2a3a 0%, #2d4a6a 100%)';
+          
+          switch($ruangan->tipe_ruangan) {
+              case 'KAMAR_STANDAR':
+                  $emoji = '🛏️';
+                  $gradient = 'linear-gradient(135deg, #1a2a3a 0%, #2d4a6a 100%)';
+                  break;
+              case 'KAMAR_VIP':
+                  $emoji = '👑';
+                  $gradient = 'linear-gradient(135deg, #2c1810 0%, #5c3520 100%)';
+                  break;
+              case 'KAMAR_PREMIUM':
+                  $emoji = '✨';
+                  $gradient = 'linear-gradient(135deg, #1a0d37 0%, #3a1a6a 100%)';
+                  break;
+              case 'AULA':
+                  $emoji = '🏛️';
+                  $gradient = 'linear-gradient(135deg, #0d2837 0%, #1a4a6a 100%)';
+                  break;
+              case 'RUANG_MEETING':
+                  $emoji = '💼';
+                  $gradient = 'linear-gradient(135deg, #0d3020 0%, #1a6a40 100%)';
+                  break;
+              case 'RUANG_LAINNYA':
+                  $emoji = '🌟';
+                  $gradient = 'linear-gradient(135deg, #2d1a0d 0%, #6a4020 100%)';
+                  break;
+          }
+
+          $features = [];
+          $features[] = '👥 ' . ($ruangan->kapasitas > 1 ? 's.d. ' : '') . $ruangan->kapasitas . ' Orang';
+          
+          $desc = strtolower($ruangan->keterangan);
+          if (str_contains($desc, 'ac')) $features[] = '❄️ AC';
+          if (str_contains($desc, 'wifi') || str_contains($desc, 'wi-fi')) $features[] = '📶 WiFi';
+          if (str_contains($desc, 'tv')) $features[] = '📺 TV';
+          if (str_contains($desc, 'bathtub')) $features[] = '🛁 Bathtub';
+          if (str_contains($desc, 'sound') || str_contains($desc, 'audio')) $features[] = '🔊 Sound';
+          if (str_contains($desc, 'proyektor') || str_contains($desc, 'projector')) $features[] = '📽️ Proyektor';
+          if (str_contains($desc, 'panggung')) $features[] = '🎤 Panggung';
+          if (str_contains($desc, 'kulkas')) $features[] = '❄️ Kulkas';
+          if (str_contains($desc, 'sarapan')) $features[] = '🍳 Sarapan';
+          
+          if (count($features) < 3) {
+              if (str_contains($ruangan->tipe_ruangan, 'KAMAR')) {
+                  $features[] = '📶 WiFi';
+                  $features[] = '❄️ AC';
+              } else {
+                  $features[] = '❄️ AC';
+              }
+          }
+          $features = array_unique($features);
+          $features = array_slice($features, 0, 4);
+
+          $minPaket = $ruangan->paketRuangans->sortBy('harga')->first();
+          $priceText = 'Hubungi Kami';
+          $periodText = '';
+          if ($minPaket) {
+              $priceText = 'Rp ' . number_format($minPaket->harga, 0, ',', '.');
+              $periodText = $minPaket->durasi == 24 ? '/ malam' : '/ ' . $minPaket->durasi . ' jam';
+          }
+          
+          $hasImage = $ruangan->mediaFiles->isNotEmpty();
+          $imageUrl = $hasImage ? asset($ruangan->mediaFiles->first()->path) : null;
+        @endphp
+        <div class="facility-card {{ $ruangan->tipe_ruangan === 'KAMAR_VIP' ? 'featured' : '' }}" data-category="{{ $category }}">
           <div class="card-image-wrap">
-            <div class="card-image" style="background: linear-gradient(135deg, #1a2a3a 0%, #2d4a6a 100%);">
-              <div class="card-image-placeholder">
-                <span>🛏️</span>
+            @if($hasImage)
+              <div class="card-image" style="background-image: url('{{ $imageUrl }}'); background-size: cover; background-position: center;">
               </div>
-            </div>
-            <div class="card-badge">Tersedia</div>
-            <div class="card-tag">Kamar</div>
+            @else
+              <div class="card-image" style="background: {{ $gradient }};">
+                <div class="card-image-placeholder">
+                  <span>{{ $emoji }}</span>
+                </div>
+              </div>
+            @endif
+            <div class="card-badge">{{ $ruangan->tipe_ruangan === 'KAMAR_VIP' ? 'Rekomendasi' : 'Tersedia' }}</div>
+            <div class="card-tag">{{ str_replace('_', ' ', $ruangan->tipe_ruangan) }}</div>
           </div>
           <div class="card-body">
-            <h3 class="card-title">Kamar Standar</h3>
-            <p class="card-desc">Kamar nyaman dengan AC, kamar mandi dalam, TV, dan wifi. Cocok untuk individu maupun pasangan.</p>
+            <h3 class="card-title">{{ $ruangan->nama_ruangan }}</h3>
+            <p class="card-desc">{{ Str::limit(strip_tags($ruangan->keterangan), 120) }}</p>
             <div class="card-features">
-              <span>👥 1–2 Orang</span>
-              <span>❄️ AC</span>
-              <span>📶 WiFi</span>
-              <span>📺 TV</span>
+              @foreach($features as $feature)
+                <span>{{ $feature }}</span>
+              @endforeach
             </div>
             <div class="card-footer">
               <div class="card-price">
-                <span class="price-from">Mulai dari</span>
-                <span class="price-amount">Rp 250.000</span>
-                <span class="price-period">/ malam</span>
+                @if($minPaket)
+                  <span class="price-from">Mulai dari</span>
+                  <span class="price-amount">{{ $priceText }}</span>
+                  <span class="price-period">{{ $periodText }}</span>
+                @else
+                  <span class="price-amount">{{ $priceText }}</span>
+                @endif
               </div>
-              <a href="{{ route('users.main.reservasi.create') }}" class="card-btn" id="bookStd">Pesan</a>
+              <a href="{{ route('users.main.reservasi.create') }}" class="card-btn" id="bookRoom{{ $ruangan->id_ruangan }}">Pesan</a>
             </div>
           </div>
         </div>
-
-        <!-- Card 2 -->
-        <div class="facility-card featured" data-category="kamar">
-          <div class="card-image-wrap">
-            <div class="card-image" style="background: linear-gradient(135deg, #2c1810 0%, #5c3520 100%);">
-              <div class="card-image-placeholder">
-                <span>🛏️</span>
-              </div>
-            </div>
-            <div class="card-badge">Rekomendasi</div>
-            <div class="card-tag">Kamar VIP</div>
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">Kamar VIP</h3>
-            <p class="card-desc">Suite eksklusif dengan furnitur premium, bathtub, ruang tamu terpisah, dan pemandangan asri kota.</p>
-            <div class="card-features">
-              <span>👥 1–3 Orang</span>
-              <span>❄️ AC</span>
-              <span>🛁 Bathtub</span>
-              <span>🍳 Sarapan</span>
-            </div>
-            <div class="card-footer">
-              <div class="card-price">
-                <span class="price-from">Mulai dari</span>
-                <span class="price-amount">Rp 450.000</span>
-                <span class="price-period">/ malam</span>
-              </div>
-              <a href="{{ route('users.main.reservasi.create') }}" class="card-btn" id="bookVip">Pesan</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="facility-card" data-category="aula">
-          <div class="card-image-wrap">
-            <div class="card-image" style="background: linear-gradient(135deg, #0d2837 0%, #1a4a6a 100%);">
-              <div class="card-image-placeholder">
-                <span>🏛️</span>
-              </div>
-            </div>
-            <div class="card-badge">Tersedia</div>
-            <div class="card-tag">Aula</div>
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">Aula Kecil</h3>
-            <p class="card-desc">Ideal untuk rapat, seminar kecil, atau arisan keluarga. Kapasitas hingga 50 orang dengan proyektor dan sound system.</p>
-            <div class="card-features">
-              <span>👥 s.d. 50 Orang</span>
-              <span>📽️ Proyektor</span>
-              <span>🔊 Sound</span>
-              <span>❄️ AC</span>
-            </div>
-            <div class="card-footer">
-              <div class="card-price">
-                <span class="price-from">Mulai dari</span>
-                <span class="price-amount">Rp 500.000</span>
-                <span class="price-period">/ 4 jam</span>
-              </div>
-              <a href="{{ route('users.main.reservasi.create') }}" class="card-btn" id="bookAulaKecil">Pesan</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 4 -->
-        <div class="facility-card" data-category="aula">
-          <div class="card-image-wrap">
-            <div class="card-image" style="background: linear-gradient(135deg, #1a0d37 0%, #3a1a6a 100%);">
-              <div class="card-image-placeholder">
-                <span>🏟️</span>
-              </div>
-            </div>
-            <div class="card-badge">Tersedia</div>
-            <div class="card-tag">Gedung</div>
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">Aula Besar / Gedung Pertemuan</h3>
-            <p class="card-desc">Gedung representatif untuk resepsi pernikahan, wisuda, konferensi, atau acara besar. Kapasitas hingga 500 orang.</p>
-            <div class="card-features">
-              <span>👥 s.d. 500 Orang</span>
-              <span>📽️ LED Screen</span>
-              <span>🎤 Podium</span>
-              <span>🚗 Parkir Luas</span>
-            </div>
-            <div class="card-footer">
-              <div class="card-price">
-                <span class="price-from">Mulai dari</span>
-                <span class="price-amount">Rp 1.200.000</span>
-                <span class="price-period">/ hari</span>
-              </div>
-              <a href="{{ route('users.main.reservasi.create') }}" class="card-btn" id="bookAulaBesar">Pesan</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 5 -->
-        <div class="facility-card" data-category="fasum">
-          <div class="card-image-wrap">
-            <div class="card-image" style="background: linear-gradient(135deg, #0d3020 0%, #1a6a40 100%);">
-              <div class="card-image-placeholder">
-                <span>🍽️</span>
-              </div>
-            </div>
-            <div class="card-badge">Tersedia</div>
-            <div class="card-tag">Kafetaria</div>
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">Kafetaria & Restoran</h3>
-            <p class="card-desc">Menu masakan nusantara dan internasional halal, buka dari pagi hingga malam. Dapat dipesan untuk katering acara.</p>
-            <div class="card-features">
-              <span>🍱 Halal</span>
-              <span>☕ Kopi & Teh</span>
-              <span>🥡 Katering</span>
-              <span>⏰ 06:00–21:00</span>
-            </div>
-            <div class="card-footer">
-              <div class="card-price">
-                <span class="price-from">Paket Katering</span>
-                <span class="price-amount">Rp 35.000</span>
-                <span class="price-period">/ orang</span>
-              </div>
-              <a href="#kontak" class="card-btn" id="infoKafetaria">Info</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 6 -->
-        <div class="facility-card" data-category="fasum">
-          <div class="card-image-wrap">
-            <div class="card-image" style="background: linear-gradient(135deg, #2d1a0d 0%, #6a4020 100%);">
-              <div class="card-image-placeholder">
-                <span>🕌</span>
-              </div>
-            </div>
-            <div class="card-badge">Tersedia</div>
-            <div class="card-tag">Masjid</div>
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">Masjid & Musholla</h3>
-            <p class="card-desc">Fasilitas ibadah yang nyaman dan luas, tersedia untuk tamu dan umum. Diadakan shalat berjamaah 5 waktu.</p>
-            <div class="card-features">
-              <span>🕌 Kapasitas Besar</span>
-              <span>🚰 Wudhu Luas</span>
-              <span>📖 Perpustakaan</span>
-              <span>🆓 Gratis</span>
-            </div>
-            <div class="card-footer">
-              <div class="card-price">
-                <span class="price-from">Fasilitas</span>
-                <span class="price-amount">Gratis</span>
-                <span class="price-period">untuk tamu</span>
-              </div>
-              <a href="#fasilitas" class="card-btn" id="infoMasjid">Info</a>
-            </div>
-          </div>
-        </div>
-
+        @endforeach
       </div>
 
       <div class="view-all-wrap">

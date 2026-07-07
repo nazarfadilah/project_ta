@@ -27,7 +27,7 @@
         </button>
 
         <div class="news-carousel-container">
-                    <div class="news-carousel-track" id="newsCarouselTrack">
+          <div class="news-carousel-track" id="newsCarouselTrack">
             @foreach($beritas as $berita)
             <!-- News Card -->
             <div class="news-carousel-item">
@@ -46,6 +46,12 @@
             @endforeach
           </div>
         </div>
+
+        <button class="carousel-nav-next" id="newsNext">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
       </div>
     </section>
 @endsection
@@ -57,28 +63,85 @@
       const newsCarouselTrack = document.getElementById('newsCarouselTrack');
       const newsPrevBtn = document.getElementById('newsPrev');
       const newsNextBtn = document.getElementById('newsNext');
-      let newsCurrentPosition = 0;
-      const newsItemWidth = 100 / 3; // 3 items per view
+
+      if (!newsCarouselTrack || !newsPrevBtn || !newsNextBtn) return;
+
+      const totalItems = newsCarouselTrack.children.length;
+      if (totalItems === 0) {
+        newsPrevBtn.style.display = 'none';
+        newsNextBtn.style.display = 'none';
+        return;
+      }
+
+      let currentIndex = 0;
+
+      function updateNewsCarouselPosition() {
+        const containerWidth = newsCarouselTrack.parentElement.offsetWidth;
+        const lastItem = newsCarouselTrack.children[totalItems - 1];
+        const lastItemRight = lastItem.offsetLeft + lastItem.offsetWidth;
+
+        // Check if all items fit inside the container
+        if (lastItemRight <= containerWidth) {
+          newsPrevBtn.style.display = 'none';
+          newsNextBtn.style.display = 'none';
+          newsCarouselTrack.style.transform = 'translateX(0px)';
+          return;
+        } else {
+          newsPrevBtn.style.display = 'flex';
+          newsNextBtn.style.display = 'flex';
+        }
+
+        const maxTranslate = lastItemRight - containerWidth;
+
+        let targetTranslate = newsCarouselTrack.children[currentIndex].offsetLeft;
+        if (targetTranslate > maxTranslate) {
+          targetTranslate = maxTranslate;
+        }
+
+        newsCarouselTrack.style.transform = `translateX(-${targetTranslate}px)`;
+
+        // Update button states (disable/opacity)
+        if (currentIndex === 0) {
+          newsPrevBtn.style.opacity = '0.5';
+          newsPrevBtn.style.pointerEvents = 'none';
+        } else {
+          newsPrevBtn.style.opacity = '1';
+          newsPrevBtn.style.pointerEvents = 'auto';
+        }
+
+        if (targetTranslate >= maxTranslate) {
+          newsNextBtn.style.opacity = '0.5';
+          newsNextBtn.style.pointerEvents = 'none';
+        } else {
+          newsNextBtn.style.opacity = '1';
+          newsNextBtn.style.pointerEvents = 'auto';
+        }
+      }
 
       newsPrevBtn.addEventListener('click', () => {
-        if (newsCurrentPosition > 0) {
-          newsCurrentPosition -= newsItemWidth;
+        if (currentIndex > 0) {
+          currentIndex--;
           updateNewsCarouselPosition();
         }
       });
 
       newsNextBtn.addEventListener('click', () => {
-        const totalItems = newsCarouselTrack.children.length;
-        const maxPosition = (totalItems - 3) * newsItemWidth;
-        if (newsCurrentPosition < maxPosition) {
-          newsCurrentPosition += newsItemWidth;
+        const containerWidth = newsCarouselTrack.parentElement.offsetWidth;
+        const lastItem = newsCarouselTrack.children[totalItems - 1];
+        const lastItemRight = lastItem.offsetLeft + lastItem.offsetWidth;
+        const currentTranslate = newsCarouselTrack.children[currentIndex].offsetLeft;
+
+        if (currentTranslate + containerWidth < lastItemRight) {
+          currentIndex++;
           updateNewsCarouselPosition();
         }
       });
 
-      function updateNewsCarouselPosition() {
-        newsCarouselTrack.style.transform = `translateX(-${newsCurrentPosition}%)`;
-      }
+      // Initial layout setup
+      updateNewsCarouselPosition();
+
+      // Recalculate layout on window resize
+      window.addEventListener('resize', updateNewsCarouselPosition);
     });
 </script>
 @endpush

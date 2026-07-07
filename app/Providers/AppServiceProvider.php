@@ -34,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
                 'jam_akhir' => $settings['jam_akhir'] ?? '',
                 'jam_sabtu' => $settings['jam_sabtu'] ?? '',
                 'tentang' => $settings['tentang'] ?? '',
+                'copyright' => $settings['copyright'] ?? '',
+                'naungan' => $settings['naungan'] ?? '',
             ];
 
             $globalSocial = [
@@ -43,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
                 'telegram' => $settings['telegram'] ?? '',
                 'twitter' => $settings['twitter/x'] ?? '',
                 'whatsapp' => $settings['whatsapp'] ?? '',
+                'e-katalog' => $settings['e-katalog'] ?? '',
             ];
 
             $globalLogo = isset($settings['logo']) && $settings['logo'] ? asset(ltrim($settings['logo'], '/')) : '';
