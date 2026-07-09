@@ -39,9 +39,13 @@
         <div class="col-lg-4 col-md-5">
             <div class="card border-0 shadow-sm rounded-3 mb-4">
                 <div class="card-body p-4 text-center">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-light border border-2 border-warning text-warning fw-bold rounded-circle mb-3" style="width: 80px; height: 80px; font-size: 32px;">
-                        {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
-                    </div>
+                    @if($user->profile_photo)
+                        <img src="{{ asset($user->profile_photo) }}" alt="Foto Profil" class="rounded-circle border border-2 border-warning mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+                    @else
+                        <div class="d-inline-flex align-items-center justify-content-center bg-light border border-2 border-warning text-warning fw-bold rounded-circle mb-3" style="width: 80px; height: 80px; font-size: 32px;">
+                            {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
+                        </div>
+                    @endif
                     <h5 class="fw-bold text-dark mb-1">{{ $guest->name ?? $user->username }}</h5>
                     <div class="text-muted small mb-3">@&#64;{{ $user->username }}</div>
                     <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill" style="font-size: 12px;">
@@ -110,6 +114,7 @@
             <form action="{{ route('users.profil.update') }}" 
                   method="POST"
                   class="confirm-submit"
+                  enctype="multipart/form-data"
                   data-confirm-title="Simpan Perubahan Profil"
                   data-confirm-text="Apakah Anda yakin ingin menyimpan perubahan data profil Anda?"
                   data-confirm-button="Ya, Simpan">
@@ -126,6 +131,15 @@
                         <h6 class="fw-bold mb-3 border-bottom pb-2" style="color: #B8953F;"><i class="fas fa-id-badge me-1"></i> Data Diri Peminjam</h6>
                         
                         <div class="row g-3 mb-4">
+                            <div class="col-md-12">
+                                <label for="profile_photo" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Foto Profil</label>
+                                <input type="file" class="form-control @error('profile_photo') is-invalid @enderror" id="profile_photo" name="profile_photo" accept="image/*" style="font-size: 14px; padding: 10px 14px;">
+                                <div class="form-text small text-muted" style="font-size: 12px; margin-top: 5px;">Format: JPG, JPEG, PNG (Maksimal 2MB). Foto ini akan digunakan sebagai avatar Anda.</div>
+                                <div id="photo-preview-container" class="mt-2" style="display: {{ $user->profile_photo ? 'block' : 'none' }};">
+                                    <img id="photo-preview" src="{{ $user->profile_photo ? asset($user->profile_photo) : '#' }}" alt="Pratinjau Foto" class="rounded-circle border" style="width: 60px; height: 60px; object-fit: cover;">
+                                </div>
+                            </div>
+
                             <div class="col-md-6">
                                 <label for="nik" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">NIK / Nomor Identitas <span class="text-danger">*</span></label>
                                 <div class="input-group">
@@ -192,8 +206,8 @@
                             </div>
 
                             <div class="col-12">
-                                <label for="address" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Alamat Lengkap</label>
-                                <textarea class="form-control" id="address" name="address" rows="3" placeholder="Masukkan alamat lengkap rumah / domisili" style="font-size: 14px; padding: 10px 14px;">{{ old('address', $guest->address ?? '') }}</textarea>
+                                <label for="address" class="form-label fw-semibold text-muted small text-uppercase" style="font-size: 11px;">Alamat Lengkap <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="address" name="address" rows="3" placeholder="Masukkan alamat lengkap rumah / domisili" required style="font-size: 14px; padding: 10px 14px;">{{ old('address', $guest->address ?? '') }}</textarea>
                             </div>
 
                             <div class="col-12">
@@ -242,3 +256,19 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.getElementById('profile_photo').addEventListener('change', function(event) {
+        const previewContainer = document.getElementById('photo-preview-container');
+        const previewImg = document.getElementById('photo-preview');
+        const [file] = event.target.files;
+        if (file) {
+            previewImg.src = URL.createObjectURL(file);
+            previewContainer.style.display = 'block';
+        } else {
+            previewContainer.style.display = 'none';
+        }
+    });
+</script>
+@endpush

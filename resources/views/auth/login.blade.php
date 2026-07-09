@@ -291,7 +291,7 @@
                 
                 @if($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ $errors->first() }}
+                        {!! $errors->first() !!}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
@@ -303,7 +303,7 @@
                         <label for="login">Email atau Username</label>
                         <input type="text" class="form-control @error('login') is-invalid @enderror" id="login" name="login" value="{{ old('login') }}" placeholder="Email atau username" required>
                         @error('login')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{!! $message !!}</div>
                         @enderror
                     </div>
 

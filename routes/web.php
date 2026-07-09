@@ -60,6 +60,11 @@ Route::get('/login/google', [AuthController::class, 'redirectToGoogle'])->name('
 Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('login.google.callback');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
+Route::get('/request-unblock', [AuthController::class, 'showRequestUnblock'])->name('register.unblock');
+Route::post('/request-unblock', [AuthController::class, 'submitRequestUnblock'])->name('register.unblock.process');
+Route::get('/verify-unblock', [AuthController::class, 'showVerifyUnblock'])->name('register.unblock.verify');
+Route::post('/verify-unblock', [AuthController::class, 'submitVerifyUnblock'])->name('register.unblock.verify.process');
+
 Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
 Route::post('/forgot-password', [AuthController::class, 'sendResetCode'])->name('password.email');
 Route::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('password.reset');
@@ -77,6 +82,10 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->group(function () {
     // User Management
     Route::prefix('users')->name('main.users.')->group(function () {
         Route::get('/', [ManageUserController::class, 'index'])->name('index');
+        Route::get('/blocked', [ManageUserController::class, 'blocked'])->name('blocked');
+        Route::get('/{id}/blocked-request', [ManageUserController::class, 'showBlockedRequest'])->name('blocked.request');
+        Route::post('/{id}/unblock-approve', [ManageUserController::class, 'approveUnblock'])->name('unblock.approve');
+        Route::post('/{id}/unblock-reject', [ManageUserController::class, 'rejectUnblock'])->name('unblock.reject');
         Route::get('/{email}/edit', [ManageUserController::class, 'edit'])->name('edit');
         Route::put('/{email}', [ManageUserController::class, 'update'])->name('update');
     });

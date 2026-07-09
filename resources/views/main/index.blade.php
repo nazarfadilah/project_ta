@@ -4,6 +4,40 @@
 
 @section('content')
 <div class="container-fluid" style="padding-left: 60px; padding-right: 60px; margin-top: 30px;">
+    <!-- Welcome Banner -->
+    <div class="welcome-banner" style="background: linear-gradient(135deg, #C9A961 0%, #A48135 100%); border-radius: 16px; color: white; padding: 40px; margin-bottom: 35px; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(201, 169, 97, 0.2);">
+        <div class="welcome-content" style="position: relative; z-index: 2; max-width: 70%;">
+            <h1 class="welcome-title" style="font-size: 32px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.5px;">Selamat Datang, {{ Auth::user()->role->name ?? 'Administrator' }}!</h1>
+            <p class="welcome-subtitle" style="font-size: 16px; opacity: 0.95; line-height: 1.6; font-weight: 400;">
+                Di portal manajemen SIPRASA (Sistem Informasi Peminjaman Ruangan & Sarana). Sebagai administrator/staff, Anda dapat memantau data transaksi, mengonfirmasi pengajuan dari peminjam, mengelola ketersediaan ruangan, sarana, prasarana, serta menghasilkan laporan performa secara terintegrasi.
+            </p>
+        </div>
+        <style>
+            .welcome-banner::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -20%;
+                width: 400px;
+                height: 400px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.08);
+                z-index: 1;
+            }
+            .welcome-banner::after {
+                content: '';
+                position: absolute;
+                bottom: -30%;
+                right: 10%;
+                width: 250px;
+                height: 250px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.05);
+                z-index: 1;
+            }
+        </style>
+    </div>
+
     <!-- Header Dashboard dengan Toggle Kalender -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>

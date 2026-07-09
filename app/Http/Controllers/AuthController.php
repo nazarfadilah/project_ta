@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Tentang;
 use App\Models\Guest;
+use App\Models\UnblockRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -45,8 +46,15 @@ class AuthController extends Controller
                     ->first();
 
         if ($user) {
-            if ($user->status !== 'ACTIVE') {
-                return back()->withErrors(['login' => 'Akun Anda dinonaktifkan atau ditangguhkan. Hubungi admin.'])->withInput();
+            if ($user->status === 'INACTIVE') {
+                return back()->withErrors(['login' => 'Akun Anda dinonaktifkan. Hubungi admin.'])->withInput();
+            }
+            if ($user->status === 'SUSPENDED') {
+                $unblockLink = route('register.unblock', ['email' => $user->email]);
+                return back()->withErrors(['login' => 'Akun Anda ditangguhkan (Di Blokir Sementara). Silakan <a href="' . $unblockLink . '" class="fw-bold text-decoration-underline" style="color: #c90000;">Klik di sini</a> untuk mengajukan pembukaan blokir akun. Alasan blokir: "' . ($user->blocked_reason ?? 'Tidak ada alasan spesifik') . '"'])->withInput();
+            }
+            if ($user->status === 'SUSPENDED_PERMANENT') {
+                return back()->withErrors(['login' => 'Akun Anda telah diblokir secara permanen. Anda tidak diperbolehkan mengajukan pembukaan blokir kembali. Alasan blokir: "' . ($user->blocked_reason ?? 'Tidak ada alasan spesifik') . '"'])->withInput();
             }
 
             if (Hash::check($request->password, $user->password)) {
@@ -255,28 +263,14 @@ class AuthController extends Controller
                     $counter++;
                 }
 
-                // Generate a unique 16-digit numeric NIK to satisfy validation constraints
-                do {
-                    $nik = '12' . sprintf('%014d', mt_rand(0, 99999999999999));
-                } while (Guest::where('nik', $nik)->exists());
-
-                // Create Guest record first
-                $guest = Guest::create([
-                    'nik' => $nik,
-                    'name' => $googleUser->name ?? $username,
-                    'gender' => 'MALE',
-                    'address' => '-',
-                    'instansi' => '-',
-                ]);
-
-                // Create User record linked to the new Guest record
+                // Create User record with guestId = null
                 $user = User::create([
                     'username' => $username,
                     'email' => $googleUser->email,
                     'google_id' => $googleUser->id,
                     'password' => null, // Password is null for google users
                     'roleId' => $peminjamRole->id,
-                    'guestId' => $guest->id,
+                    'guestId' => null,
                     'status' => 'ACTIVE',
                 ]);
             } else {
@@ -284,23 +278,6 @@ class AuthController extends Controller
                 $updates = [];
                 if (!$user->google_id) {
                     $updates['google_id'] = $googleUser->id;
-                }
-
-                // Ensure a Guest record exists for this Tamu user
-                if ($user->roleId == $peminjamRole->id && (!$user->guestId || !Guest::where('id', $user->guestId)->exists())) {
-                    do {
-                        $nik = '12' . sprintf('%014d', mt_rand(0, 99999999999999));
-                    } while (Guest::where('nik', $nik)->exists());
-
-                    $guest = Guest::create([
-                        'nik' => $nik,
-                        'name' => $user->username,
-                        'gender' => 'MALE',
-                        'address' => '-',
-                        'phone' => $user->phone,
-                        'instansi' => '-',
-                    ]);
-                    $updates['guestId'] = $guest->id;
                 }
 
                 if (!empty($updates)) {
@@ -414,5 +391,125 @@ class AuthController extends Controller
         return redirect()->route('login')
             ->with('success', 'Password Anda telah berhasil direset ke default: "password". Silakan masuk menggunakan password tersebut dan segera ubah password Anda di halaman profil.');
     }
-}
 
+    // ─── UNBLOCK ACCOUNT FLOW ─────────────────────────────────
+    public function showRequestUnblock(Request $request)
+    {
+        $email = $request->query('email');
+        $whatsapp = Tentang::where('key', 'whatsapp')->first()?->value;
+        return view('auth.request_unblock', compact('email', 'whatsapp'));
+    }
+
+    public function submitRequestUnblock(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.exists' => 'Alamat email tidak terdaftar.',
+        ]);
+
+        $user = User::where('email', $request->email)->firstOrFail();
+
+        if ($user->status === 'SUSPENDED_PERMANENT') {
+            return back()->withErrors(['email' => 'Akun Anda telah diblokir secara permanen dan tidak diperbolehkan mengajukan pembukaan blokir kembali.'])->withInput();
+        }
+
+        if ($user->status !== 'SUSPENDED') {
+            return back()->withErrors(['email' => 'Akun Anda tidak dalam status terblokir sementara.'])->withInput();
+        }
+
+        // Check if there is already a rejected unblock request for this user
+        $hasRejected = UnblockRequest::where('user_id', $user->id)
+            ->where('status', 'REJECTED')
+            ->exists();
+
+        if ($hasRejected) {
+            return back()->withErrors(['email' => 'Permohonan buka blokir Anda sebelumnya telah ditolak permanen.'])->withInput();
+        }
+
+        // Generate 6 digit OTP
+        $otp = (string)rand(100000, 999999);
+        $expiresAt = Carbon::now()->addMinutes(15);
+
+        // Save or update unblock request
+        UnblockRequest::updateOrCreate(
+            ['user_id' => $user->id, 'status' => 'PENDING'],
+            [
+                'verification_code' => $otp,
+                'expires_at' => $expiresAt,
+            ]
+        );
+
+        // Send email
+        try {
+            Mail::to($user->email)->send(new \App\Mail\UnblockOTPVerificationMail($otp));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send unblock OTP: ' . $e->getMessage());
+            return back()->withErrors(['email' => 'Gagal mengirim email verifikasi OTP: ' . $e->getMessage()]);
+        }
+
+        return redirect()->route('register.unblock.verify', ['email' => $user->email])
+            ->with('success', 'Kode verifikasi OTP telah dikirim ke email Anda. Silakan periksa kotak masuk.');
+    }
+
+    public function showVerifyUnblock(Request $request)
+    {
+        $email = $request->query('email');
+        if (!$email) {
+            return redirect()->route('register.unblock')->withErrors(['email' => 'Email wajib dicantumkan.']);
+        }
+        $whatsapp = Tentang::where('key', 'whatsapp')->first()?->value;
+        return view('auth.verify_unblock', compact('email', 'whatsapp'));
+    }
+
+    public function submitVerifyUnblock(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'code' => 'required|numeric',
+            'reason' => 'required|string|min:10|max:1000',
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'code.required' => 'Kode verifikasi wajib diisi.',
+            'code.numeric' => 'Kode verifikasi harus berupa angka.',
+            'reason.required' => 'Catatan alasan wajib diisi.',
+            'reason.min' => 'Alasan minimal harus 10 karakter.',
+        ]);
+
+        $user = User::where('email', $request->email)->firstOrFail();
+
+        $unblockReq = UnblockRequest::where('user_id', $user->id)
+            ->where('status', 'PENDING')
+            ->first();
+
+        if (!$unblockReq) {
+            return back()->withErrors(['code' => 'Sesi verifikasi tidak ditemukan atau telah kedaluwarsa.'])->withInput();
+        }
+
+        if ($unblockReq->verification_code !== $request->code) {
+            return back()->withErrors(['code' => 'Kode verifikasi OTP salah.'])->withInput();
+        }
+
+        if (Carbon::now()->gt($unblockReq->expires_at)) {
+            return back()->withErrors(['code' => 'Kode verifikasi OTP telah kedaluwarsa. Silakan kirim ulang.'])->withInput();
+        }
+
+        // Update reason and keep PENDING status (until admin validates)
+        $unblockReq->update([
+            'reason' => $request->reason,
+        ]);
+
+        // Send notification email to admin
+        try {
+            $adminEmail = 'admin@gmail.com'; // Default admin email
+            Mail::to($adminEmail)->send(new \App\Mail\AdminUnblockNotificationMail($user, $request->reason));
+        } catch (\Exception $e) {
+            \Log::error('Failed to notify admin about unblock request: ' . $e->getMessage());
+        }
+
+        return redirect()->route('login')
+            ->with('success', 'Permohonan buka blokir berhasil diajukan. Kami telah mengirimkan email pemberitahuan ke Admin. Silakan tunggu peninjauan Admin.');
+    }
+}

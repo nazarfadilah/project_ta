@@ -55,7 +55,7 @@ class UsersRuanganController extends Controller
         $bookedRanges = PeminjamanTransaksi::whereHas('paketRuangan', function ($query) use ($id) {
                 $query->where('ruangan_id', $id);
             })
-            ->whereIn('statusApproval', ['APPROVED'])
+            ->whereIn('statusApproval', ['PENDING', 'APPROVED'])
             ->whereIn('statusPeminjaman', ['RESERVASI', 'CHECK_IN', 'SELESAI'])
             ->where('tanggal', '>=', Carbon::today()->toDateString())
             ->orderBy('tanggal', 'asc')
@@ -117,7 +117,7 @@ class UsersRuanganController extends Controller
         // Filter out rooms that have active/approved booking on the selected date
         if ($tanggal) {
             $bookedRoomIds = PeminjamanTransaksi::whereDate('tanggal', $tanggal)
-                ->whereIn('statusApproval', ['APPROVED'])
+                ->whereIn('statusApproval', ['PENDING', 'APPROVED'])
                 ->whereIn('statusPeminjaman', ['RESERVASI', 'CHECK_IN', 'SELESAI'])
                 ->whereHas('paketRuangan')
                 ->get()

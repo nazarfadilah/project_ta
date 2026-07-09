@@ -27,7 +27,7 @@ class GuestSeeder extends Seeder {
             'Polda Kalimantan Selatan',
             'Universitas Lambung Mangkurat',
             'Dinas Kesehatan Banjarbaru',
-            'Kementerian Agama Kota Banjarmasin',
+            'Kementerian Haji Kota Banjarmasin',
             'Personal',
             'MTs Negeri 2 Banjarmasin',
             'MAN 1 Kota Banjarbaru'

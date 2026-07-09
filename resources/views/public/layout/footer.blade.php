@@ -9,7 +9,7 @@
                 <strong>{{ $globalContact['nama_instansi'] }}</strong>
               </div>
             </div>
-            <p>Fasilitas penginapan dan sewa gedung terpercaya di bawah naungan Kementerian Agama Kalimantan Selatan.</p>
+            <p>Fasilitas penginapan dan sewa gedung terpercaya di bawah naungan Kementrian Haji Kalimantan Selatan.</p>
             <div class="footer-social">
               @if(!empty($globalSocial['facebook'])) <a href="{{ $globalSocial['facebook'] }}" class="social-link social-fb" id="socialFb" aria-label="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a> @endif
               @if(!empty($globalSocial['instagram'])) <a href="{{ $globalSocial['instagram'] }}" class="social-link social-ig" id="socialIg" aria-label="Instagram" target="_blank"><i class="fab fa-instagram"></i></a> @endif
@@ -39,7 +39,7 @@
     <div class="footer-bottom">
       <div class="container">
         <p>{!! $globalContact['copyright'] ?? '© 2026 Asrama Haji Emberkasi Landasan Ulin. Hak Cipta Dilindungi Undang-Undang.' !!}</p>
-        <p>{!! $globalContact['naungan'] ?? 'Dibawah naungan <strong>Kementerian Agama RI</strong> · Kanwil Kalimantan Selatan' !!}</p>
+        <p>{!! $globalContact['naungan'] ?? 'Dibawah naungan <strong>Kementerian Haji RI</strong> · Kanwil Kalimantan Selatan' !!}</p>
       </div>
     </div>
 </footer>

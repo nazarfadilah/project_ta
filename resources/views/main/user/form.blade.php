@@ -48,7 +48,7 @@
                 </div>
 
                 {{-- Alamat Email --}}
-                <div class="mb-4">
+                <div class="mb-3">
                     <label for="email" class="form-label fw-semibold" style="font-size: 13px; color: #555;">
                         Alamat Email
                     </label>
@@ -63,6 +63,57 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
+
+                {{-- Status Akun --}}
+                <div class="mb-3">
+                    <label for="status" class="form-label fw-semibold" style="font-size: 13px; color: #555;">
+                        Status Akun
+                    </label>
+                    <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" style="font-size: 14px; padding: 10px 14px;">
+                        <option value="ACTIVE" {{ old('status', $user->status) == 'ACTIVE' ? 'selected' : '' }}>Aktif</option>
+                        <option value="INACTIVE" {{ old('status', $user->status) == 'INACTIVE' ? 'selected' : '' }}>Non Aktif</option>
+                        <option value="SUSPENDED" {{ old('status', $user->status) == 'SUSPENDED' ? 'selected' : '' }}>Di Blokir Sementara</option>
+                        <option value="SUSPENDED_PERMANENT" {{ old('status', $user->status) == 'SUSPENDED_PERMANENT' ? 'selected' : '' }}>Di Blokir Permanen</option>
+                    </select>
+                    @error('status')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Alasan Pemblokiran (Hanya tampil jika status SUSPENDED atau SUSPENDED_PERMANENT) --}}
+                <div class="mb-4" id="blocked-reason-wrapper" style="display: none;">
+                    <label for="blocked_reason" class="form-label fw-semibold" style="font-size: 13px; color: #dc3545;">
+                        Alasan Pemblokiran
+                    </label>
+                    <textarea class="form-control @error('blocked_reason') is-invalid @enderror" 
+                              id="blocked_reason" 
+                              name="blocked_reason" 
+                              rows="3" 
+                              placeholder="Masukkan alasan kenapa akun ini diblokir (alasan ini akan dikirim ke email pengguna)"
+                              style="font-size: 14px; padding: 10px 14px;">{{ old('blocked_reason', $user->blocked_reason) }}</textarea>
+                    @error('blocked_reason')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const statusSelect = document.getElementById('status');
+                        const reasonWrapper = document.getElementById('blocked-reason-wrapper');
+                        
+                        function toggleReason() {
+                            const val = statusSelect.value;
+                            if (val === 'SUSPENDED' || val === 'SUSPENDED_PERMANENT') {
+                                reasonWrapper.style.display = 'block';
+                            } else {
+                                reasonWrapper.style.display = 'none';
+                            }
+                        }
+
+                        statusSelect.addEventListener('change', toggleReason);
+                        toggleReason(); // run once on load
+                    });
+                </script>
 
                 {{-- Tombol --}}
                 <div class="d-flex gap-2">

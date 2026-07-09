@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password - SIPRASA</title>
+    <title>Ajukan Buka Blokir - SIPRASA</title>
     <link rel="icon" type="image/png" href="{{ asset('assets/image/icon.png') }}">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -106,7 +106,7 @@
         .btn-submit {
             width: 100%;
             padding: 12px;
-            background-color: #1a1a1a;
+            background-color: #dc3545;
             color: white;
             border: none;
             border-radius: 4px;
@@ -116,7 +116,7 @@
             transition: background-color 0.3s;
         }
         .btn-submit:hover {
-            background-color: #333;
+            background-color: #c82333;
         }
         .register-section {
             text-align: center;
@@ -177,8 +177,8 @@
         <!-- Right Section -->
         <div class="login-right">
             <div class="login-card">
-                <h3>Verifikasi Reset Password</h3>
-                <p>Masukkan kode verifikasi 6 digit yang dikirimkan ke email Anda untuk mereset password ke default.</p>
+                <h3>Ajukan Buka Blokir</h3>
+                <p>Masukkan alamat email Anda yang terblokir. Kami akan mengirimkan kode verifikasi OTP 6 digit ke email tersebut.</p>
 
                 @if(session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -201,29 +201,22 @@
                     </div>
                 @endif
 
-                <form action="{{ route('password.update') }}" method="POST">
+                <form action="{{ route('register.unblock.process') }}" method="POST">
                     @csrf
                     
                     <div class="form-group">
-                        <label for="email">Alamat Email</label>
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $email) }}" placeholder="contoh@gmail.com" required readonly>
+                        <label for="email">Alamat Email Terblokir</label>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $email) }}" placeholder="contoh@gmail.com" required>
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <div class="form-group">
-                        <label for="code">Kode Verifikasi (6 Digit)</label>
-                        <input type="text" class="form-control @error('code') is-invalid @enderror" id="code" name="code" placeholder="Masukkan 6 digit kode" pattern="[0-9]{6}" maxlength="6" style="text-align: center; font-size: 18px; letter-spacing: 4px; font-weight: bold;" required autofocus>
-                        @error('code')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <button type="submit" class="btn-submit">Reset Password</button>
+                    <button type="submit" class="btn-submit">Minta Kode OTP</button>
 
                     <div class="register-section">
-                        <p>Batal melakukan reset? <a href="{{ route('login') }}">Kembali ke Login</a></p>
+                        <p>Kembali ke halaman <a href="{{ route('login') }}">Masuk</a></p>
+                        <a href="{{ route('home') }}" style="display: block; margin-top: 10px; font-size: 12px; color: #666; text-decoration: none;">&larr; Kembali ke Beranda</a>
                         @if($whatsapp)
                             <a href="https://wa.me/{{ str_replace(['+', '-', ' '], '', $whatsapp) }}" target="_blank" style="display: block; margin-top: 8px; font-size: 12px; color: #25D366; text-decoration: none;">💬 Hubungi Admin via WhatsApp</a>
                         @endif

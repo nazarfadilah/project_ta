@@ -120,6 +120,8 @@ class DashboardController extends Controller
     // Users Dashboard - Users yang sudah login
     public function usersindex()
     {
+        $user = auth()->user();
+        
         $stats = [
             // Code Lama:
             // 'buildings' => Gedung::count(),
@@ -129,7 +131,44 @@ class DashboardController extends Controller
             'saranas' => Sarana::count(),
         ];
 
-        return view('users.main.index', $stats);
+        // Fetch pending and approved bookings for the calendar
+        $calendarBookings = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan')
+            ->whereIn('statusApproval', ['PENDING', 'APPROVED'])
+            ->get()
+            ->map(function ($booking) use ($user) {
+                // If it is the logged-in user's own booking, they see their guest name. Otherwise, they see "Tamu (Terbooking)".
+                $isOwnBooking = ($booking->userId === $user->id) || ($user->guestId && $booking->guestId === $user->guestId);
+                
+                // Calculate end time
+                $start = \Carbon\Carbon::parse($booking->jamMulai);
+                $isHarian = ($booking->paketRuangan && (stripos($booking->paketRuangan->nama_paket, 'hari') !== false || stripos($booking->paketRuangan->nama_paket, 'harian') !== false));
+                if ($isHarian) {
+                    $end = $start->copy()->addDays($booking->durasi);
+                } else {
+                    $end = $start->copy()->addHours($booking->durasi);
+                }
+
+                return [
+                    'id' => $booking->id,
+                    'tanggal' => $booking->tanggal ? $booking->tanggal->format('Y-m-d') : null,
+                    'status' => $booking->statusApproval,
+                    'status_peminjaman' => $booking->statusPeminjaman,
+                    'guest_name' => $isOwnBooking ? ($booking->guest->name ?? 'Saya') : 'Tamu (Terbooking)',
+                    'is_own' => $isOwnBooking,
+                    'ruangan' => $booking->paketRuangan->ruangan->nama_ruangan ?? 'Ruangan',
+                    'jam_mulai' => $start->format('H:i'),
+                    'jam_selesai' => $end->format('H:i'),
+                    'durasi' => $booking->durasi . ($isHarian ? ' Hari' : ' Jam'),
+                ];
+            })
+            ->filter(function ($booking) {
+                return !empty($booking['tanggal']);
+            })
+            ->values();
+
+        return view('users.main.index', array_merge($stats, [
+            'calendarBookings' => $calendarBookings,
+        ]));
     }
 }
 

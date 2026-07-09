@@ -59,8 +59,13 @@ class RuanganController extends Controller
         // Handle file uploads
         if ($request->hasFile('media_files')) {
             foreach ($request->file('media_files') as $file) {
-                $path = $file->store('media_file', 'public');
-                $mediaPath = 'storage/' . $path;
+                $mediaPath = \App\Helpers\ImageHelper::optimizeAndStore(
+                    $file,
+                    'media_file',
+                    1200, // Max width
+                    null,  // Dynamic height
+                    75    // WebP quality
+                );
 
                 MediaFile::create([
                     'ruangan_id' => $ruangan->id_ruangan,
@@ -127,8 +132,13 @@ class RuanganController extends Controller
         // Handle file uploads
         if ($request->hasFile('media_files')) {
             foreach ($request->file('media_files') as $file) {
-                $path = $file->store('media_file', 'public');
-                $mediaPath = 'storage/' . $path;
+                $mediaPath = \App\Helpers\ImageHelper::optimizeAndStore(
+                    $file,
+                    'media_file',
+                    1200, // Max width
+                    null,  // Dynamic height
+                    75    // WebP quality
+                );
 
                 MediaFile::create([
                     'ruangan_id' => $ruangan->id_ruangan,

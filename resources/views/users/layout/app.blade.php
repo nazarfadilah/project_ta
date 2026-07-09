@@ -601,6 +601,9 @@
             <button class="navbar-toggle-btn" id="themeToggle" type="button" title="Toggle Tema" style="margin-left: 10px;">
                 <i class="fas fa-moon" id="themeIcon"></i>
             </button>
+            @if(Auth::user()->profile_photo)
+                <img src="{{ asset(Auth::user()->profile_photo) }}" alt="Foto Profil" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover; border: 2px solid var(--gold-light); margin-left: 5px;">
+            @endif
         </div>
     </nav>
 

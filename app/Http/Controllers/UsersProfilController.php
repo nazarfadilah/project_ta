@@ -16,26 +16,7 @@ class UsersProfilController extends Controller
     public function edit()
     {
         $user = auth()->user();
-        
-        // Auto-create a guest record if it doesn't exist yet
-        if (!$user->guestId) {
-            $nik = 'NIK' . sprintf('%05d', $user->id) . rand(1000, 9999);
-            $guest = Guest::create([
-                'nik' => substr($nik, 0, 16),
-                'name' => $user->username,
-                'gender' => 'MALE',
-                'address' => '-',
-                'phone' => $user->phone,
-                'instansi' => '-',
-            ]);
-            $user->update(['guestId' => $guest->id]);
-            $user->load('guest');
-        } else {
-            $user->load('guest');
-        }
-
         $guest = $user->guest;
-
         return view('users.main.profil.form', compact('user', 'guest'));
     }
 
@@ -46,21 +27,6 @@ class UsersProfilController extends Controller
     {
         $user = auth()->user();
         $guestId = $user->guestId;
-
-        // Auto-create guest if somehow missing
-        if (!$guestId) {
-            $nik = 'NIK' . sprintf('%05d', $user->id) . rand(1000, 9999);
-            $guest = Guest::create([
-                'nik' => substr($nik, 0, 16),
-                'name' => $user->username,
-                'gender' => 'MALE',
-                'address' => '-',
-                'phone' => $user->phone,
-                'instansi' => '-',
-            ]);
-            $user->update(['guestId' => $guest->id]);
-            $guestId = $guest->id;
-        }
 
         $validated = $request->validate([
             // Guest fields
@@ -79,6 +45,7 @@ class UsersProfilController extends Controller
             // User fields
             'phone' => 'required|digits_between:9,15',
             'password' => 'nullable|string|min:6|confirmed',
+            'profile_photo' => 'nullable|image|max:2048', // 2MB max
         ], [
             'nik.required' => 'NIK wajib diisi.',
             'nik.digits' => 'NIK harus berupa angka dan berjumlah tepat 16 digit.',
@@ -88,25 +55,51 @@ class UsersProfilController extends Controller
             'phone.digits_between' => 'Nomor HP harus berupa angka dan berjumlah antara 9 sampai 15 digit.',
             'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
             'password.min' => 'Password baru minimal harus 6 karakter.',
+            'profile_photo.image' => 'Berkas harus berupa gambar.',
+            'profile_photo.max' => 'Ukuran gambar maksimal adalah 2MB.',
         ]);
 
-        // Update Guest record
-        $guest = Guest::findOrFail($guestId);
-        $guest->update([
-            'nik' => $validated['nik'],
-            'name' => $validated['name'],
-            'gender' => $validated['gender'],
-            'address' => $validated['address'],
-            'bloodType' => $validated['bloodType'],
-            'notes' => $validated['notes'],
-            'phone' => $validated['phone'],
-            'instansi' => $validated['instansi'] ?? null,
-        ]);
+        if (!$guestId) {
+            $guest = Guest::create([
+                'nik' => $validated['nik'],
+                'name' => $validated['name'],
+                'gender' => $validated['gender'],
+                'address' => $validated['address'],
+                'bloodType' => $validated['bloodType'],
+                'notes' => $validated['notes'],
+                'phone' => $validated['phone'],
+                'instansi' => $validated['instansi'] ?? null,
+            ]);
+            $user->update(['guestId' => $guest->id]);
+        } else {
+            $guest = Guest::findOrFail($guestId);
+            $guest->update([
+                'nik' => $validated['nik'],
+                'name' => $validated['name'],
+                'gender' => $validated['gender'],
+                'address' => $validated['address'],
+                'bloodType' => $validated['bloodType'],
+                'notes' => $validated['notes'],
+                'phone' => $validated['phone'],
+                'instansi' => $validated['instansi'] ?? null,
+            ]);
+        }
 
         // Update User record (phone and optionally password)
         $userUpdate = [
             'phone' => $validated['phone'],
         ];
+
+        if ($request->hasFile('profile_photo')) {
+            $photoPath = \App\Helpers\ImageHelper::optimizeAndStore(
+                $request->file('profile_photo'),
+                'profile_photos',
+                300, // Max width
+                300, // Max height
+                80   // WebP quality
+            );
+            $userUpdate['profile_photo'] = $photoPath;
+        }
 
         if (!empty($validated['password'])) {
             $userUpdate['password'] = Hash::make($validated['password']);

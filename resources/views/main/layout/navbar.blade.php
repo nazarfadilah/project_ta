@@ -32,15 +32,31 @@
             <!-- Kelola User -->
             @if(Auth::user()->roleId == 1)
             <li class="nav-item">
-                <a href="{{ route('main.users.index') }}" class="nav-link {{ request()->routeIs('main.users.*') ? 'active' : '' }}" title="Kelola User">
+                <a href="#kelolaUserMenu" class="nav-link dropdown-toggle {{ request()->routeIs('main.users.*') ? 'active' : '' }}" data-bs-toggle="collapse" title="Kelola User">
                     <i class="fas fa-users menu-icon"></i>
                     <span class="menu-text">Kelola User</span>
                 </a>
+                <div class="collapse {{ request()->routeIs('main.users.*') ? 'show' : '' }}" id="kelolaUserMenu">
+                    <ul class="nav flex-column ps-4">
+                        <li class="nav-item">
+                            <a href="{{ route('main.users.index') }}" class="nav-link {{ request()->routeIs('main.users.index') || request()->routeIs('main.users.edit') ? 'active' : '' }}" title="Daftar Pengguna">
+                                <i class="fas fa-user-check menu-icon"></i>
+                                <span class="menu-text">Pengguna</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('main.users.blocked') }}" class="nav-link {{ request()->routeIs('main.users.blocked') || request()->routeIs('main.users.blocked.request') ? 'active' : '' }}" title="Daftar Terblokir">
+                                <i class="fas fa-user-lock menu-icon"></i>
+                                <span class="menu-text">Terblokir</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
             @endif
 
             <!-- Kelola Tamu -->
-            @if(in_array(Auth::user()->roleId, [1, 2, 3]))
+            @if(in_array(Auth::user()->roleId, [2, 3]))
             <li class="nav-item">
                 <a href="{{ route('main.tamu.index') }}" class="nav-link {{ request()->routeIs('main.tamu.*') ? 'active' : '' }}" title="Kelola Tamu">
                     <i class="fas fa-user-tie menu-icon"></i>

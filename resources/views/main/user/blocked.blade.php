@@ -1,6 +1,6 @@
 @extends('main.layout.app')
 
-@section('title', 'Kelola Pengguna')
+@section('title', 'Kelola Pengguna Terblokir')
 
 @section('content')
 <div class="container-fluid" style="padding-left: 40px; padding-right: 40px; margin-top: 20px;">
@@ -15,21 +15,22 @@
 
     {{-- Card Table --}}
     <div class="card border-0 shadow-sm rounded-3">
-        <div class="card-header d-flex align-items-center justify-content-between" style="background-color: #C9A961; color: #fff; border-radius: 8px 8px 0 0; padding: 14px 20px;">
+        <div class="card-header d-flex align-items-center justify-content-between" style="background-color: #ab8b46; color: #fff; border-radius: 8px 8px 0 0; padding: 14px 20px;">
             <h6 class="mb-0 fw-semibold" style="font-size: 15px;">
-                <i class="fas fa-users me-2"></i>Daftar Pengguna
+                <i class="fas fa-user-slash me-2"></i>Daftar Pengguna Terblokir
             </h6>
         </div>
         <div class="card-body" style="padding: 20px;">
             <div class="table-responsive">
-                <table id="usersTable" class="table table-hover table-bordered align-middle" style="width: 100%; font-size: 14px;">
+                <table id="blockedUsersTable" class="table table-hover table-bordered align-middle" style="width: 100%; font-size: 14px;">
                     <thead style="background-color: #f8f9fa;">
                         <tr>
                             <th style="width: 50px; text-align: center;">No</th>
                             <th>Nama Pengguna</th>
                             <th>Alamat Email</th>
                             <th style="width: 80px; text-align: center;">Role</th>
-                            <th style="width: 100px; text-align: center;">Status</th>
+                            <th style="width: 120px; text-align: center;">Status</th>
+                            <th style="width: 150px; text-align: center;">Alasan Blokir</th>
                             <th style="width: 100px; text-align: center;">Aksi</th>
                         </tr>
                     </thead>
@@ -41,20 +42,21 @@
                             <td>{{ $user->email }}</td>
                             <td style="text-align: center;"><span class="badge bg-info">{{ $user->role->name ?? 'User' }}</span></td>
                             <td style="text-align: center;">
-                                @if($user->status === 'ACTIVE')
-                                    <span class="badge bg-success">Aktif</span>
-                                @elseif($user->status === 'INACTIVE')
-                                    <span class="badge bg-secondary">Non Aktif</span>
+                                @if($user->status === 'SUSPENDED')
+                                    <span class="badge bg-warning text-dark">Di Blokir Sementara</span>
+                                @elseif($user->status === 'SUSPENDED_PERMANENT')
+                                    <span class="badge bg-danger">Di Blokir Permanen</span>
                                 @else
-                                    <span class="badge bg-danger">{{ $user->status }}</span>
+                                    <span class="badge bg-secondary">{{ $user->status }}</span>
                                 @endif
                             </td>
+                            <td>{{ $user->blocked_reason ?? '-' }}</td>
                             <td style="text-align: center;">
-                                <a href="{{ route('main.users.edit', $user->email) }}" 
-                                   class="btn btn-sm btn-warning" 
-                                   title="Edit"
-                                   style="padding: 4px 10px; font-size: 13px;">
-                                    <i class="fas fa-edit"></i>
+                                <a href="{{ route('main.users.blocked.request', $user->id) }}" 
+                                   class="btn btn-sm btn-primary" 
+                                   title="Detail Permohonan Buka Blokir"
+                                   style="padding: 4px 10px; font-size: 13px; background-color: #1a1a1a; border-color: #1a1a1a;">
+                                    <i class="fas fa-info-circle me-1"></i> Detail
                                 </a>
                             </td>
                         </tr>
@@ -71,17 +73,17 @@
 {{-- DataTables CSS --}}
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 <style>
-    #usersTable thead th {
+    #blockedUsersTable thead th {
         font-weight: 600;
         font-size: 13px;
         color: #555;
         border-bottom: 2px solid #dee2e6;
     }
-    #usersTable tbody td {
+    #blockedUsersTable tbody td {
         vertical-align: middle;
         color: #444;
     }
-    #usersTable tbody tr:hover {
+    #blockedUsersTable tbody tr:hover {
         background-color: #fdf6e3;
     }
     .dataTables_wrapper {
@@ -115,14 +117,14 @@
         margin-top: 15px;
     }
     .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        background: #C9A961 !important;
-        border-color: #C9A961 !important;
+        background: #ab8b46 !important;
+        border-color: #ab8b46 !important;
         color: #fff !important;
         border-radius: 4px;
     }
     .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background: #d4ba7a !important;
-        border-color: #d4ba7a !important;
+        background: #ab8b46 !important;
+        border-color: #ab8b46 !important;
         color: #fff !important;
     }
 </style>
@@ -135,27 +137,24 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('#usersTable').DataTable({
+        $('#blockedUsersTable').DataTable({
             language: {
                 search: "Cari:",
                 lengthMenu: "Tampilkan _MENU_ data",
-                info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
-                infoEmpty: "Tidak ada data",
-                infoFiltered: "(disaring dari _MAX_ total data)",
-                zeroRecords: "Data tidak ditemukan",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+                infoFiltered: "(difilter dari _MAX_ total data)",
+                zeroRecords: "Tidak ada data yang cocok ditemukan",
                 paginate: {
                     first: "Pertama",
                     last: "Terakhir",
-                    next: "›",
-                    previous: "‹"
+                    next: "Lanjut",
+                    previous: "Sebelum"
                 }
             },
             pageLength: 10,
-            ordering: true,
-            responsive: true,
             columnDefs: [
-                { orderable: false, targets: [0, 4] },
-                { searchable: false, targets: [0, 3, 4] }
+                { orderable: false, targets: 6 } // Matikan sorting untuk kolom aksi
             ]
         });
     });

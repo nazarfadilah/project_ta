@@ -390,7 +390,7 @@
             <span class="page-title">@yield('title', 'Dashboard')</span>
             <div class="vr" style="height: 20px; background-color: #ddd;"></div>
             <span class="welcome-text">
-                <i class="fas fa-hand-wave me-1"></i> Selamat datang!
+                <i class="fas fa-user-circle me-1"></i> Selamat Datang, {{ Auth::user()->role->name ?? 'Admin' }}!
             </span>
         </div>
     </nav>

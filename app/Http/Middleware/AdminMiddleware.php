@@ -76,15 +76,16 @@ class AdminMiddleware
             }
         }
 
-        // 2. Admin (Role 1) - Tidak boleh akses Data Master (Gedung, Ruangan, Sarana, Paket Ruangan) & Peminjaman/Transaksi
+        // 2. Admin (Role 1) - Tidak boleh akses Data Master (Gedung, Ruangan, Sarana, Paket Ruangan), Peminjaman/Transaksi, & Kelola Tamu
         if ($user->roleId == 1) {
             if (str_starts_with($routeName, 'main.ruangan.') || 
                 str_starts_with($routeName, 'main.sarana.') || 
                 str_starts_with($routeName, 'main.paket_ruangan.') ||
                 str_starts_with($routeName, 'main.gedung.') ||
                 str_starts_with($routeName, 'main.transaksi.peminjaman.') ||
-                str_starts_with($routeName, 'main.peminjaman_sarana.')) {
-                abort(403, 'Akses ditolak. Admin tidak mengelola data master atau peminjaman.');
+                str_starts_with($routeName, 'main.peminjaman_sarana.') ||
+                str_starts_with($routeName, 'main.tamu.')) {
+                abort(403, 'Akses ditolak. Admin tidak mengelola data master, peminjaman, atau data tamu.');
             }
         }
 

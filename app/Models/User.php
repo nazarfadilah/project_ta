@@ -24,8 +24,10 @@ class User extends Authenticatable
         'phone',
         'guestId',
         'status',
+        'blocked_reason',
         'lastLoginAt',
         'google_id',
+        'profile_photo',
     ];
 
     protected $hidden = [
@@ -56,5 +58,10 @@ class User extends Authenticatable
     public function beritas(): HasMany
     {
         return $this->hasMany(Berita::class, 'userId', 'id');
+    }
+
+    public function unblockRequests(): HasMany
+    {
+        return $this->hasMany(UnblockRequest::class, 'user_id', 'id');
     }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password - SIPRASA</title>
+    <title>Verifikasi OTP Unblock - SIPRASA</title>
     <link rel="icon" type="image/png" href="{{ asset('assets/image/icon.png') }}">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -106,7 +106,7 @@
         .btn-submit {
             width: 100%;
             padding: 12px;
-            background-color: #1a1a1a;
+            background-color: #28a745;
             color: white;
             border: none;
             border-radius: 4px;
@@ -116,7 +116,7 @@
             transition: background-color 0.3s;
         }
         .btn-submit:hover {
-            background-color: #333;
+            background-color: #218838;
         }
         .register-section {
             text-align: center;
@@ -177,8 +177,8 @@
         <!-- Right Section -->
         <div class="login-right">
             <div class="login-card">
-                <h3>Verifikasi Reset Password</h3>
-                <p>Masukkan kode verifikasi 6 digit yang dikirimkan ke email Anda untuk mereset password ke default.</p>
+                <h3>Verifikasi OTP</h3>
+                <p>Masukkan kode verifikasi OTP 6 digit yang dikirim ke email <strong>{{ $email }}</strong> dan tuliskan alasan Anda mengajukan pembukaan blokir akun.</p>
 
                 @if(session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -201,29 +201,31 @@
                     </div>
                 @endif
 
-                <form action="{{ route('password.update') }}" method="POST">
+                <form action="{{ route('register.unblock.verify.process') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="email" value="{{ $email }}">
                     
                     <div class="form-group">
-                        <label for="email">Alamat Email</label>
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $email) }}" placeholder="contoh@gmail.com" required readonly>
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label for="code">Kode Verifikasi (6 Digit)</label>
-                        <input type="text" class="form-control @error('code') is-invalid @enderror" id="code" name="code" placeholder="Masukkan 6 digit kode" pattern="[0-9]{6}" maxlength="6" style="text-align: center; font-size: 18px; letter-spacing: 4px; font-weight: bold;" required autofocus>
+                        <label for="code">Kode Verifikasi OTP</label>
+                        <input type="text" class="form-control @error('code') is-invalid @enderror" id="code" name="code" value="{{ old('code') }}" placeholder="Masukkan 6 digit angka" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                         @error('code')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <button type="submit" class="btn-submit">Reset Password</button>
+                    <div class="form-group">
+                        <label for="reason">Catatan / Alasan Buka Blokir</label>
+                        <textarea class="form-control @error('reason') is-invalid @enderror" id="reason" name="reason" rows="4" placeholder="Jelaskan alasan kenapa akun Anda layak diaktifkan kembali oleh admin..." required>{{ old('reason') }}</textarea>
+                        @error('reason')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <button type="submit" class="btn-submit">Kirim Pengajuan Buka Blokir</button>
 
                     <div class="register-section">
-                        <p>Batal melakukan reset? <a href="{{ route('login') }}">Kembali ke Login</a></p>
+                        <p>Kembali ke halaman <a href="{{ route('login') }}">Masuk</a></p>
+                        <a href="{{ route('home') }}" style="display: block; margin-top: 10px; font-size: 12px; color: #666; text-decoration: none;">&larr; Kembali ke Beranda</a>
                         @if($whatsapp)
                             <a href="https://wa.me/{{ str_replace(['+', '-', ' '], '', $whatsapp) }}" target="_blank" style="display: block; margin-top: 8px; font-size: 12px; color: #25D366; text-decoration: none;">💬 Hubungi Admin via WhatsApp</a>
                         @endif

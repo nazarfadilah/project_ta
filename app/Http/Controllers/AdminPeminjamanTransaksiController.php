@@ -260,7 +260,7 @@ class AdminPeminjamanTransaksiController extends Controller
         $bookedRanges = PeminjamanTransaksi::whereHas('paketRuangan', function ($query) use ($id) {
                 $query->where('ruangan_id', $id);
             })
-            ->whereIn('statusApproval', ['APPROVED'])
+            ->whereIn('statusApproval', ['PENDING', 'APPROVED'])
             ->whereIn('statusPeminjaman', ['RESERVASI', 'CHECK_IN', 'SELESAI'])
             ->where('tanggal', '>=', Carbon::today()->toDateString())
             ->orderBy('tanggal', 'asc')
@@ -356,7 +356,7 @@ class AdminPeminjamanTransaksiController extends Controller
         $overlapping = PeminjamanTransaksi::whereHas('paketRuangan', function ($q) use ($validated) {
                 $q->where('ruangan_id', $validated['ruangan_id']);
             })
-            ->whereIn('statusApproval', ['APPROVED'])
+            ->whereIn('statusApproval', ['PENDING', 'APPROVED'])
             ->whereIn('statusPeminjaman', ['RESERVASI', 'CHECK_IN', 'SELESAI'])
             ->get()
             ->filter(function ($item) use ($startDateTime, $endDateTime) {
