@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIPRASA - Flowchart Viewer</title>
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #ffffff;
+      --bg-sidebar: #ffffff;
+      --text-primary: #000000;
+      --text-secondary: #222222;
+      --text-muted: #555555;
+      --border-color: #000000;
+      
+      --accent-color: #000000;
+      --accent-hover: #333333;
+      --accent-light: rgba(0, 0, 0, 0.05);
+      
+      --sidebar-text: #000000;
+      --sidebar-text-muted: #555555;
+      
+      --shadow-sm: none;
+      --shadow-md: none;
+      --shadow-lg: none;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      width: 320px;
+      background-color: var(--bg-sidebar);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      border-right: 2px solid var(--border-color);
+      z-index: 10;
+    }
+
+    .sidebar-brand {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .brand-icon {
+      background-color: var(--accent-color);
+      color: #ffffff;
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .brand-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .sidebar-menu {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px;
+    }
+
+    .sidebar-menu-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--sidebar-text-muted);
+      margin-bottom: 12px;
+      padding-left: 8px;
+      font-weight: 700;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 6px;
+      color: var(--sidebar-text);
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      line-height: 1.4;
+    }
+
+    .nav-item:hover {
+      background-color: var(--accent-light);
+      border-color: var(--border-color);
+    }
+
+    .nav-item.active {
+      background-color: var(--accent-color);
+      color: #ffffff;
+      font-weight: 600;
+      border-color: var(--accent-color);
+    }
+
+    .nav-item-icon {
+      margin-right: 12px;
+      font-size: 15px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Main Area Styling */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Navbar */
+    .top-navbar {
+      height: 70px;
+      background-color: var(--bg-secondary);
+      border-bottom: 2px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+
+    .doc-meta h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 2px solid var(--border-color);
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background-color: var(--accent-light);
+    }
+
+    .btn-primary {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+      border-color: var(--accent-hover);
+      color: #ffffff;
+    }
+
+    /* Diagram Viewer Box */
+    .viewer-area {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: #fdfdfd;
+    }
+
+    .meta-card {
+      background-color: var(--bg-secondary);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .meta-tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tag-role {
+      background-color: var(--accent-light);
+      color: var(--accent-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .diagram-card {
+      background-color: #ffffff;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+      min-height: 400px;
+    }
+
+    .diagram-img-container {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .diagram-img-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      border: 2px solid var(--border-color);
+    }
+
+    /* Description Table Card */
+    .description-card {
+      background-color: var(--bg-secondary);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .steps-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    .steps-table th, .steps-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .steps-table th {
+      font-weight: 600;
+      color: #000000;
+      background-color: #f1f1f1;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .steps-table tr:hover {
+      background-color: var(--accent-light);
+    }
+
+    .step-num {
+      width: 50px;
+      font-weight: 700;
+      color: var(--accent-color);
+    }
+
+    .step-shape {
+      font-weight: 600;
+      width: 150px;
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #888888;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555555;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">F</div>
+      <div class="brand-text">SIPRASA Flowchart</div>
+    </div>
+    <div class="sidebar-menu">
+      <h6 class="sidebar-menu-title">Flowchart Diagrams</h6>
+      <ul class="nav-list" id="diagramList">
+        <!-- JS will populate menu items here -->
+      </ul>
+    </div>
+  </div>
+
+  <!-- Main Content Viewport -->
+  <div class="main-content">
+    
+    <!-- Top Bar -->
+    <div class="top-navbar">
+      <div class="doc-meta">
+        <h1 id="activeTitle">Judul Diagram</h1>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-primary" id="downloadBtn" title="Unduh File PNG">
+          <i class="fas fa-download"></i> Unduh PNG
+        </button>
+        <button class="btn" id="downloadDrawioBtn" title="Unduh File .drawio untuk Diedit">
+          <i class="fas fa-file-code"></i> Unduh .drawio
+        </button>
+      </div>
+    </div>
+
+    <!-- Scrollable Viewer Box -->
+    <div class="viewer-area">
+      
+      <!-- Meta Information Card -->
+      <div class="meta-card">
+        <p id="activeDesc" style="font-size: 14px; line-height: 1.6; color: var(--text-secondary);">
+          Deskripsi diagram di sini.
+        </p>
+        <div class="meta-tag-row" id="activeRoles">
+          <!-- Tags populated by JS -->
+        </div>
+      </div>
+
+      <!-- Diagram Graphics Box -->
+      <div class="diagram-card">
+        <div class="diagram-img-container" id="imageContainer">
+          <!-- Image loaded live here by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Steps Description Box -->
+      <div class="description-card">
+        <h5 class="card-title">
+          <i class="fas fa-list-ol text-accent" style="color: var(--accent-color);"></i> Simbol & Langkah Proses
+        </h5>
+        <div class="table-responsive">
+          <table class="steps-table">
+            <thead>
+              <tr>
+                <th style="width: 60px;">No</th>
+                <th style="width: 150px;">Bentuk Simbol</th>
+                <th>Langkah / Keterangan</th>
+              </tr>
+            </thead>
+            <tbody id="stepsTableBody">
+              <!-- JS will write rows here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function getCrudSteps(ds) {
+      return [
+        ["Start (Terminal)", "Mulai"],
+        ["Input", `Pilih Data & Klik Tambah/Ubah ${ds}`],
+        ["Input", `Isi Formulir Data ${ds}`],
+        ["Process", `Validasi Kelayakan Data ${ds}`],
+        ["Decision (Diamond)", "Data Valid? (Ya -> Simpan ke Database, Tidak -> Tampilkan Notifikasi Error)"],
+        ["Process", `Simpan Data ${ds} ke Database (jika valid)`],
+        ["Output (Parallelogram)", "Tampilkan Notifikasi Error Form (jika tidak valid)"],
+        ["End (Terminal)", "Selesai"]
+      ];
+    }
+
+    const diagrams = {
+      "1_login_sistem": {
+        "title": "1. Login Sistem",
+        "description": "Proses otentikasi login pengguna (Admin, Petugas, Pimpinan, dan Tamu).",
+        "roles": ["Admin", "Petugas", "Pimpinan", "Tamu"],
+        "steps": [
+          ["Start (Terminal)", "Mulai"],
+          ["Input", "Masukkan Email & Password"],
+          ["Process", "Enkripsi Password & Verifikasi Akun"],
+          ["Decision (Diamond)", "Cocok & Aktif? (Ya -> Buka Dashboard, Tidak -> Tampilkan Peringatan)"],
+          ["Process", "Buat Session Login & Buka Dashboard (jika cocok)"],
+          ["Output (Parallelogram)", "Tampilkan Peringatan Gagal Login (jika tidak cocok)"],
+          ["End (Terminal)", "Selesai"]
+        ]
+      },
+      "2_registrasi_akun": {
+        "title": "2. Registrasi Akun",
+        "description": "Proses pendaftaran akun baru oleh Tamu beserta verifikasi kode OTP email.",
+        "roles": ["Tamu"],
+        "steps": [
+          ["Start (Terminal)", "Mulai"],
+          ["Input", "Masukkan Data Akun (Nama, Email, Password, dll)"],
+          ["Process", "Validasi Email Unik & Form Input"],
+          ["Decision (Diamond)", "Data Valid? (Ya -> Kirim OTP, Tidak -> Tampilkan Error)"],
+          ["Process", "Simpan User Inaktif & Kirim OTP (jika valid)"],
+          ["Output (Parallelogram)", "Tampilkan Notifikasi Error Form (jika tidak valid)"],
+          ["Input", "Input Kode OTP dari Email"],
+          ["Decision (Diamond)", "OTP Benar? (Ya -> Aktifkan Akun, Tidak -> Tampilkan Pesan Error)"],
+          ["Process", "Ubah Status Akun Menjadi Aktif (jika benar)"],
+          ["Output (Parallelogram)", "Tampilkan Pesan Error OTP (jika salah)"],
+          ["End (Terminal)", "Selesai"]
+        ]
+      },
+      "3_kelola_pengguna": {
+        "title": "3. Kelola Pengguna (User Management)",
+        "description": "Pengelolaan data akun pengguna oleh Admin.",
+        "roles": ["Admin"],
+        "steps": getCrudSteps("Pengguna")
+      },
+      "4_kelola_landing_page": {
+        "title": "4. Kelola Landing Page",
+        "description": "Pengelolaan visual slide, FAQ, dan informasi landing page oleh Admin.",
+        "roles": ["Admin"],
+        "steps": getCrudSteps("Landing Page")
+      },
+      "5_kelola_tamu": {
+        "title": "5. Kelola Tamu (Guest Management)",
+        "description": "Pengelolaan data identitas dan instansi Tamu oleh Admin dan Petugas.",
+        "roles": ["Admin", "Petugas"],
+        "steps": getCrudSteps("Tamu")
+      },
+      "6_kelola_ulasan": {
+        "title": "6. Kelola Ulasan",
+        "description": "Pengelolaan ulasan/rating ruangan yang disewa oleh Tamu.",
+        "roles": ["Tamu"],
+        "steps": getCrudSteps("Ulasan")
+      },
+      "7_kelola_ruangan": {
+        "title": "7. Kelola Ruangan",
+        "description": "Pengelolaan master data ruangan, kapasitas, dan tarif sewa oleh Petugas.",
+        "roles": ["Petugas"],
+        "steps": getCrudSteps("Ruangan")
+      },
+      "8_kelola_sarana": {
+        "title": "8. Kelola Sarana & Prasarana",
+        "description": "Pengelolaan master data sarana pendukung sewa oleh Petugas.",
+        "roles": ["Petugas"],
+        "steps": getCrudSteps("Sarana")
+      },
+      "9_kelola_paket": {
+        "title": "9. Kelola Paket Ruangan",
+        "description": "Pengelolaan data paket sewa bundling oleh Petugas.",
+        "roles": ["Petugas"],
+        "steps": getCrudSteps("Paket")
+      },
+      "10_kelola_profil": {
+        "title": "10. Kelola Profil",
+        "description": "Pengelolaan data profil diri dan ubah password oleh Tamu secara mandiri.",
+        "roles": ["Tamu"],
+        "steps": [
+          ["Start (Terminal)", "Mulai"],
+          ["Input", "Buka Halaman Profil & Edit Form"],
+          ["Process", "Validasi NIK, No Telp & Password"],
+          ["Decision (Diamond)", "Data Valid? (Ya -> Update Profil, Tidak -> Tampilkan Error)"],
+          ["Process", "Update Profil & Password di Database (jika valid)"],
+          ["Output (Parallelogram)", "Tampilkan Notifikasi Error Form (jika tidak valid)"],
+          ["End (Terminal)", "Selesai"]
+        ]
+      },
+      "11_kelola_invoice": {
+        "title": "11. Kelola & Cetak Invoice",
+        "description": "Pengelolaan status bayar invoice peminjaman oleh Petugas.",
+        "roles": ["Petugas"],
+        "steps": [
+          ["Start (Terminal)", "Mulai"],
+          ["Input", "Pilih Invoice Transaksi Tamu"],
+          ["Process", "Input Pembayaran & Validasi Jumlah"],
+          ["Decision (Diamond)", "Sesuai? (Ya -> Set PAID, Tidak -> Tampilkan Error)"],
+          ["Process", "Set Status PAID & Cetak Kuitansi (jika sesuai)"],
+          ["Output (Parallelogram)", "Tampilkan Error Nominal Kurang (jika tidak sesuai)"],
+          ["End (Terminal)", "Selesai"]
+        ]
+      },
+      "12_checkin": {
+        "title": "12. Proses Check-In",
+        "description": "Proses check-in peminjaman ruangan pada hari H pemakaian oleh Petugas.",
+        "roles": ["Petugas"],
+        "steps": [
+          ["Start (Terminal)", "Mulai"],
+          ["Input", "Pilih Peminjaman status APPROVED"],
+          ["Process", "Klik Tombol Proses Check-In"],
+          ["Decision (Diamond)", "Sudah Hari H? (Ya -> Update Status, Tidak -> Tampilkan Peringatan)"],
+          ["Process", "Update Status CHECK_IN & Jam Masuk (jika sudah Hari H)"],
+          ["Output (Parallelogram)", "Tampilkan Pesan Peringatan Tanggal (jika belum Hari H)"],
+          ["End (Terminal)", "Selesai"]
+        ]
+      },
+      "13_checkout": {
+        "title": "13. Proses Check-Out",
+        "description": "Proses pengembalian ruangan, pencatatan kondisi barang, denda, dan checkout oleh Petugas.",
+        "roles": ["Petugas"],
+        "steps": [
+          ["Start (Terminal)", "Mulai"],
+          ["Input", "Pilih Peminjaman status CHECK_IN"],
+          ["Process", "Klik Check-Out & Input Kondisi Pengembalian"],
+          ["Decision (Diamond)", "Ada Rusak/Telat? (Ya -> Hitung Denda, Tidak -> Set Denda Rp 0)"],
+          ["Process", "Hitung Denda & Update Total Tagihan"],
+          ["Process", "Set Biaya Denda = Rp 0"],
+          ["Process", "Update Status SELESAI & Jam Keluar"],
+          ["End (Terminal)", "Selesai"]
+        ]
+      },
+      "14_verifikasi_peminjaman": {
+        "title": "14. Verifikasi Peminjaman",
+        "description": "Verifikasi kelayakan berkas pengajuan sewa pending oleh Petugas.",
+        "roles": ["Petugas"],
+        "steps": [
+          ["Start (Terminal)", "Mulai"],
+          ["Input", "Buka Berkas Peminjaman Pending"],
+          ["Process", "Cek Dokumen & Persetujuan Kuota"],
+          ["Decision (Diamond)", "Disetujui? (Ya -> Approve & Buat Invoice, Tidak -> Reject)"],
+          ["Process", "Status APPROVED & Generate Invoice (jika disetujui)"],
+          ["Process", "Status REJECTED & Input Alasan (jika ditolak)"],
+          ["End (Terminal)", "Selesai"]
+        ]
+      },
+      "15_ajukan_peminjaman": {
+        "title": "15. Ajukan Peminjaman (Reservasi)",
+        "description": "Proses permohonan sewa ruangan dan sarana pendukung oleh Tamu.",
+        "roles": ["Tamu"],
+        "steps": [
+          ["Start (Terminal)", "Mulai"],
+          ["Input", "Pilih Ruangan, Sarana, & Tanggal Sewa"],
+          ["Process", "Cek Ketersediaan Kuota & Jadwal"],
+          ["Decision (Diamond)", "Fasilitas Tersedia? (Ya -> Simpan Booking, Tidak -> Tampilkan Error)"],
+          ["Process", "Simpan Transaksi status PENDING (jika tersedia)"],
+          ["Output (Parallelogram)", "Tampilkan Notifikasi Sudah Terbooking (jika terisi)"],
+          ["End (Terminal)", "Selesai"]
+        ]
+      },
+      "16_batalkan_peminjaman": {
+        "title": "16. Batalkan Peminjaman",
+        "description": "Pembatalan sewa ruangan secara mandiri oleh Tamu sebelum H-1.",
+        "roles": ["Tamu"],
+        "steps": [
+          ["Start (Terminal)", "Mulai"],
+          ["Input", "Pilih Reservasi Aktif di Menu Saya"],
+          ["Process", "Validasi Batas Waktu Pembatalan (Sebelum Hari H)"],
+          ["Decision (Diamond)", "Bisa Batal? (Ya -> Batalkan, Tidak -> Tampilkan Error)"],
+          ["Process", "Update Status BATAL & Bebaskan Jadwal (jika ya)"],
+          ["Output (Parallelogram)", "Tampilkan Peringatan Melebihi Batas (jika tidak)"],
+          ["End (Terminal)", "Selesai"]
+        ]
+      },
+      "17_lihat_laporan": {
+        "title": "17. Lihat Laporan Penggunaan",
+        "description": "Penyaringan, peninjauan statistik okupansi, dan cetak laporan oleh Admin dan Pimpinan.",
+        "roles": ["Admin", "Pimpinan"],
+        "steps": [
+          ["Start (Terminal)", "Mulai"],
+          ["Input", "Masukkan Parameter Filter Tanggal"],
+          ["Process", "Query Okupansi & Pemasukan Sewa"],
+          ["Process", "Tampilkan Tabel Data & Chart Okupansi"],
+          ["Decision (Diamond)", "Cetak Laporan PDF? (Ya -> Export PDF, Tidak -> Tetap di Layar)"],
+          ["Process", "Export Laporan ke File PDF (jika ya)"],
+          ["Process", "Tetap Tampilkan Data di Layar (jika tidak)"],
+          ["End (Terminal)", "Selesai"]
+        ]
+      },
+      "18_kelola_berita": {
+        "title": "18. Kelola Berita",
+        "description": "Penyusunan draft berita/pengumuman oleh Admin dan Petugas.",
+        "roles": ["Admin", "Petugas"],
+        "steps": getCrudSteps("Berita")
+      },
+      "19_publish_berita": {
+        "title": "19. Publish Berita",
+        "description": "Proses publikasi draft berita/pengumuman ke halaman publik oleh Admin.",
+        "roles": ["Admin"],
+        "steps": [
+          ["Start (Terminal)", "Mulai"],
+          ["Input", "Pilih Berita Status DRAFT"],
+          ["Process", "Pratinjau Berita & Isi Pengumuman"],
+          ["Decision (Diamond)", "Klik Publish? (Ya -> Ubah Status, Tidak -> Pertahankan Draft)"],
+          ["Process", "Ubah Status PUBLISHED & Tampilkan (jika ya)"],
+          ["Process", "Pertahankan Berita sebagai DRAFT (jika tidak)"],
+          ["End (Terminal)", "Selesai"]
+        ]
+      }
+    };
+
+    const diagramList = document.getElementById('diagramList');
+    let activeKey = Object.keys(diagrams)[0];
+
+    Object.entries(diagrams).forEach(([key, data]) => {
+      const li = document.createElement('li');
+      const cleanTitle = data.title.split('. ')[1] || data.title;
+      li.className = `nav-item ${key === activeKey ? 'active' : ''}`;
+      li.innerHTML = `<i class="fas fa-sitemap nav-item-icon"></i> ${cleanTitle}`;
+      li.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        li.classList.add('active');
+        activeKey = key;
+        loadDiagram(key);
+      });
+      diagramList.appendChild(li);
+    });
+
+    function loadDiagram(key) {
+      const data = diagrams[key];
+      document.getElementById('activeTitle').innerText = data.title;
+      document.getElementById('activeDesc').innerText = data.description;
+      
+      const rolesContainer = document.getElementById('activeRoles');
+      rolesContainer.innerHTML = '';
+      data.roles.forEach(role => {
+        const span = document.createElement('span');
+        span.className = 'tag tag-role';
+        span.innerText = role;
+        rolesContainer.appendChild(span);
+      });
+
+      const container = document.getElementById('imageContainer');
+      container.innerHTML = `<img src="${key}.png" alt="${data.title}" />`;
+
+      const tbody = document.getElementById('stepsTableBody');
+      tbody.innerHTML = '';
+      
+      let stepCounter = 1;
+      data.steps.forEach(step => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="step-num">${stepCounter++}</td>
+          <td class="step-shape">${step[0]}</td>
+          <td>${step[1]}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const downloadLink = document.createElement("a");
+      downloadLink.href = `${activeKey}.png`;
+      downloadLink.download = `${activeKey}.png`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    });
+
+    document.getElementById('downloadDrawioBtn').addEventListener('click', () => {
+      const downloadLink = document.createElement("a");
+      downloadLink.href = `${activeKey}.drawio`;
+      downloadLink.download = `${activeKey}.drawio`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    });
+
+    loadDiagram(activeKey);
+  </script>
+</body>
+</html>

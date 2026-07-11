@@ -44,6 +44,7 @@
                             {{-- Gedung - DISABLED
                             <th>Gedung</th>
                             --}}
+                            <th style="width: 120px; text-align: center;">Tipe Paket</th>
                             <th style="width: 120px; text-align: center;">Durasi (Jam)</th>
                             <th style="width: 150px; text-align: right;">Harga Sewa</th>
                             <th style="width: 120px; text-align: center;">Status</th>
@@ -65,6 +66,13 @@
                                 <span class="badge bg-light text-dark border">{{ $paket->ruangan->gedung->nama_gedung ?? 'N/A' }}</span>
                             </td>
                             --}}
+                            <td style="text-align: center;">
+                                @if($paket->tipe_paket == 1)
+                                    <span class="badge bg-primary text-white" style="font-size: 12px; padding: 5px 10px;">Harian</span>
+                                @else
+                                    <span class="badge bg-info text-dark" style="font-size: 12px; padding: 5px 10px;">Per Jam</span>
+                                @endif
+                            </td>
                             <td style="text-align: center;">
                                 {{ $paket->durasi ? $paket->durasi . ' Jam' : 'Fleksibel' }}
                             </td>
@@ -218,8 +226,8 @@
             ordering: true,
             responsive: true,
             columnDefs: [
-                { orderable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 6] @endif },
-                { searchable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 6] @endif }
+                { orderable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 7] @endif },
+                { searchable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 7] @endif }
             ]
         });
     });

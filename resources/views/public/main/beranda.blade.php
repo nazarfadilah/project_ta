@@ -310,6 +310,62 @@
     </div>
   </section>
 
+  <!-- ===================== TESTIMONI ===================== -->
+  @if(isset($testimonials) && $testimonials->count() > 0)
+  <section class="section testimonials-section" style="background-color: #fcfbf7; padding: 80px 0;">
+    <div class="container">
+      <div class="text-center mb-5">
+        <span class="section-tag" style="color: #C9A961; font-weight: 700; text-transform: uppercase; font-size: 13px; letter-spacing: 2px;">Testimoni Tamu</span>
+        <h2 style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 36px; margin-top: 10px; color: #2d3748;">Ulasan Jujur Dari <span class="text-gold" style="color: #C9A961;">Pelanggan Kami</span></h2>
+        <p class="text-muted" style="max-width: 600px; margin: 15px auto 0;">Apa kata mereka yang telah menggunakan fasilitas ruangan dan akomodasi di Asrama Haji Emberkasi Landasan Ulin.</p>
+      </div>
+
+      <div class="row g-4 justify-content-center">
+        @foreach($testimonials as $testi)
+          @php
+            $guestName = $testi->transaksi->guest->name ?? 'Tamu Asrama Haji';
+            $guestPhoto = $testi->transaksi->guest->user->profile_photo ?? null;
+            $ruanganName = $testi->transaksi->paketRuangan->ruangan->nama_ruangan ?? 'Fasilitas';
+          @endphp
+          <div class="col-md-4 col-sm-6">
+            <div class="testimonial-card" style="background: white; border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); height: 100%; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease;">
+              <div>
+                <div class="stars mb-3" style="color: #ffc107; font-size: 14px;">
+                  @for($i = 1; $i <= 5; $i++)
+                    <i class="{{ $i <= $testi->rating ? 'fas' : 'far' }} fa-star"></i>
+                  @endfor
+                </div>
+                <p style="font-size: 14px; color: #4a5568; line-height: 1.6; font-style: italic; margin-bottom: 20px;">
+                  "{{ Str::limit($testi->komentar ?? 'Pelayanan sangat memuaskan, ruangan bersih dan nyaman untuk acara kami.', 150) }}"
+                </p>
+              </div>
+              <div class="d-flex align-items-center gap-3 pt-3 border-top">
+                @if($guestPhoto)
+                  <img src="{{ asset($guestPhoto) }}" alt="{{ $guestName }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #C9A961;">
+                @else
+                  <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px; background-color: #C9A961; font-weight: bold; font-size: 14px;">
+                    {{ strtoupper(substr($guestName, 0, 1)) }}
+                  </div>
+                @endif
+                <div>
+                  <h6 class="fw-bold mb-0 text-dark" style="font-size: 14px;">{{ $guestName }}</h6>
+                  <small class="text-muted" style="font-size: 11px;">Penyewa {{ $ruanganName }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    </div>
+  </section>
+  <style>
+    .testimonial-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(201, 169, 97, 0.1) !important;
+    }
+  </style>
+  @endif
+
   <!-- ===================== CTA BANNER ===================== -->
   <section class="cta-banner-section">
     <div class="cta-banner">

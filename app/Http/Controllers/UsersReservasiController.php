@@ -104,10 +104,7 @@ class UsersReservasiController extends Controller
         $paket = PaketRuangan::findOrFail($validated['paket_id']);
 
         // Deteksi apakah paket harian
-        $isHarian = false;
-        if ($paket->nama_paket && (stripos($paket->nama_paket, 'hari') !== false || stripos($paket->nama_paket, 'harian') !== false)) {
-            $isHarian = true;
-        }
+        $isHarian = (bool)$paket->tipe_paket;
 
         // Tentukan durasi transaksi
         if ($isHarian) {
@@ -141,7 +138,7 @@ class UsersReservasiController extends Controller
             ->get()
             ->filter(function ($item) use ($startDateTime, $endDateTime) {
                 $itemStart = Carbon::parse($item->jamMulai);
-                $itemIsHarian = ($item->paketRuangan && (stripos($item->paketRuangan->nama_paket, 'hari') !== false || stripos($item->paketRuangan->nama_paket, 'harian') !== false));
+                $itemIsHarian = ($item->paketRuangan && $item->paketRuangan->tipe_paket == 1);
                 if ($itemIsHarian) {
                     $itemEnd = $itemStart->copy()->addDays($item->durasi);
                 } else {
@@ -207,6 +204,25 @@ class UsersReservasiController extends Controller
             }
         }
 
+        // Send notification to Tamu
+        \App\Models\Notification::send(
+            $user->id,
+            'Peminjaman Diajukan',
+            'Pengajuan reservasi Anda untuk Ruangan ' . $ruangan->nama_ruangan . ' (Kode: ' . $peminjaman->kodePeminjaman . ') berhasil dikirim. Menunggu verifikasi petugas.',
+            $peminjaman->id
+        );
+
+        // Send notification to Admin & Petugas
+        $staffs = \App\Models\User::whereIn('roleId', [1, 3])->get();
+        foreach ($staffs as $staff) {
+            \App\Models\Notification::send(
+                $staff->id,
+                'Peminjaman Diajukan',
+                'Ada pengajuan reservasi baru dari ' . ($user->name ?? $user->username) . ' untuk Ruangan ' . $ruangan->nama_ruangan . ' (Kode: ' . $peminjaman->kodePeminjaman . ').',
+                $peminjaman->id
+            );
+        }
+
         return redirect()->route('users.main.reservasi.index')
                        ->with('success', 'Reservasi berhasil dibuat. Mohon tunggu persetujuan admin.');
     }
@@ -228,7 +244,7 @@ class UsersReservasiController extends Controller
         // $peminjamans = PeminjamanTransaksi::where('guestId', $guestId)->with(['paketRuangan.ruangan.gedung'])->orderBy('tanggal', 'desc')->get();
         // Code Baru:
         $peminjamans = PeminjamanTransaksi::where('guestId', $guestId)
-            ->with(['paketRuangan.ruangan'])
+            ->with(['paketRuangan.ruangan', 'review'])
             ->orderBy('tanggal', 'desc')
             ->get();
 
@@ -237,7 +253,7 @@ class UsersReservasiController extends Controller
             $item->id = $item->id;
             $item->ruangan = $item->paketRuangan->ruangan ?? new Ruangan();
             $item->tanggal_mulai = $item->tanggal;
-            $itemIsHarian = ($item->paketRuangan && (stripos($item->paketRuangan->nama_paket, 'hari') !== false || stripos($item->paketRuangan->nama_paket, 'harian') !== false));
+            $itemIsHarian = ($item->paketRuangan && $item->paketRuangan->tipe_paket == 1);
             if ($itemIsHarian) {
                 $item->tanggal_selesai = Carbon::parse($item->jamMulai)->addDays($item->durasi)->format('Y-m-d');
             } else {
@@ -281,7 +297,7 @@ class UsersReservasiController extends Controller
         $reservasi = $peminjaman;
         $reservasi->ruangan = $peminjaman->paketRuangan->ruangan ?? new Ruangan();
         $reservasi->tanggal_mulai = $peminjaman->tanggal;
-        $pjmIsHarian = ($peminjaman->paketRuangan && (stripos($peminjaman->paketRuangan->nama_paket, 'hari') !== false || stripos($peminjaman->paketRuangan->nama_paket, 'harian') !== false));
+        $pjmIsHarian = ($peminjaman->paketRuangan && $peminjaman->paketRuangan->tipe_paket == 1);
         if ($pjmIsHarian) {
             $reservasi->tanggal_selesai = Carbon::parse($peminjaman->jamMulai)->addDays($peminjaman->durasi)->format('Y-m-d');
         } else {
@@ -329,6 +345,25 @@ class UsersReservasiController extends Controller
             'statusPeminjaman' => 'BATAL',
             'alasan_pembatalan' => $validated['alasan_pembatalan'] ?? null,
         ]);
+
+        // Send notification to Tamu
+        \App\Models\Notification::send(
+            $user->id,
+            'Peminjaman Dibatalkan',
+            'Anda telah membatalkan reservasi untuk Ruangan ' . ($peminjaman->paketRuangan->ruangan->nama_ruangan ?? 'Ruangan') . ' (Kode: ' . $peminjaman->kodePeminjaman . ').',
+            $peminjaman->id
+        );
+
+        // Send notification to Admin & Petugas
+        $staffs = \App\Models\User::whereIn('roleId', [1, 3])->get();
+        foreach ($staffs as $staff) {
+            \App\Models\Notification::send(
+                $staff->id,
+                'Peminjaman Dibatalkan',
+                'Pengguna ' . ($user->name ?? $user->username) . ' telah membatalkan reservasi untuk Ruangan ' . ($peminjaman->paketRuangan->ruangan->nama_ruangan ?? 'Ruangan') . ' (Kode: ' . $peminjaman->kodePeminjaman . '). Alasan: ' . ($validated['alasan_pembatalan'] ?? '-'),
+                $peminjaman->id
+            );
+        }
 
         return redirect()->route('users.main.reservasi.index')->with('success', 'Reservasi berhasil dibatalkan.');
     }

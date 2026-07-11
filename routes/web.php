@@ -75,6 +75,15 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 Route::post('/logout', [AuthController::class, 'logoutUser'])->name('logout')->middleware('auth:web');
 Route::post('/admin/logout', [AuthController::class, 'logoutUser'])->name('admin.logout')->middleware('auth:web');
 
+Route::middleware(['auth:web'])->group(function () {
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [App\Http\Controllers\NotificationController::class, 'index'])->name('index');
+        Route::get('/unread-json', [App\Http\Controllers\NotificationController::class, 'getUnreadJson'])->name('unread.json');
+        Route::post('/{id}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('read');
+        Route::post('/read-all', [App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('read.all');
+    });
+});
+
 // ─── ADMIN ROUTES ────────────────────────────────────────────────
 Route::middleware(['auth:web', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'adminIndex'])->name('admin.dashboard');
@@ -161,6 +170,7 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->group(function () {
         Route::get('/', [RuanganController::class, 'index'])->name('index');
         Route::get('/create', [RuanganController::class, 'create'])->name('create');
         Route::post('/', [RuanganController::class, 'store'])->name('store');
+        Route::get('/{id}/ulasan', [RuanganController::class, 'allReviews'])->name('ulasan');
         Route::get('/{id}', [RuanganController::class, 'show'])->name('show');
         Route::get('/{id}/edit', [RuanganController::class, 'edit'])->name('edit');
         Route::put('/{id}', [RuanganController::class, 'update'])->name('update');
@@ -271,6 +281,7 @@ Route::middleware(['auth:web', 'tamu'])->prefix('users')->name('users.')->group(
             Route::get('/', [UsersRuanganController::class, 'index'])->name('index');
             Route::get('/ketersediaan', [UsersRuanganController::class, 'ketersediaan'])->name('ketersediaan');
             Route::get('/{id}/details', [UsersRuanganController::class, 'getDetails'])->name('details');
+            Route::get('/{id}/ulasan', [UsersRuanganController::class, 'allReviews'])->name('ulasan');
             Route::get('/{slug}', [UsersRuanganController::class, 'show'])->name('show');
         });
         // Gedung routes (view-only) - DISABLED
@@ -297,6 +308,12 @@ Route::middleware(['auth:web', 'tamu'])->prefix('users')->name('users.')->group(
         // Invoice routes
         Route::prefix('invoice')->name('invoice.')->group(function () {
             Route::get('/{peminjaman_id}', [UsersInvoiceController::class, 'index'])->name('index');
+        });
+
+        // Reviews
+        Route::prefix('review')->name('review.')->group(function () {
+            Route::get('/create/{transaksi_id}', [App\Http\Controllers\ReviewController::class, 'create'])->name('create');
+            Route::post('/', [App\Http\Controllers\ReviewController::class, 'store'])->name('store');
         });
     });
 });

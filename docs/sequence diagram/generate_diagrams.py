@@ -5,10 +5,10 @@ from PIL import Image, ImageDraw, ImageFont
 # Define the sequence diagrams data
 # Group A: "Kelola Data" CRUD diagrams
 kelola_templates = {
-    "2_kelola_pengguna": {
-        "title": "2. Kelola Pengguna (User Management)",
-        "description": "Pengelolaan data pengguna sistem (Admin memiliki akses penuh, Pimpinan & Petugas diblokir).",
-        "actor": "Admin",
+    "3_kelola_pengguna": {
+        "title": "3. Kelola Pengguna (User Management)",
+        "description": "Pengelolaan data pengguna oleh Aktor (tambah, lihat, ubah, hapus).",
+        "actor": "Aktor",
         "menu": "Pengguna",
         "submenu": "Manajemen",
         "halaman": "Halaman Manajemen Pengguna",
@@ -16,90 +16,12 @@ kelola_templates = {
         "model": "User Model",
         "data_singular": "pengguna",
         "data_plural": "pengguna",
-        "roles": ["Admin"]
+        "roles": ["Aktor"]
     },
-    "3_kelola_tamu": {
-        "title": "3. Kelola Tamu (Guest Management)",
-        "description": "Pengelolaan data tamu (Guest) penyewa (Admin kelola penuh, Pimpinan read-only, Petugas diblokir).",
-        "actor": "Admin",
-        "menu": "Tamu",
-        "submenu": "Manajemen",
-        "halaman": "Halaman Manajemen Tamu",
-        "controller": "Tamu Controller",
-        "model": "Tamu Model",
-        "data_singular": "tamu",
-        "data_plural": "tamu",
-        "roles": ["Admin", "Pimpinan"]
-    },
-    "4_kelola_gedung": {
-        "title": "4. Kelola Gedung",
-        "description": "Pengelolaan master data gedung (Admin kelola penuh, Pimpinan read-only, Petugas diblokir).",
-        "actor": "Admin",
-        "menu": "Gedung",
-        "submenu": "Manajemen",
-        "halaman": "Halaman Manajemen Gedung",
-        "controller": "Gedung Controller",
-        "model": "Gedung Model",
-        "data_singular": "gedung",
-        "data_plural": "gedung",
-        "roles": ["Admin", "Pimpinan"]
-    },
-    "5_kelola_ruangan": {
-        "title": "5. Kelola Ruangan",
-        "description": "Pengelolaan master data ruangan (Petugas kelola penuh, Pimpinan read-only, Admin diblokir).",
-        "actor": "Petugas",
-        "menu": "Ruangan",
-        "submenu": "Manajemen",
-        "halaman": "Halaman Manajemen Ruangan",
-        "controller": "Ruangan Controller",
-        "model": "Ruangan Model",
-        "data_singular": "ruangan",
-        "data_plural": "ruangan",
-        "roles": ["Petugas", "Pimpinan"]
-    },
-    "6_kelola_sarana": {
-        "title": "6. Kelola Sarana & Prasarana",
-        "description": "Pengelolaan master data sarana (Petugas kelola penuh, Pimpinan read-only, Admin diblokir).",
-        "actor": "Petugas",
-        "menu": "Sarana",
-        "submenu": "Manajemen",
-        "halaman": "Halaman Manajemen Sarana",
-        "controller": "Sarana Controller",
-        "model": "Sarana Model",
-        "data_singular": "sarana",
-        "data_plural": "sarana",
-        "roles": ["Petugas", "Pimpinan"]
-    },
-    "7_kelola_paket_ruangan": {
-        "title": "7. Kelola Paket Ruangan",
-        "description": "Pengelolaan paket sewa dan durasi sewa ruangan (Petugas kelola penuh, Pimpinan read-only, Admin diblokir).",
-        "actor": "Petugas",
-        "menu": "Paket",
-        "submenu": "Manajemen",
-        "halaman": "Halaman Manajemen Paket",
-        "controller": "Paket Controller",
-        "model": "Paket Model",
-        "data_singular": "paket",
-        "data_plural": "paket",
-        "roles": ["Petugas", "Pimpinan"]
-    },
-    "14_kelola_berita": {
-        "title": "14. Kelola Berita",
-        "description": "Penyusunan berita oleh Petugas (sebagai draft) dan penerbitan oleh Admin.",
-        "actor": "Petugas",
-        "menu": "Berita",
-        "submenu": "Manajemen",
-        "halaman": "Halaman Manajemen Berita",
-        "controller": "Berita Controller",
-        "model": "Berita Model",
-        "data_singular": "berita",
-        "data_plural": "berita",
-        "roles": ["Petugas", "Admin"]
-    },
-    "15_kelola_landing_page": {
-        "title": "15. Kelola Landing Page",
-        "description": "Pengaturan informasi profil, FAQ, dan galeri web publik (Hanya untuk Admin).",
-        "actor": "Admin",
+    "4_kelola_landing_page": {
+        "title": "4. Kelola Landing Page",
+        "description": "Pengelolaan slider galeri, Frequently Asked Questions (FAQ), dan landing page oleh Aktor.",
+        "actor": "Aktor",
         "menu": "Landing Page",
         "submenu": "Manajemen",
         "halaman": "Halaman Manajemen Landing Page",
@@ -107,7 +29,85 @@ kelola_templates = {
         "model": "Landing Page Model",
         "data_singular": "landing page",
         "data_plural": "landing page",
-        "roles": ["Admin"]
+        "roles": ["Aktor"]
+    },
+    "5_kelola_tamu": {
+        "title": "5. Kelola Tamu (Guest Management)",
+        "description": "Pengelolaan data profil tamu oleh Aktor.",
+        "actor": "Aktor",
+        "menu": "Tamu",
+        "submenu": "Manajemen",
+        "halaman": "Halaman Manajemen Tamu",
+        "controller": "Tamu Controller",
+        "model": "Tamu Model",
+        "data_singular": "tamu",
+        "data_plural": "tamu",
+        "roles": ["Aktor"]
+    },
+    "6_kelola_ulasan": {
+        "title": "6. Kelola Ulasan Ruangan",
+        "description": "Pengelolaan ulasan dan testimoni tentang ruangan oleh Aktor.",
+        "actor": "Aktor",
+        "menu": "Ulasan",
+        "submenu": "Manajemen",
+        "halaman": "Halaman Manajemen Ulasan",
+        "controller": "Ulasan Controller",
+        "model": "Ulasan Model",
+        "data_singular": "ulasan",
+        "data_plural": "ulasan",
+        "roles": ["Aktor"]
+    },
+    "7_kelola_ruangan": {
+        "title": "7. Kelola Ruangan",
+        "description": "Pengelolaan master data ruangan oleh Aktor (kapasitas, fasilitas, tarif).",
+        "actor": "Aktor",
+        "menu": "Ruangan",
+        "submenu": "Manajemen",
+        "halaman": "Halaman Manajemen Ruangan",
+        "controller": "Ruangan Controller",
+        "model": "Ruangan Model",
+        "data_singular": "ruangan",
+        "data_plural": "ruangan",
+        "roles": ["Aktor"]
+    },
+    "8_kelola_sarana": {
+        "title": "8. Kelola Sarana & Prasarana",
+        "description": "Pengelolaan data sarana pendukung sewa oleh Aktor.",
+        "actor": "Aktor",
+        "menu": "Sarana",
+        "submenu": "Manajemen",
+        "halaman": "Halaman Manajemen Sarana",
+        "controller": "Sarana Controller",
+        "model": "Sarana Model",
+        "data_singular": "sarana",
+        "data_plural": "sarana",
+        "roles": ["Aktor"]
+    },
+    "9_kelola_paket": {
+        "title": "9. Kelola Paket Ruangan",
+        "description": "Pengelolaan paket bundling ruangan dan sarana beserta tarif oleh Aktor.",
+        "actor": "Aktor",
+        "menu": "Paket",
+        "submenu": "Manajemen",
+        "halaman": "Halaman Manajemen Paket",
+        "controller": "Paket Controller",
+        "model": "Paket Model",
+        "data_singular": "paket",
+        "data_plural": "paket",
+        "roles": ["Aktor"]
+    },
+    "18_kelola_berita": {
+        "title": "18. Kelola Berita",
+        "description": "Pengelolaan data berita (tulis draf pengumuman/berita) oleh Aktor.",
+        "actor": "Aktor",
+        "menu": "Berita",
+        "submenu": "Manajemen",
+        "halaman": "Halaman Manajemen Berita",
+        "controller": "Berita Controller",
+        "model": "Berita Model",
+        "data_singular": "berita",
+        "data_plural": "berita",
+        "roles": ["Aktor"]
     }
 }
 
@@ -153,231 +153,291 @@ for key, tmpl in kelola_templates.items():
     }
 
 # Group B: Custom flow diagrams
-diagrams["1_autentikasi"] = {
-    "title": "1. Autentikasi (Login & Logout)",
+diagrams["1_login_sistem"] = {
+    "title": "1. Login Sistem",
     "description": "Alur masuk (login) dan keluar (logout) sistem untuk seluruh pengguna.",
-    "roles": ["Admin", "Petugas", "Pimpinan", "Guest"],
+    "roles": ["Aktor"],
     "participants": [
-        {"name": "Actor", "type": "actor"},
-        {"name": "Halaman Autentikasi", "type": "boundary"},
+        {"name": "Aktor", "type": "actor"},
+        {"name": "Halaman Login", "type": "boundary"},
         {"name": "Auth Controller", "type": "control"},
         {"name": "User Model", "type": "entity"}
     ],
     "steps": [
-        ("msg", "Actor", "Halaman Autentikasi", "1: Input username & password, klik Login", "call"),
-        ("msg", "Halaman Autentikasi", "Auth Controller", "1.1: Kirim data login (POST)", "call"),
-        ("msg", "Auth Controller", "User Model", "1.1.1: Cari user berdasarkan email/username", "call"),
+        ("msg", "Aktor", "Halaman Login", "1: Input email & password, klik Login", "call"),
+        ("msg", "Halaman Login", "Auth Controller", "1.1: Kirim data login (POST)", "call"),
+        ("msg", "Auth Controller", "User Model", "1.1.1: Cari user berdasarkan email", "call"),
         ("msg", "User Model", "Auth Controller", "1.1.2: Kembalikan data user & password hash", "reply"),
         ("self", "Auth Controller", "1.1.3: Verifikasi password & session"),
         ("alt_start", "Password Valid"),
-        ("msg", "Auth Controller", "Halaman Autentikasi", "1.1.4: Redirect ke Dashboard (Session Aktif)", "reply"),
+        ("msg", "Auth Controller", "Halaman Login", "1.1.4: Redirect ke Dashboard", "reply"),
         ("alt_else", "Password Salah"),
-        ("msg", "Auth Controller", "Halaman Autentikasi", "1.1.5: Kembalikan pesan error (401)", "reply"),
+        ("msg", "Auth Controller", "Halaman Login", "1.1.5: Tampilkan notifikasi error", "reply"),
         ("alt_end",),
-        ("msg", "Actor", "Halaman Autentikasi", "2: Klik Logout", "call"),
-        ("msg", "Halaman Autentikasi", "Auth Controller", "2.1: Request logout (POST)", "call"),
-        ("msg", "Auth Controller", "Halaman Autentikasi", "2.2: Destroy session, redirect ke Login", "reply")
+        ("msg", "Aktor", "Halaman Login", "2: Klik Logout", "call"),
+        ("msg", "Halaman Login", "Auth Controller", "2.1: Request logout (POST)", "call"),
+        ("msg", "Auth Controller", "Halaman Login", "2.2: Destroy session, redirect ke Login", "reply")
     ]
 }
 
-diagrams["8_pengajuan_peminjaman"] = {
-    "title": "8. Pengajuan Peminjaman (Reservasi)",
-    "description": "Alur pengajuan sewa ruangan dan sarana pendukung oleh Guest (Peminjam).",
-    "roles": ["Guest"],
+diagrams["2_registrasi_akun"] = {
+    "title": "2. Registrasi Akun",
+    "description": "Alur registrasi akun baru oleh Aktor beserta pengiriman kode verifikasi ke email.",
+    "roles": ["Aktor"],
     "participants": [
-        {"name": "Actor (Peminjam)", "type": "actor"},
-        {"name": "Halaman Pengajuan", "type": "boundary"},
-        {"name": "Peminjaman Controller", "type": "control"},
-        {"name": "Peminjaman Model", "type": "entity"}
+        {"name": "Aktor", "type": "actor"},
+        {"name": "Halaman Registrasi", "type": "boundary"},
+        {"name": "Auth Controller", "type": "control"},
+        {"name": "User Model", "type": "entity"},
+        {"name": "Halaman Verifikasi", "type": "boundary"}
     ],
     "steps": [
-        ("msg", "Actor (Peminjam)", "Halaman Pengajuan", "1: Isi Form Permohonan Peminjaman", "call"),
-        ("msg", "Halaman Pengajuan", "Peminjaman Controller", "1.1: Kirim Permohonan Peminjaman (POST)", "call"),
-        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.1: Cek ketersediaan Ruangan & Sarana", "call"),
-        ("msg", "Peminjaman Model", "Peminjaman Controller", "1.1.2: Return status ketersediaan", "reply"),
-        ("alt_start", "Fasilitas Tersedia"),
-        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.3: Simpan data peminjaman (status=PENDING)", "call"),
-        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.4: Simpan detail sarana yang dipinjam", "call"),
-        ("msg", "Peminjaman Model", "Peminjaman Controller", "1.1.5: Success", "reply"),
-        ("msg", "Peminjaman Controller", "Halaman Pengajuan", "1.1.6: Tampilkan sukses (Menunggu Verifikasi)", "reply"),
-        ("alt_else", "Fasilitas Terbooking / Stok Habis"),
-        ("msg", "Peminjaman Controller", "Halaman Pengajuan", "1.1.7: Tampilkan pesan error ketersediaan", "reply"),
+        ("msg", "Aktor", "Halaman Registrasi", "1: Isi form registrasi & klik Register", "call"),
+        ("msg", "Halaman Registrasi", "Auth Controller", "1.1: POST /register", "call"),
+        ("self", "Auth Controller", "1.1.1: Validasi data input"),
+        ("alt_start", "Validasi Sukses"),
+        ("msg", "Auth Controller", "User Model", "1.1.2: Simpan user baru (status=INACTIVE)", "call"),
+        ("self", "Auth Controller", "1.1.3: Kirim kode verifikasi ke email"),
+        ("msg", "Auth Controller", "Halaman Verifikasi", "1.1.4: Redirect ke Halaman Verifikasi Email", "reply"),
+        ("msg", "Aktor", "Halaman Verifikasi", "2: Input kode OTP & klik Verifikasi", "call"),
+        ("msg", "Halaman Verifikasi", "Auth Controller", "2.1: POST /verify", "call"),
+        ("self", "Auth Controller", "2.1.1: Validasi OTP"),
+        ("alt_start", "OTP Benar"),
+        ("msg", "Auth Controller", "User Model", "2.1.2: Update status user=ACTIVE", "call"),
+        ("msg", "Auth Controller", "Halaman Verifikasi", "2.1.3: Redirect ke Login dengan sukses", "reply"),
+        ("alt_else", "OTP Salah"),
+        ("msg", "Auth Controller", "Halaman Verifikasi", "2.1.4: Tampilkan error OTP tidak valid", "reply"),
+        ("alt_end",),
+        ("alt_else", "Validasi Gagal"),
+        ("msg", "Auth Controller", "Halaman Registrasi", "1.1.5: Tampilkan error validasi", "reply"),
         ("alt_end",)
     ]
 }
 
-diagrams["9_batalkan_peminjaman"] = {
-    "title": "9. Batalkan Peminjaman",
-    "description": "Alur pembatalan pengajuan peminjaman sewa ruangan/sarana oleh Tamu sebelum check-in.",
-    "roles": ["Guest"],
+diagrams["10_kelola_profil"] = {
+    "title": "10. Kelola Profil",
+    "description": "Pembaruan informasi data diri dan password oleh Aktor.",
+    "roles": ["Aktor"],
     "participants": [
-        {"name": "Actor (Peminjam)", "type": "actor"},
-        {"name": "Halaman Detail Peminjaman", "type": "boundary"},
-        {"name": "Peminjaman Controller", "type": "control"},
-        {"name": "Peminjaman Model", "type": "entity"},
-        {"name": "Invoice Model", "type": "entity"}
+        {"name": "Aktor", "type": "actor"},
+        {"name": "Halaman Profil", "type": "boundary"},
+        {"name": "Profil Controller", "type": "control"},
+        {"name": "User Model", "type": "entity"}
     ],
     "steps": [
-        ("msg", "Actor (Peminjam)", "Halaman Detail Peminjaman", "1: Klik tombol Batalkan Peminjaman", "call"),
-        ("self", "Halaman Detail Peminjaman", "1.1: Tampilkan pop-up konfirmasi pembatalan"),
-        ("msg", "Actor (Peminjam)", "Halaman Detail Peminjaman", "2: Konfirmasi pembatalan (Klik Ya)", "call"),
-        ("msg", "Halaman Detail Peminjaman", "Peminjaman Controller", "2.1: POST /users/main/reservasi/{id}/batal", "call"),
-        ("msg", "Peminjaman Controller", "Peminjaman Model", "2.1.1: Update statusPeminjaman=BATAL & statusApproval=REJECTED", "call"),
-        ("msg", "Peminjaman Controller", "Invoice Model", "2.1.2: Update statusInvoice=CANCELLED", "call"),
-        ("msg", "Peminjaman Model", "Peminjaman Controller", "2.1.3: Success", "reply"),
-        ("msg", "Peminjaman Controller", "Halaman Detail Peminjaman", "2.1.4: Redirect ke daftar reservasi dengan pesan sukses", "reply")
-    ]
-}
-
-diagrams["10_verifikasi_approval"] = {
-    "title": "10. Verifikasi & Approval Peminjaman",
-    "description": "Proses persetujuan atau penolakan pengajuan sewa oleh Admin atau Petugas.",
-    "roles": ["Admin", "Petugas", "Pimpinan (View-only)"],
-    "participants": [
-        {"name": "Actor", "type": "actor"},
-        {"name": "Halaman Detail Peminjaman", "type": "boundary"},
-        {"name": "Approval Controller", "type": "control"},
-        {"name": "Peminjaman Model", "type": "entity"}
-    ],
-    "steps": [
-        ("msg", "Actor", "Halaman Detail Peminjaman", "1: Buka detail peminjaman pending", "call"),
-        ("msg", "Halaman Detail Peminjaman", "Approval Controller", "1.1: GET /admin/transaksi/peminjaman/{id}", "call"),
-        ("msg", "Approval Controller", "Peminjaman Model", "1.1.1: Get peminjaman & detail sarana", "call"),
-        ("msg", "Peminjaman Model", "Approval Controller", "1.1.2: Return data", "reply"),
-        ("msg", "Approval Controller", "Halaman Detail Peminjaman", "1.1.3: Tampilkan detail peminjaman", "reply"),
-        ("alt_start", "Role == Pimpinan"),
-        ("self", "Halaman Detail Peminjaman", "1.1.4: Sembunyikan tombol Setujui/Tolak"),
-        ("alt_else", "Role == Admin atau Petugas"),
-        ("msg", "Actor", "Halaman Detail Peminjaman", "2: Klik tombol Setujui", "call"),
-        ("msg", "Halaman Detail Peminjaman", "Approval Controller", "2.1: POST /admin/transaksi/peminjaman/{id}/approve", "call"),
-        ("msg", "Approval Controller", "Peminjaman Model", "2.1.1: Update statusApproval=APPROVED & set tglApproval", "call"),
-        ("msg", "Approval Controller", "Peminjaman Model", "2.1.2: Auto-generate Invoice record (status=UNPAID)", "call"),
-        ("msg", "Peminjaman Model", "Approval Controller", "2.1.3: Success", "reply"),
-        ("msg", "Approval Controller", "Halaman Detail Peminjaman", "2.1.4: Redirect & tampilkan status APPROVED", "reply"),
+        ("msg", "Aktor", "Halaman Profil", "1: Membuka Halaman Profil Saya", "call"),
+        ("msg", "Halaman Profil", "Profil Controller", "1.1: GET /users/profil", "call"),
+        ("msg", "Profil Controller", "User Model", "1.1.1: Query data user login", "call"),
+        ("msg", "User Model", "Profil Controller", "1.1.2: Return data user", "reply"),
+        ("msg", "Profil Controller", "Halaman Profil", "1.1.3: Tampilkan Halaman Profil dengan form edit", "reply"),
+        ("msg", "Aktor", "Halaman Profil", "2: Mengubah data profil & Klik Simpan", "call"),
+        ("msg", "Halaman Profil", "Profil Controller", "2.1: PUT /users/profil", "call"),
+        ("self", "Profil Controller", "2.1.1: Validasi data diri"),
+        ("alt_start", "Validasi Berhasil"),
+        ("msg", "Profil Controller", "User Model", "2.1.2: Update data user & password", "call"),
+        ("msg", "User Model", "Profil Controller", "2.1.3: Success", "reply"),
+        ("msg", "Profil Controller", "Halaman Profil", "2.1.4: Tampilkan pesan sukses update", "reply"),
+        ("alt_else", "Validasi Gagal"),
+        ("msg", "Profil Controller", "Halaman Profil", "2.1.5: Tampilkan pesan error validasi", "reply"),
         ("alt_end",)
     ]
 }
 
-diagrams["11_proses_checkin"] = {
-    "title": "11. Proses Check-In",
-    "description": "Pemberian check-in tamu pada hari H oleh petugas atau admin.",
-    "roles": ["Petugas", "Admin"],
+diagrams["11_kelola_invoice"] = {
+    "title": "11. Kelola & Cetak Invoice",
+    "description": "Pengelolaan data invoice transaksi peminjaman oleh Aktor (update status lunas/unpaid).",
+    "roles": ["Aktor"],
     "participants": [
-        {"name": "Actor (Petugas)", "type": "actor"},
-        {"name": "Halaman Transaksi", "type": "boundary"},
-        {"name": "Peminjaman Controller", "type": "control"},
-        {"name": "Peminjaman Model", "type": "entity"}
-    ],
-    "steps": [
-        ("msg", "Actor (Petugas)", "Halaman Transaksi", "1: Klik tombol Proses Check-In", "call"),
-        ("msg", "Halaman Transaksi", "Peminjaman Controller", "1.1: POST /admin/transaksi/peminjaman/{id}/check-in", "call"),
-        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.1: Update statusPeminjaman=CHECK_IN, checkIn=now()", "call"),
-        ("msg", "Peminjaman Model", "Peminjaman Controller", "1.1.2: Success", "reply"),
-        ("msg", "Peminjaman Controller", "Halaman Transaksi", "1.1.3: Refresh page & status menjadi CHECK_IN", "reply")
-    ]
-}
-
-diagrams["12_proses_checkout"] = {
-    "title": "12. Proses Check-Out",
-    "description": "Proses check-out saat masa sewa berakhir, pencatatan kerusakan/denda.",
-    "roles": ["Petugas", "Admin"],
-    "participants": [
-        {"name": "Actor (Petugas)", "type": "actor"},
-        {"name": "Halaman Transaksi", "type": "boundary"},
-        {"name": "Peminjaman Controller", "type": "control"},
-        {"name": "Peminjaman Model", "type": "entity"}
-    ],
-    "steps": [
-        ("msg", "Actor (Petugas)", "Halaman Transaksi", "1: Klik Check-Out & isi form kerusakan", "call"),
-        ("msg", "Halaman Transaksi", "Peminjaman Controller", "1.1: POST /admin/transaksi/peminjaman/{id}/check-out", "call"),
-        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.1: Update statusPeminjaman=SELESAI, checkOut=now()", "call"),
-        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.2: Simpan kondisiReturn, denda, & biayaTambahan", "call"),
-        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.3: Update Invoice (tambah biaya denda ke totalHarga)", "call"),
-        ("msg", "Peminjaman Model", "Peminjaman Controller", "1.1.4: Success", "reply"),
-        ("msg", "Peminjaman Controller", "Halaman Transaksi", "1.1.5: Redirect & status menjadi SELESAI", "reply")
-    ]
-}
-
-diagrams["13_kelola_invoice"] = {
-    "title": "13. Kelola & Cetak Invoice",
-    "description": "Pembuatan invoice tagihan sewa dan update status pembayaran oleh Admin.",
-    "roles": ["Admin"],
-    "participants": [
-        {"name": "Actor", "type": "actor"},
+        {"name": "Aktor", "type": "actor"},
         {"name": "Halaman Detail Invoice", "type": "boundary"},
         {"name": "Invoice Controller", "type": "control"},
         {"name": "Invoice Model", "type": "entity"}
     ],
     "steps": [
-        ("msg", "Actor", "Halaman Detail Invoice", "1: Buka halaman kelola invoice", "call"),
+        ("msg", "Aktor", "Halaman Detail Invoice", "1: Buka halaman detail invoice", "call"),
         ("msg", "Halaman Detail Invoice", "Invoice Controller", "1.1: GET /admin/transaksi/invoice/{id}", "call"),
         ("msg", "Invoice Controller", "Invoice Model", "1.1.1: Get invoice & peminjaman details", "call"),
         ("msg", "Invoice Model", "Invoice Controller", "1.1.2: Return data", "reply"),
-        ("msg", "Invoice Controller", "Halaman Detail Invoice", "1.1.3: Tampilkan Invoice Detail", "reply"),
-        ("msg", "Actor", "Halaman Detail Invoice", "2: Konfirmasi Pembayaran Lunas", "call"),
+        ("msg", "Invoice Controller", "Halaman Detail Invoice", "1.1.3: Tampilkan detail invoice", "reply"),
+        ("msg", "Aktor", "Halaman Detail Invoice", "2: Konfirmasi Pembayaran Lunas", "call"),
         ("msg", "Halaman Detail Invoice", "Invoice Controller", "2.1: POST /admin/transaksi/invoice/{id}/pay", "call"),
-        ("alt_start", "Role == Pimpinan"),
-        ("msg", "Invoice Controller", "Halaman Detail Invoice", "2.1.1: 403 Forbidden (Blocked)", "reply"),
-        ("alt_else", "Role == Admin"),
+        ("self", "Invoice Controller", "2.1.1: Validasi status pembayaran"),
+        ("alt_start", "Valid"),
         ("msg", "Invoice Controller", "Invoice Model", "2.1.2: Update statusInvoice=PAID, status_pembayaran=LUNAS", "call"),
         ("msg", "Invoice Model", "Invoice Controller", "2.1.3: Success", "reply"),
-        ("msg", "Invoice Controller", "Halaman Detail Invoice", "2.1.4: Tampilkan status PAID", "reply"),
+        ("msg", "Invoice Controller", "Halaman Detail Invoice", "2.1.4: Tampilkan status PAID & Cetak Kuitansi", "reply"),
+        ("alt_else", "Tidak Valid"),
+        ("msg", "Invoice Controller", "Halaman Detail Invoice", "2.1.5: Tampilkan pesan kesalahan", "reply"),
         ("alt_end",)
     ]
 }
 
-diagrams["16_cetak_laporan"] = {
-    "title": "16. Cetak Laporan",
-    "description": "Cetak dan ekspor laporan peminjaman & penggunaan fasilitas (Admin & Pimpinan).",
-    "roles": ["Admin", "Pimpinan"],
+diagrams["12_checkin"] = {
+    "title": "12. Proses Check-In Peminjaman",
+    "description": "Proses check-in peminjam pada hari H penggunaan fasilitas oleh Aktor.",
+    "roles": ["Aktor"],
     "participants": [
-        {"name": "Actor", "type": "actor"},
+        {"name": "Aktor", "type": "actor"},
+        {"name": "Halaman Transaksi", "type": "boundary"},
+        {"name": "Peminjaman Controller", "type": "control"},
+        {"name": "Peminjaman Model", "type": "entity"}
+    ],
+    "steps": [
+        ("msg", "Aktor", "Halaman Transaksi", "1: Klik tombol Proses Check-In", "call"),
+        ("msg", "Halaman Transaksi", "Peminjaman Controller", "1.1: POST /admin/transaksi/peminjaman/{id}/check-in", "call"),
+        ("self", "Peminjaman Controller", "1.1.1: Validasi tanggal hari H"),
+        ("alt_start", "Valid"),
+        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.2: Update statusPeminjaman=CHECK_IN, checkIn=now()", "call"),
+        ("msg", "Peminjaman Model", "Peminjaman Controller", "1.1.3: Success", "reply"),
+        ("msg", "Peminjaman Controller", "Halaman Transaksi", "1.1.4: Tampilkan status CHECK_IN", "reply"),
+        ("alt_else", "Tidak Valid"),
+        ("msg", "Peminjaman Controller", "Halaman Transaksi", "1.1.5: Tampilkan peringatan belum hari H", "reply"),
+        ("alt_end",)
+    ]
+}
+
+diagrams["13_checkout"] = {
+    "title": "13. Proses Check-Out Peminjaman",
+    "description": "Proses check-out peminjam setelah pemakaian fasilitas berakhir oleh Aktor.",
+    "roles": ["Aktor"],
+    "participants": [
+        {"name": "Aktor", "type": "actor"},
+        {"name": "Halaman Transaksi", "type": "boundary"},
+        {"name": "Peminjaman Controller", "type": "control"},
+        {"name": "Peminjaman Model", "type": "entity"}
+    ],
+    "steps": [
+        ("msg", "Aktor", "Halaman Transaksi", "1: Klik Check-Out & isi form kerusakan", "call"),
+        ("msg", "Halaman Transaksi", "Peminjaman Controller", "1.1: POST /admin/transaksi/peminjaman/{id}/check-out", "call"),
+        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.1: Update statusPeminjaman=SELESAI, checkOut=now()", "call"),
+        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.2: Simpan kondisiReturn, denda, & biayaTambahan", "call"),
+        ("msg", "Peminjaman Model", "Peminjaman Controller", "1.1.3: Success", "reply"),
+        ("msg", "Peminjaman Controller", "Halaman Transaksi", "1.1.4: Redirect & status menjadi SELESAI", "reply")
+    ]
+}
+
+diagrams["14_verifikasi_peminjaman"] = {
+    "title": "14. Verifikasi & Approval Peminjaman",
+    "description": "Verifikasi dan persetujuan pengajuan reservasi masuk oleh Aktor.",
+    "roles": ["Aktor"],
+    "participants": [
+        {"name": "Aktor", "type": "actor"},
+        {"name": "Halaman Detail Peminjaman", "type": "boundary"},
+        {"name": "Approval Controller", "type": "control"},
+        {"name": "Peminjaman Model", "type": "entity"}
+    ],
+    "steps": [
+        ("msg", "Aktor", "Halaman Detail Peminjaman", "1: Buka detail peminjaman pending", "call"),
+        ("msg", "Halaman Detail Peminjaman", "Approval Controller", "1.1: GET /admin/transaksi/peminjaman/{id}", "call"),
+        ("msg", "Approval Controller", "Peminjaman Model", "1.1.1: Get peminjaman & detail berkas", "call"),
+        ("msg", "Peminjaman Model", "Approval Controller", "1.1.2: Return data", "reply"),
+        ("msg", "Approval Controller", "Halaman Detail Peminjaman", "1.1.3: Tampilkan detail peminjaman", "reply"),
+        ("alt_start", "Setujui"),
+        ("msg", "Aktor", "Halaman Detail Peminjaman", "2: Klik tombol Setujui", "call"),
+        ("msg", "Halaman Detail Peminjaman", "Approval Controller", "2.1: POST /admin/transaksi/peminjaman/{id}/approve", "call"),
+        ("msg", "Approval Controller", "Peminjaman Model", "2.1.1: Update statusApproval=APPROVED & set tglApproval", "call"),
+        ("msg", "Approval Controller", "Peminjaman Model", "2.1.2: Auto-generate Invoice record (status=UNPAID)", "call"),
+        ("msg", "Peminjaman Model", "Approval Controller", "2.1.3: Success", "reply"),
+        ("msg", "Approval Controller", "Halaman Detail Peminjaman", "2.1.4: Tampilkan status APPROVED", "reply"),
+        ("alt_else", "Tolak"),
+        ("msg", "Aktor", "Halaman Detail Peminjaman", "3: Klik tombol Tolak & input alasan", "call"),
+        ("msg", "Halaman Detail Peminjaman", "Approval Controller", "3.1: POST /admin/transaksi/peminjaman/{id}/reject", "call"),
+        ("msg", "Approval Controller", "Peminjaman Model", "3.1.1: Update statusApproval=REJECTED & simpan alasan", "call"),
+        ("msg", "Peminjaman Model", "Approval Controller", "3.1.2: Success", "reply"),
+        ("msg", "Approval Controller", "Halaman Detail Peminjaman", "3.1.3: Tampilkan status REJECTED", "reply"),
+        ("alt_end",)
+    ]
+}
+
+diagrams["15_ajukan_peminjaman"] = {
+    "title": "15. Ajukan Peminjaman (Reservasi)",
+    "description": "Pengajuan permohonan sewa ruangan dan sarana oleh Aktor.",
+    "roles": ["Aktor"],
+    "participants": [
+        {"name": "Aktor", "type": "actor"},
+        {"name": "Halaman Pengajuan", "type": "boundary"},
+        {"name": "Peminjaman Controller", "type": "control"},
+        {"name": "Peminjaman Model", "type": "entity"}
+    ],
+    "steps": [
+        ("msg", "Aktor", "Halaman Pengajuan", "1: Isi Form Permohonan Peminjaman", "call"),
+        ("msg", "Halaman Pengajuan", "Peminjaman Controller", "1.1: Kirim Permohonan Peminjaman (POST)", "call"),
+        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.1: Cek ketersediaan Ruangan & Sarana", "call"),
+        ("msg", "Peminjaman Model", "Peminjaman Controller", "1.1.2: Return status ketersediaan", "reply"),
+        ("alt_start", "Fasilitas Tersedia"),
+        ("msg", "Peminjaman Controller", "Peminjaman Model", "1.1.3: Simpan data peminjaman (status=PENDING)", "call"),
+        ("msg", "Peminjaman Model", "Peminjaman Controller", "1.1.4: Success", "reply"),
+        ("msg", "Peminjaman Controller", "Halaman Pengajuan", "1.1.5: Tampilkan sukses (Menunggu Verifikasi)", "reply"),
+        ("alt_else", "Fasilitas Terbooking"),
+        ("msg", "Peminjaman Controller", "Halaman Pengajuan", "1.1.6: Tampilkan pesan error ketersediaan", "reply"),
+        ("alt_end",)
+    ]
+}
+
+diagrams["16_batalkan_peminjaman"] = {
+    "title": "16. Batalkan Peminjaman",
+    "description": "Proses pembatalan sewa fasilitas sebelum hari H oleh Aktor.",
+    "roles": ["Aktor"],
+    "participants": [
+        {"name": "Aktor", "type": "actor"},
+        {"name": "Halaman Detail Peminjaman", "type": "boundary"},
+        {"name": "Peminjaman Controller", "type": "control"},
+        {"name": "Peminjaman Model", "type": "entity"}
+    ],
+    "steps": [
+        ("msg", "Aktor", "Halaman Detail Peminjaman", "1: Klik tombol Batalkan Peminjaman", "call"),
+        ("self", "Halaman Detail Peminjaman", "1.1: Tampilkan pop-up konfirmasi pembatalan"),
+        ("msg", "Aktor", "Halaman Detail Peminjaman", "2: Konfirmasi pembatalan (Klik Ya)", "call"),
+        ("msg", "Halaman Detail Peminjaman", "Peminjaman Controller", "2.1: POST /users/main/reservasi/{id}/batal", "call"),
+        ("msg", "Peminjaman Controller", "Peminjaman Model", "2.1.1: Update statusPeminjaman=BATAL & statusApproval=REJECTED", "call"),
+        ("msg", "Peminjaman Model", "Peminjaman Controller", "2.1.2: Success", "reply"),
+        ("msg", "Peminjaman Controller", "Halaman Detail Peminjaman", "2.1.3: Redirect ke daftar reservasi dengan pesan sukses", "reply")
+    ]
+}
+
+diagrams["17_lihat_laporan"] = {
+    "title": "17. Lihat Laporan Penggunaan",
+    "description": "Penyaringan dan cetak laporan okupansi/transaksi sewa oleh Aktor.",
+    "roles": ["Aktor"],
+    "participants": [
+        {"name": "Aktor", "type": "actor"},
         {"name": "Halaman Laporan", "type": "boundary"},
         {"name": "Laporan Controller", "type": "control"},
         {"name": "Peminjaman Model", "type": "entity"}
     ],
     "steps": [
-        ("msg", "Actor", "Halaman Laporan", "1: Buka Halaman Laporan & pilih filter tanggal", "call"),
+        ("msg", "Aktor", "Halaman Laporan", "1: Buka Halaman Laporan & pilih filter tanggal", "call"),
         ("msg", "Halaman Laporan", "Laporan Controller", "1.1: GET /admin/laporan", "call"),
-        ("alt_start", "Role == Petugas"),
-        ("msg", "Laporan Controller", "Halaman Laporan", "1.1.1: 403 Forbidden (Blocked)", "reply"),
-        ("alt_else", "Role in [Admin, Pimpinan]"),
-        ("msg", "Laporan Controller", "Peminjaman Model", "1.1.2: Query aggregated data", "call"),
-        ("msg", "Peminjaman Model", "Laporan Controller", "1.1.3: Return data", "reply"),
-        ("msg", "Laporan Controller", "Halaman Laporan", "1.1.4: Tampilkan Halaman Laporan dengan data & tombol Cetak", "reply"),
-        ("alt_end",)
+        ("msg", "Laporan Controller", "Peminjaman Model", "1.1.1: Query aggregated data", "call"),
+        ("msg", "Peminjaman Model", "Laporan Controller", "1.1.2: Return data", "reply"),
+        ("msg", "Laporan Controller", "Halaman Laporan", "1.1.3: Tampilkan Halaman Laporan dengan data & grafik", "reply"),
+        ("msg", "Aktor", "Halaman Laporan", "2: Klik tombol Cetak PDF", "call"),
+        ("msg", "Halaman Laporan", "Laporan Controller", "2.1: GET /admin/laporan/export-pdf", "call"),
+        ("msg", "Laporan Controller", "Halaman Laporan", "2.2: Export & download file PDF Laporan", "reply")
     ]
 }
 
-diagrams["17_kelola_profil"] = {
-    "title": "17. Kelola Profil",
-    "description": "Pembaruan informasi profil dan data diri tamu secara mandiri.",
-    "roles": ["Guest"],
+diagrams["19_publish_berita"] = {
+    "title": "19. Publish Berita",
+    "description": "Proses mempublikasikan draf berita oleh Aktor ke laman publik.",
+    "roles": ["Aktor"],
     "participants": [
-        {"name": "Actor (Tamu)", "type": "actor"},
-        {"name": "Halaman Profil", "type": "boundary"},
-        {"name": "Profil Controller", "type": "control"},
-        {"name": "User Model", "type": "entity"},
-        {"name": "Guest Model", "type": "entity"}
+        {"name": "Aktor", "type": "actor"},
+        {"name": "Halaman Detail Berita", "type": "boundary"},
+        {"name": "Berita Controller", "type": "control"},
+        {"name": "Berita Model", "type": "entity"}
     ],
     "steps": [
-        ("msg", "Actor (Tamu)", "Halaman Profil", "1: Membuka Halaman Profil Saya", "call"),
-        ("msg", "Halaman Profil", "Profil Controller", "1.1: GET /users/profil", "call"),
-        ("msg", "Profil Controller", "User Model", "1.1.1: Query data user login", "call"),
-        ("msg", "Profil Controller", "Guest Model", "1.1.2: Query detail data tamu", "call"),
-        ("msg", "Guest Model", "Profil Controller", "1.1.3: Return data", "reply"),
-        ("msg", "Profil Controller", "Halaman Profil", "1.1.4: Tampilkan Halaman Profil dengan form edit", "reply"),
-        ("msg", "Actor (Tamu)", "Halaman Profil", "2: Mengubah data profil & Klik Simpan", "call"),
-        ("msg", "Halaman Profil", "Profil Controller", "2.1: PUT /users/profil", "call"),
-        ("self", "Profil Controller", "2.1.1: Validasi data diri"),
-        ("alt_start", "Validasi Berhasil"),
-        ("msg", "Profil Controller", "Guest Model", "2.1.2: Update data tamu (nik, nama, gender, dll)", "call"),
-        ("msg", "Profil Controller", "User Model", "2.1.3: Update data user (nomor telepon & password)", "call"),
-        ("msg", "User Model", "Profil Controller", "2.1.4: Success", "reply"),
-        ("msg", "Profil Controller", "Halaman Profil", "2.1.5: Tampilkan pesan sukses update", "reply"),
-        ("alt_else", "Validasi Gagal"),
-        ("msg", "Profil Controller", "Halaman Profil", "2.1.6: Tampilkan pesan error validasi", "reply"),
-        ("alt_end",)
+        ("msg", "Aktor", "Halaman Detail Berita", "1: Buka detail berita status draft", "call"),
+        ("msg", "Halaman Detail Berita", "Berita Controller", "1.1: GET /admin/berita/{id}", "call"),
+        ("msg", "Berita Controller", "Berita Model", "1.1.1: Get detail data berita", "call"),
+        ("msg", "Berita Model", "Berita Controller", "1.1.2: Return data", "reply"),
+        ("msg", "Berita Controller", "Halaman Detail Berita", "1.1.3: Tampilkan detail berita & tombol Publish", "reply"),
+        ("msg", "Aktor", "Halaman Detail Berita", "2: Klik tombol Publish Berita", "call"),
+        ("msg", "Halaman Detail Berita", "Berita Controller", "2.1: POST /admin/berita/{id}/publish", "call"),
+        ("msg", "Berita Controller", "Berita Model", "2.1.1: Update statusBerita=PUBLISHED", "call"),
+        ("msg", "Berita Model", "Berita Controller", "2.1.2: Success", "reply"),
+        ("msg", "Berita Controller", "Halaman Detail Berita", "2.1.3: Tampilkan pesan sukses & status PUBLISHED", "reply")
     ]
 }
 
@@ -759,20 +819,31 @@ if __name__ == "__main__":
     sorted_diagrams = {k: diagrams[k] for k in sorted(diagrams.keys(), key=lambda x: int(x.split('_')[0]))}
     diagrams = sorted_diagrams
     
+    # Set of expected file names
+    valid_names = {
+        "1_login_sistem", "2_registrasi_akun", "3_kelola_pengguna", "4_kelola_landing_page",
+        "5_kelola_tamu", "6_kelola_ulasan", "7_kelola_ruangan", "8_kelola_sarana", "9_kelola_paket",
+        "10_kelola_profil", "11_kelola_invoice", "12_checkin", "13_checkout", "14_verifikasi_peminjaman",
+        "15_ajukan_peminjaman", "16_batalkan_peminjaman", "17_lihat_laporan", "18_kelola_berita",
+        "19_publish_berita"
+    }
+
     # 1. Generate PNGs
     print(f"Generating {len(diagrams)} PNG Sequence Diagrams...")
     for filename, data in diagrams.items():
         generate_png(filename, data, output_dir)
         
-    # 2. Cleanup old SVG files
-    print("Cleaning up old SVG files...")
-    svg_files = [f for f in os.listdir(output_dir) if f.endswith(".svg")]
-    for svg_file in svg_files:
-        svg_path = os.path.join(output_dir, svg_file)
-        try:
-            os.remove(svg_path)
-            print(f"Removed SVG: {svg_path}")
-        except Exception as e:
-            print(f"Failed to remove {svg_path}: {e}")
+    # 2. Cleanup old png/svg files
+    print("Cleaning up old files...")
+    for filename in os.listdir(output_dir):
+        base, ext = os.path.splitext(filename)
+        if ext in [".png", ".svg"]:
+            if base not in valid_names and filename != "images.png":
+                filepath = os.path.join(output_dir, filename)
+                try:
+                    os.remove(filepath)
+                    print(f"Removed obsolete file: {filepath}")
+                except Exception as e:
+                    print(f"Failed to remove {filepath}: {e}")
             
     print("Sequence Diagrams generation and cleanup completed successfully.")

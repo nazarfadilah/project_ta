@@ -543,7 +543,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedPkg = activePackages.find(p => p.id == pId);
         if (!selectedPkg) return;
 
-        const isHarian = selectedPkg.nama_paket.toLowerCase().includes('hari') || selectedPkg.nama_paket.toLowerCase().includes('harian');
+        const isHarian = selectedPkg.tipe_paket == 1;
         const durasiHariVal = parseInt(document.getElementById('durasi_hari').value) || 1;
 
         // Calculate estimated end datetime
@@ -593,7 +593,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const containerDurasiHari = document.getElementById('container_durasi_hari');
         const inputDurasiHari = document.getElementById('durasi_hari');
         if (selectedPkg) {
-            const isHarian = selectedPkg.nama_paket.toLowerCase().includes('hari') || selectedPkg.nama_paket.toLowerCase().includes('harian');
+            const isHarian = selectedPkg.tipe_paket == 1;
             if (isHarian) {
                 containerDurasiHari.style.display = 'block';
             } else {

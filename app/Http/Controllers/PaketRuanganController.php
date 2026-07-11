@@ -33,10 +33,19 @@ class PaketRuanganController extends Controller
         $validated = $request->validate([
             'ruangan_id' => 'required|exists:ruangan,id_ruangan',
             'nama_paket' => 'required|string|max:255',
-            'durasi' => 'nullable|integer|min:1|max:999',
+            'tipe_paket' => 'required|boolean',
+            'durasi' => 'required|integer|min:1|max:24',
             'harga' => 'required|numeric|min:0|max:99999999.99',
             'status' => 'required|in:ACTIVE,INACTIVE,MAINTENANCE',
         ]);
+
+        if ($validated['tipe_paket'] == 1) {
+            $validated['durasi'] = 24;
+        } else {
+            if ($validated['durasi'] > 23) {
+                return back()->withErrors(['durasi' => 'Durasi sewa untuk paket per jam maksimal 23 jam.'])->withInput();
+            }
+        }
 
         $validated['currency'] = 'IDR';
 
@@ -67,10 +76,19 @@ class PaketRuanganController extends Controller
         $validated = $request->validate([
             'ruangan_id' => 'required|exists:ruangan,id_ruangan',
             'nama_paket' => 'required|string|max:255',
-            'durasi' => 'nullable|integer|min:1|max:999',
+            'tipe_paket' => 'required|boolean',
+            'durasi' => 'required|integer|min:1|max:24',
             'harga' => 'required|numeric|min:0|max:99999999.99',
             'status' => 'required|in:ACTIVE,INACTIVE,MAINTENANCE',
         ]);
+
+        if ($validated['tipe_paket'] == 1) {
+            $validated['durasi'] = 24;
+        } else {
+            if ($validated['durasi'] > 23) {
+                return back()->withErrors(['durasi' => 'Durasi sewa untuk paket per jam maksimal 23 jam.'])->withInput();
+            }
+        }
 
         $paketRuangan = PaketRuangan::findOrFail($id);
         $paketRuangan->update($validated);

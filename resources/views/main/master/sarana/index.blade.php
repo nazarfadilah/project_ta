@@ -59,8 +59,6 @@
                                     <span class="badge bg-success">Baik Sekali</span>
                                 @elseif($sarana->kondisi === 'Baik')
                                     <span class="badge bg-primary">Baik</span>
-                                @elseif($sarana->kondisi === 'Normal')
-                                    <span class="badge bg-info text-dark">Normal</span>
                                 @else
                                     <span class="badge bg-danger">Perlu Perbaikan</span>
                                 @endif

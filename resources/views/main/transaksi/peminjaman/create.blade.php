@@ -549,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     data.packages.forEach(pkg => {
                         const opt = document.createElement('option');
                         opt.value = pkg.id;
-                        const isHarian = pkg.nama_paket.toLowerCase().includes('hari') || pkg.nama_paket.toLowerCase().includes('harian');
+                        const isHarian = pkg.tipe_paket == 1;
                         const durasiDisplay = isHarian ? 'Harian' : `${pkg.durasi} Jam`;
                         opt.textContent = `${pkg.nama_paket} - Rp ${formatRupiah(pkg.harga)} (${durasiDisplay})`;
                         paketSelect.appendChild(opt);
@@ -588,7 +588,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedPkg = activePackages.find(p => p.id == pId);
         if (!selectedPkg) return;
 
-        const isHarian = selectedPkg.nama_paket.toLowerCase().includes('hari') || selectedPkg.nama_paket.toLowerCase().includes('harian');
+        const isHarian = selectedPkg.tipe_paket == 1;
         const durasiHariVal = parseInt(document.getElementById('durasi_hari').value) || 1;
 
         // Calculate estimated end datetime
@@ -638,7 +638,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const containerDurasiHari = document.getElementById('container_durasi_hari');
         const inputDurasiHari = document.getElementById('durasi_hari');
         if (selectedPkg) {
-            const isHarian = selectedPkg.nama_paket.toLowerCase().includes('hari') || selectedPkg.nama_paket.toLowerCase().includes('harian');
+            const isHarian = selectedPkg.tipe_paket == 1;
             if (isHarian) {
                 containerDurasiHari.style.display = 'block';
             } else {

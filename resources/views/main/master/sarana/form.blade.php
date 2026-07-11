@@ -64,7 +64,6 @@
                             <option value="">Pilih Kondisi</option>
                             <option value="Baik Sekali" {{ old('kondisi', $sarana?->kondisi) === 'Baik Sekali' ? 'selected' : '' }}>Baik Sekali</option>
                             <option value="Baik" {{ old('kondisi', $sarana?->kondisi) === 'Baik' ? 'selected' : '' }}>Baik</option>
-                            <option value="Normal" {{ old('kondisi', $sarana?->kondisi) === 'Normal' ? 'selected' : '' }}>Normal</option>
                             <option value="Perlu Perbaikan" {{ old('kondisi', $sarana?->kondisi) === 'Perlu Perbaikan' ? 'selected' : '' }}>Perlu Perbaikan</option>
                         </select>
                         @error('kondisi')

@@ -46,7 +46,7 @@ class Sarana extends Model {
                 
                 // Gunakan jamMulai (bukan startOfDay) untuk akurasi jam
                 $pemStart = Carbon::parse($tx->jamMulai);
-                $itemIsHarian = ($tx->paketRuangan && (stripos($tx->paketRuangan->nama_paket, 'hari') !== false || stripos($tx->paketRuangan->nama_paket, 'harian') !== false));
+                $itemIsHarian = ($tx->paketRuangan && $tx->paketRuangan->tipe_paket == 1);
                 if ($itemIsHarian) {
                     $pemEnd = $pemStart->copy()->addDays($tx->durasi);
                 } else {
@@ -92,7 +92,7 @@ class Sarana extends Model {
                 
                 // Gunakan jamMulai (bukan startOfDay) untuk akurasi jam
                 $pemStart = Carbon::parse($tx->jamMulai);
-                $itemIsHarian = ($tx->paketRuangan && (stripos($tx->paketRuangan->nama_paket, 'hari') !== false || stripos($tx->paketRuangan->nama_paket, 'harian') !== false));
+                $itemIsHarian = ($tx->paketRuangan && $tx->paketRuangan->tipe_paket == 1);
                 if ($itemIsHarian) {
                     $pemEnd = $pemStart->copy()->addDays($tx->durasi);
                 } else {

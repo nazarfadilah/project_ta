@@ -432,11 +432,11 @@
     // CRUD steps definition builder
     function getCrudSteps(actor, ds, dp) {
       return [
-        ["User", `Membuka menu kelola data ${ds}`],
+        [actor, `Membuka menu kelola data ${ds}`],
         ["System", `Menampilkan daftar data ${dp} yang tersimpan di sistem`],
-        ["User", `Memilih tombol tambah data ${ds}`],
+        [actor, `Memilih tombol tambah data ${ds}`],
         ["System", "Menampilkan halaman/form input data baru"],
-        ["User", `Menginput data form ${ds} secara lengkap dan menekan tombol Simpan`],
+        [actor, `Menginput data form ${ds} secara lengkap dan menekan tombol Simpan`],
         ["System", "Memvalidasi kelengkapan dan format data masukan"],
         ["System", "Percabangan validasi: Jika data TIDAK valid, tampilkan notifikasi kesalahan & arahkan kembali ke form input"],
         ["System", "Percabangan validasi: Jika data VALID, simpan data ke database & tampilkan pesan sukses"],
@@ -448,194 +448,203 @@
     const diagrams = {
       "1_login_sistem": {
         "title": "1. Login Sistem",
-        "description": "Proses masuk sistem bagi seluruh pengguna (Admin, Petugas, Pimpinan, Guest) dengan verifikasi kredensial.",
-        "roles": ["Admin", "Petugas", "Pimpinan", "Guest"],
+        "description": "Proses masuk sistem bagi seluruh pengguna (Aktor) dengan verifikasi kredensial.",
+        "roles": ["Aktor"],
         "steps": [
-          ["User", "Membuka halaman utama website dan mengklik tombol Login"],
+          ["Aktor", "Membuka halaman utama website dan mengklik tombol Login"],
           ["System", "Menampilkan form login (input email dan password)"],
-          ["User", "Menginputkan kredensial login secara lengkap dan mengklik submit"],
+          ["Aktor", "Menginputkan kredensial login secara lengkap dan mengklik submit"],
           ["System", "Memverifikasi kredensial masukan ke basis data"],
           ["System", "Percabangan verifikasi: Jika password salah atau user tidak ditemukan, tampilkan peringatan error dan arahkan kembali ke form login"],
           ["System", "Percabangan verifikasi: Jika valid, buat session login aktif, verifikasi role level, dan redirect ke halaman Dashboard sesuai role"],
           ["System", "Menampilkan dashboard utama"]
         ]
       },
-      "2_kelola_pengguna": {
-        "title": "2. Kelola Pengguna",
-        "description": "Pengelolaan master data pengguna aplikasi oleh Admin (tambah, lihat list, edit, dan validasi).",
-        "roles": ["Admin"],
-        "steps": getCrudSteps("Admin", "Pengguna", "Pengguna")
-      },
-      "3_kelola_tamu": {
-        "title": "3. Kelola Tamu",
-        "description": "Pengelolaan data tamu (Guest) penyewa oleh Admin or Petugas (tambah data identitas, kontak, dan instansi).",
-        "roles": ["Admin", "Petugas"],
-        "steps": getCrudSteps("Admin / Petugas", "Tamu", "Tamu")
-      },
-      "4_kelola_gedung": {
-        "title": "4. Kelola Gedung",
-        "description": "Pengelolaan master data gedung asrama haji oleh Admin (tambah, ubah, dan kelola ketersediaan).",
-        "roles": ["Admin"],
-        "steps": getCrudSteps("Admin", "Gedung", "Gedung")
-      },
-      "5_kelola_ruangan": {
-        "title": "5. Kelola Ruangan",
-        "description": "Pengelolaan data ruangan di setiap gedung oleh Petugas (kapasitas, fasilitas bawaan, dan tarif).",
-        "roles": ["Petugas", "Pimpinan"],
-        "steps": getCrudSteps("Petugas", "Ruangan", "Ruangan")
-      },
-      "6_kelola_sarana": {
-        "title": "6. Kelola Sarana & Fasilitas",
-        "description": "Pengelolaan data sarana pendukung (kursi, sound system, proyektor, dll) oleh Petugas.",
-        "roles": ["Petugas", "Pimpinan"],
-        "steps": getCrudSteps("Petugas", "Sarana & Fasilitas", "Sarana & Fasilitas")
-      },
-      "7_kelola_paket": {
-        "title": "7. Kelola Paket Ruangan",
-        "description": "Pengelolaan paket bundling sewa ruangan beserta durasi dan kelengkapannya oleh Petugas.",
-        "roles": ["Petugas", "Pimpinan"],
-        "steps": getCrudSteps("Petugas", "Paket Ruangan", "Paket Ruangan")
-      },
-      "8_ajukan_peminjaman": {
-        "title": "8. Ajukan Peminjaman (Reservasi)",
-        "description": "Proses reservasi/peminjaman fasilitas asrama haji oleh Tamu (Guest).",
-        "roles": ["Guest"],
+      "2_registrasi_akun": {
+        "title": "2. Registrasi Akun",
+        "description": "Proses registrasi akun baru oleh Aktor (publik) beserta pengiriman kode verifikasi ke email.",
+        "roles": ["Aktor"],
         "steps": [
-          ["User", "Memilih menu pengajuan peminjaman di website publik"],
-          ["System", "Menampilkan form input peminjaman (ruangan, sarana, tanggal mulai/selesai)"],
-          ["User", "Mengisi formulir peminjaman secara lengkap dan mengunggah berkas syarat"],
-          ["System", "Memeriksa ketersediaan ruangan dan sarana pada tanggal yang dipilih"],
-          ["System", "Percabangan ketersediaan: Jika sudah terbooking, tampilkan notifikasi penuh dan arahkan untuk memilih tanggal lain"],
-          ["System", "Percabangan ketersediaan: Jika kosong, simpan transaksi baru dengan status: PENDING"],
-          ["System", "Menampilkan bukti pengajuan pending dan mengirimkan notifikasi verifikasi ke petugas"]
+          ["Aktor", "Membuka halaman registrasi"],
+          ["System", "Menampilkan form registrasi (nama, email, password, dll)"],
+          ["Aktor", "Mengisi form secara lengkap dan mengklik tombol Register"],
+          ["System", "Memvalidasi data registrasi yang diinputkan"],
+          ["System", "Percabangan validasi: Jika data tidak valid, tampilkan notifikasi kesalahan dan arahkan kembali ke form"],
+          ["System", "Percabangan validasi: Jika valid, simpan data akun baru (Belum Aktif) dan kirim kode verifikasi ke email"],
+          ["System", "Menampilkan halaman verifikasi email (input kode OTP)"],
+          ["Aktor", "Menginputkan kode verifikasi dari email dan mengklik Verifikasi"],
+          ["System", "Memvalidasi kode verifikasi masukan"],
+          ["System", "Percabangan validasi kode: Jika salah, tampilkan pesan kesalahan dan arahkan kembali ke form verifikasi"],
+          ["System", "Percabangan validasi kode: Jika benar, aktifkan status akun baru dan redirect ke halaman Login"]
         ]
       },
-      "9_verifikasi_peminjaman": {
-        "title": "9. Verifikasi & Approval Peminjaman",
-        "description": "Proses approval dan review berkas peminjaman masuk oleh Petugas or Admin.",
-        "roles": ["Admin", "Petugas", "Pimpinan (View-only)"],
+      "3_kelola_pengguna": {
+        "title": "3. Kelola Pengguna (User Management)",
+        "description": "Pengelolaan data akun pengguna oleh Aktor (tambah, lihat, ubah, hapus).",
+        "roles": ["Aktor"],
+        "steps": getCrudSteps("Aktor", "Pengguna", "Pengguna")
+      },
+      "4_kelola_landing_page": {
+        "title": "4. Kelola Landing Page",
+        "description": "Pengelolaan data slider galeri, Frequently Asked Questions (FAQ), dan visual landing page oleh Aktor.",
+        "roles": ["Aktor"],
+        "steps": getCrudSteps("Aktor", "Landing Page", "Landing Page")
+      },
+      "5_kelola_tamu": {
+        "title": "5. Kelola Tamu (Guest Management)",
+        "description": "Pengelolaan data profil tamu oleh Aktor.",
+        "roles": ["Aktor"],
+        "steps": getCrudSteps("Aktor", "Tamu", "Tamu")
+      },
+      "6_kelola_ulasan": {
+        "title": "6. Kelola Ulasan Ruangan",
+        "description": "Pengelolaan ulasan dan testimoni tentang ruangan oleh Aktor.",
+        "roles": ["Aktor"],
+        "steps": getCrudSteps("Aktor", "Ulasan", "Ulasan")
+      },
+      "7_kelola_ruangan": {
+        "title": "7. Kelola Ruangan",
+        "description": "Pengelolaan master data ruangan oleh Aktor (kapasitas, fasilitas bawaan, tarif).",
+        "roles": ["Aktor"],
+        "steps": getCrudSteps("Aktor", "Ruangan", "Ruangan")
+      },
+      "8_kelola_sarana": {
+        "title": "8. Kelola Sarana & Prasarana",
+        "description": "Pengelolaan data sarana pendukung sewa (proyektor, kursi, meja, dll) oleh Aktor.",
+        "roles": ["Aktor"],
+        "steps": getCrudSteps("Aktor", "Sarana & Prasarana", "Sarana & Prasarana")
+      },
+      "9_kelola_paket": {
+        "title": "9. Kelola Paket Ruangan",
+        "description": "Pengelolaan paket bundling ruangan dan sarana beserta tarif khususnya oleh Aktor.",
+        "roles": ["Aktor"],
+        "steps": getCrudSteps("Aktor", "Paket Ruangan", "Paket Ruangan")
+      },
+      "10_kelola_profil": {
+        "title": "10. Kelola Profil",
+        "description": "Pembaruan informasi data diri dan password oleh Aktor.",
+        "roles": ["Aktor"],
         "steps": [
-          ["User", "Membuka halaman daftar peminjaman pending dan memilih salah satu pengajuan"],
-          ["System", "Menampilkan detail peminjaman, identitas tamu, dan berkas persyaratan yang diunggah"],
-          ["User", "Memeriksa keabsahan berkas (surat permohonan, KTP, dll)"],
-          ["User", "Membuat keputusan: Setujui atau Tolak pengajuan"],
-          ["User", "Keputusan Tolak: Input alasan penolakan -> System mengubah status menjadi REJECTED dan mengirimkan email pemberitahuan"],
-          ["User", "Keputusan Setuju: Klik Approve -> System mengubah status menjadi APPROVED, mencatat kuota booking, dan meng-generate Invoice awal (UNPAID)"],
-          ["System", "Mengirimkan invoice tagihan via sistem/email ke peminjam"]
+          ["Aktor", "Membuka menu profil saya"],
+          ["System", "Menampilkan data profil saat ini dan form ubah profil"],
+          ["Aktor", "Mengubah data diri atau password dan mengklik Simpan Perubahan"],
+          ["System", "Memvalidasi format data profil baru"],
+          ["System", "Percabangan validasi: Jika tidak valid, tampilkan notifikasi error"],
+          ["System", "Percabangan validasi: Jika valid, simpan perubahan data profil ke database"],
+          ["System", "Menampilkan pesan sukses dan memuat ulang halaman profil baru"]
         ]
       },
-      "10_checkin": {
-        "title": "10. Proses Check-In",
-        "description": "Proses check-in peminjam pada hari H penggunaan fasilitas oleh Petugas.",
-        "roles": ["Petugas", "Admin"],
+      "11_kelola_invoice": {
+        "title": "11. Kelola & Cetak Invoice",
+        "description": "Pengelolaan data invoice transaksi peminjaman oleh Aktor (update status lunas/unpaid).",
+        "roles": ["Aktor"],
         "steps": [
-          ["User", "Membuka daftar peminjaman berstatus APPROVED pada hari H"],
-          ["System", "Menampilkan transaksi peminjaman yang siap check-in"],
-          ["User", "Memilih transaksi dan mengklik tombol Check-in"],
-          ["System", "Memverifikasi kecocokan tanggal check-in dengan jadwal peminjaman"],
-          ["System", "Jika tidak cocok (belum hari H), tampilkan peringatan pemblokiran"],
-          ["System", "Jika cocok, ubah status transaksi menjadi CHECK_IN dan catat timestamp waktu masuk tamu"],
-          ["System", "Menampilkan status ACTIVE (Tamu sudah masuk)"]
-        ]
-      },
-      "11_checkout": {
-        "title": "11. Proses Check-Out",
-        "description": "Proses check-out peminjam setelah pemakaian fasilitas berakhir oleh Petugas.",
-        "roles": ["Petugas", "Admin"],
-        "steps": [
-          ["User", "Membuka daftar peminjaman aktif dan mengklik tombol Check-out"],
-          ["System", "Menampilkan form kelengkapan check-out"],
-          ["User", "Melakukan inspeksi fisik ruangan/sarana dan menginputkan kondisi kerusakan (jika ada)"],
-          ["System", "Menghitung denda secara otomatis jika ada kerusakan/kehilangan sarana"],
-          ["System", "Mengubah status transaksi menjadi CHECK_OUT, mencatat timestamp waktu keluar, dan mencetak kwitansi lunas"],
-          ["System", "Menyimpan seluruh log pemakaian di sistem database"]
-        ]
-      },
-      "12_kelola_invoice": {
-        "title": "12. Kelola & Cetak Invoice",
-        "description": "Pengelolaan data invoice (pembayaran sewa ruangan dan fasilitas) oleh Admin atau Petugas, termasuk konfirmasi status pembayaran PAID/LUNAS dan pengiriman email bukti pembayaran.",
-        "roles": ["Admin", "Petugas"],
-        "steps": [
-          ["User", "Membuka halaman rincian/detail invoice pada peminjaman terkait"],
-          ["System", "Menampilkan rincian invoice (tarif, fasilitas, status UNPAID, dan tombol konfirmasi lunas)"],
-          ["User", "Mengubah status pembayaran menjadi PAID / Lunas dan mengklik Simpan"],
+          ["Aktor", "Memilih menu Invoice / detail invoice peminjaman"],
+          ["System", "Menampilkan rincian invoice (tarif, fasilitas, status UNPAID)"],
+          ["Aktor", "Mengubah status pembayaran menjadi PAID dan klik Simpan"],
           ["System", "Memvalidasi input status pembayaran"],
-          ["System", "Percabangan validasi: Jika input tidak valid, tampilkan notifikasi kesalahan"],
-          ["System", "Percabangan validasi: Jika valid, perbarui status invoice ke PAID, status pembayaran ke LUNAS, catat tanggal pembayaran, dan simpan ke database"],
-          ["System", "Mengirimkan email notifikasi bukti pembayaran (invoice paid) ke peminjam"],
-          ["System", "Menampilkan pesan sukses dan memicu tombol cetak kwitansi lunas"]
+          ["System", "Percabangan validasi: Jika tidak valid, tampilkan pesan kesalahan"],
+          ["System", "Percabangan validasi: Jika valid, update status invoice ke PAID, status pembayaran ke LUNAS"],
+          ["System", "Mengirimkan email kuitansi/bukti pembayaran ke peminjam"]
         ]
       },
-      "13_kelola_berita": {
-        "title": "13. Kelola Berita",
-        "description": "Pengelolaan berita/pengumuman website oleh Petugas (sebagai draft) dan dipublish oleh Admin.",
-        "roles": ["Petugas", "Admin"],
-        "steps": getCrudSteps("Petugas / Admin", "Berita", "Berita")
-      },
-      "14_kelola_landing_page": {
-        "title": "14. Kelola Landing Page",
-        "description": "Pengelolaan profil asrama haji, FAQ, galeri slider, dan kontak oleh Admin.",
-        "roles": ["Admin"],
-        "steps": getCrudSteps("Admin", "Landing Page", "Landing Page")
-      },
-      "15_lihat_laporan": {
-        "title": "15. Lihat & Cetak Laporan",
-        "description": "Penyusunan filter dan ekspor laporan penggunaan fasilitas oleh Admin or Pimpinan.",
-        "roles": ["Admin", "Pimpinan"],
+      "12_checkin": {
+        "title": "12. Proses Check-In Peminjaman",
+        "description": "Proses check-in peminjam pada hari H penggunaan fasilitas oleh Aktor.",
+        "roles": ["Aktor"],
         "steps": [
-          ["User", "Membuka menu Laporan Penggunaan"],
-          ["System", "Menampilkan halaman filter laporan (range tanggal, jenis ruangan, status transaksi)"],
-          ["User", "Memasukkan kriteria tanggal/ruangan dan mengklik tombol Tampilkan"],
-          ["System", "Melakukan query agregat dan kalkulasi statistik penggunaan dari database"],
-          ["System", "Menampilkan tabel data, grafik okupansi, dan tombol aksi"],
-          ["User", "Memilih tombol Cetak Laporan (PDF) jika ingin mengunduh berkas fisik"],
-          ["System", "Mengekspor data ke file PDF siap cetak dan memicu unduhan di browser"]
+          ["Aktor", "Membuka daftar peminjaman APPROVED dan mengklik tombol Check-in"],
+          ["System", "Menampilkan detail transaksi peminjaman yang siap check-in"],
+          ["Aktor", "Memilih transaksi dan mengklik tombol Check-in"],
+          ["System", "Memverifikasi tanggal check-in dengan jadwal sewa"],
+          ["System", "Jika tidak cocok (belum waktunya), tampilkan peringatan error"],
+          ["System", "Jika valid, ubah status transaksi menjadi CHECK_IN dan catat waktu check-in"],
+          ["System", "Menampilkan status ACTIVE"]
         ]
       },
-      "16_kelola_profil": {
-        "title": "16. Kelola Profil",
-        "description": "Pembaharuan data diri akun pengguna (ubah email, nama lengkap, dan password).",
-        "roles": ["Admin", "Petugas", "Pimpinan", "Guest"],
-        "steps": getCrudSteps("Semua Pengguna", "Profil Akun", "Profil Akun")
-      },
-      "17_batalkan_peminjaman": {
-        "title": "17. Batalkan Peminjaman",
-        "description": "Proses pembatalan sewa fasilitas sebelum hari H oleh Guest (Peminjam) or Admin.",
-        "roles": ["Guest", "Admin"],
+      "13_checkout": {
+        "title": "13. Proses Check-Out Peminjaman",
+        "description": "Proses check-out peminjam setelah pemakaian fasilitas berakhir oleh Aktor.",
+        "roles": ["Aktor"],
         "steps": [
-          ["User", "Membuka menu 'Peminjaman Saya' di dashboard akun"],
-          ["System", "Menampilkan daftar reservasi aktif yang berstatus pending/approved"],
-          ["User", "Memilih salah satu jadwal dan mengklik tombol Batal Peminjaman"],
-          ["System", "Menampilkan popup konfirmasi pembatalan (Are you sure?)"],
-          ["User", "Mengklik 'Ya' untuk menyetujui pembatalan"],
-          ["System", "Mengubah status transaksi menjadi CANCELLED dan mengosongkan kembali plot jadwal/ruangan"],
-          ["System", "Menampilkan notifikasi pembatalan sukses dan menyegarkan tampilan daftar"]
+          ["Aktor", "Membuka daftar peminjaman aktif (CHECK_IN) dan mengklik tombol Check-out"],
+          ["System", "Menampilkan form input check-out"],
+          ["Aktor", "Melakukan inspeksi ruangan/sarana dan input kerusakan (jika ada)"],
+          ["System", "Kalkulasi otomatis biaya tambahan/denda jika ada kerusakan"],
+          ["System", "Mengubah status transaksi menjadi CHECK_OUT, catat waktu keluar, dan cetak kuitansi lunas"]
         ]
       },
-      "18_lihat_ketersediaan": {
-        "title": "18. Lihat Data Ketersediaan",
-        "description": "Pengecekan jadwal kosong ruangan dan fasilitas sebelum pengajuan oleh Peminjam or Petugas.",
-        "roles": ["Guest", "Petugas", "Admin", "Pimpinan"],
+      "14_verifikasi_peminjaman": {
+        "title": "14. Verifikasi & Approval Peminjaman",
+        "description": "Verifikasi dan persetujuan pengajuan reservasi masuk oleh Aktor.",
+        "roles": ["Aktor"],
         "steps": [
-          ["User", "Membuka halaman Kalender Ketersediaan"],
-          ["System", "Menampilkan list gedung dan kalender okupansi"],
-          ["User", "Memilih filter gedung/ruangan dan menentukan bulan/tahun"],
-          ["System", "Melakukan query jadwal sewa aktif dari database"],
-          ["System", "Menampilkan warna indikator pada kalender (Merah: Terisi/Terbooking, Hijau: Kosong/Tersedia)"],
-          ["System", "Menampilkan detail jam jika tanggal diklik"]
+          ["Aktor", "Membuka detail pengajuan sewa pending"],
+          ["System", "Menampilkan detail permohonan dan berkas syarat yang diunggah"],
+          ["Aktor", "Memeriksa validitas berkas peminjaman"],
+          ["Aktor", "Memutuskan Setuju atau Tolak"],
+          ["Aktor", "Keputusan Tolak: Input alasan penolakan -> System mengubah status ke REJECTED dan kirim email pemberitahuan"],
+          ["Aktor", "Keputusan Setuju: Klik Approve -> System mengubah status ke APPROVED dan meng-generate Invoice awal (UNPAID)"]
         ]
       },
-      "19_kelola_gambar": {
-        "title": "19. Kelola Gambar (Slideshow / Galeri)",
-        "description": "Pengelolaan slider promosi dan galeri foto asrama haji oleh Admin.",
-        "roles": ["Admin"],
-        "steps": getCrudSteps("Admin", "Gambar Galeri", "Gambar Galeri")
+      "15_ajukan_peminjaman": {
+        "title": "15. Ajukan Peminjaman (Reservasi)",
+        "description": "Pengajuan permohonan sewa ruangan dan sarana oleh Aktor.",
+        "roles": ["Aktor"],
+        "steps": [
+          ["Aktor", "Memilih menu pengajuan peminjaman"],
+          ["System", "Menampilkan form reservasi (tanggal sewa, ruangan, sarana, dll)"],
+          ["Aktor", "Mengisi formulir sewa lengkap dan mengunggah berkas permohonan"],
+          ["System", "Memeriksa ketersediaan ruangan dan sarana pada jadwal terpilih"],
+          ["System", "Percabangan ketersediaan: Jika terbooking, tampilkan pesan error penuh"],
+          ["System", "Percabangan ketersediaan: Jika kosong, simpan transaksi sewa baru dengan status PENDING"]
+        ]
       },
-      "20_kelola_tentang": {
-        "title": "20. Kelola Tentang Halaman",
-        "description": "Pengelolaan data sejarah, visi-misi, dan struktur organisasi asrama haji oleh Admin.",
-        "roles": ["Admin"],
-        "steps": getCrudSteps("Admin", "Tentang Halaman", "Tentang Halaman")
+      "16_batalkan_peminjaman": {
+        "title": "16. Batalkan Peminjaman",
+        "description": "Proses pembatalan sewa fasilitas sebelum hari H oleh Aktor.",
+        "roles": ["Aktor"],
+        "steps": [
+          ["Aktor", "Membuka daftar reservasi aktif miliknya"],
+          ["System", "Menampilkan daftar peminjaman aktif"],
+          ["Aktor", "Memilih peminjaman dan mengklik tombol Batal Peminjaman"],
+          ["System", "Menampilkan modal konfirmasi pembatalan"],
+          ["Aktor", "Mengonfirmasi persetujuan pembatalan"],
+          ["System", "Mengubah status transaksi menjadi CANCELLED dan mengosongkan kembali jadwal sewa terkait"]
+        ]
+      },
+      "17_lihat_laporan": {
+        "title": "17. Lihat Laporan Penggunaan",
+        "description": "Penyaringan dan cetak laporan okupansi/transaksi sewa oleh Aktor.",
+        "roles": ["Aktor"],
+        "steps": [
+          ["Aktor", "Membuka halaman Laporan Penggunaan"],
+          ["System", "Menampilkan form filter range tanggal laporan"],
+          ["Aktor", "Menginputkan range tanggal awal/akhir dan mengklik tombol Filter"],
+          ["System", "Melakukan query data agregat sewa dari database"],
+          ["System", "Menampilkan statistik penggunaan dan tombol Cetak Laporan"],
+          ["Aktor", "Memilih tombol Cetak Laporan"],
+          ["System", "Mengekspor data ke file PDF siap cetak untuk diunduh"]
+        ]
+      },
+      "18_kelola_berita": {
+        "title": "18. Kelola Berita",
+        "description": "Pengelolaan data berita (tulis draf pengumuman/berita) oleh Aktor.",
+        "roles": ["Aktor"],
+        "steps": getCrudSteps("Aktor", "Berita", "Berita")
+      },
+      "19_publish_berita": {
+        "title": "19. Publish Berita",
+        "description": "Proses mempublikasikan draf berita oleh Aktor ke laman publik.",
+        "roles": ["Aktor"],
+        "steps": [
+          ["Aktor", "Membuka draf berita yang akan dipublish"],
+          ["System", "Menampilkan isi berita dan tombol Publish"],
+          ["Aktor", "Mengklik tombol Publish"],
+          ["System", "Menampilkan modal konfirmasi publikasi"],
+          ["Aktor", "Mengonfirmasi publikasi"],
+          ["System", "Mengubah status berita ke PUBLISHED dan menampilkannya di laman publik"]
+        ]
       }
     };
 
@@ -675,7 +684,6 @@
 
       // Display PNG Image
       const container = document.getElementById('imageContainer');
-      // If key is '18_kelola_tentang', make sure it loads 18_kelola_tentang.png, etc.
       container.innerHTML = `<img src="${key}.png" alt="${data.title}" />`;
 
       // Write descriptive action table

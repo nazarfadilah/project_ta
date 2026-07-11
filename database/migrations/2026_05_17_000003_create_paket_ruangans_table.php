@@ -8,6 +8,7 @@ return new class extends Migration {
             $table->integer('id')->autoIncrement();
             $table->integer('ruangan_id');
             $table->string('nama_paket', 255);
+            $table->boolean('tipe_paket')->default(0);
             $table->integer('durasi')->nullable();
             $table->decimal('harga', 15, 2);
             $table->string('currency', 3)->default('IDR');

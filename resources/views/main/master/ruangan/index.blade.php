@@ -43,9 +43,8 @@
                             {{-- <th>Gedung</th> --}}
                             <th>Tipe Ruangan</th>
                             <th>Kapasitas</th>
-                            @if(Auth::user()->roleId != 2)
-                            <th style="width: 110px; text-align: center;">Aksi</th>
-                            @endif
+                            <th>Rating</th>
+                            <th style="width: 150px; text-align: center;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -64,9 +63,30 @@
                                 <span class="badge bg-secondary">{{ str_replace('_', ' ', $ruangan->tipe_ruangan) }}</span>
                             </td>
                             <td>{{ $ruangan->kapasitas }} Orang</td>
-                            @if(Auth::user()->roleId != 2)
+                            <td>
+                                @php
+                                    $avgRating = $ruangan->average_rating;
+                                @endphp
+                                @if($avgRating > 0)
+                                    <div style="color: #ffc107; font-size: 13px;">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <i class="{{ $i <= round($avgRating) ? 'fas' : 'far' }} fa-star"></i>
+                                        @endfor
+                                        <span class="text-muted ms-1">({{ number_format($avgRating, 1) }})</span>
+                                    </div>
+                                @else
+                                    <span class="text-muted" style="font-size: 13px;">Belum ada ulasan</span>
+                                @endif
+                            </td>
                             <td style="text-align: center;">
                                 <div class="d-flex justify-content-center gap-1">
+                                    <a href="{{ route('main.ruangan.show', $ruangan->id_ruangan) }}" 
+                                       class="btn btn-sm btn-info text-white" 
+                                       title="Detail"
+                                       style="padding: 4px 10px; font-size: 13px;">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    @if(Auth::user()->roleId != 2)
                                     <a href="{{ route('main.ruangan.edit', $ruangan->id_ruangan) }}" 
                                        class="btn btn-sm btn-warning" 
                                        title="Edit"
@@ -80,13 +100,13 @@
                                             onclick="hapusData('{{ route('main.ruangan.destroy', $ruangan->id_ruangan) }}')">
                                         <i class="fas fa-trash"></i>
                                     </button>
+                                    @endif
                                 </div>
                             </td>
-                            @endif
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="{{ Auth::user()->roleId == 2 ? 4 : 5 }}" style="text-align: center; color: #999; padding: 30px;">
+                            <td colspan="6" style="text-align: center; color: #999; padding: 30px;">
                                 <i class="fas fa-inbox" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
                                 Belum ada data ruangan
                             </td>
@@ -207,8 +227,8 @@
             ordering: true,
             responsive: true,
             columnDefs: [
-                { orderable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 4] @endif },
-                { searchable: false, targets: @if(Auth::user()->roleId == 2) [0] @else [0, 4] @endif }
+                { orderable: false, targets: [0, 5] },
+                { searchable: false, targets: [0, 5] }
             ]
         });
     });

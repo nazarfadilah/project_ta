@@ -86,4 +86,8 @@ class PeminjamanTransaksi extends Model {
     public function detailSaranas() {
         return $this->hasMany(DetailPeminjamanSarana::class, 'peminjaman_id', 'id');
     }
+
+    public function review() {
+        return $this->hasOne(Review::class, 'transaksi_id', 'id');
+    }
 }

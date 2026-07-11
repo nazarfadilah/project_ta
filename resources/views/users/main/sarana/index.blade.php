@@ -41,8 +41,6 @@
                                     <span class="badge bg-success text-white"><i class="fas fa-circle-check me-1"></i> Baik Sekali</span>
                                 @elseif($sarana->kondisi === 'Baik')
                                     <span class="badge bg-primary text-white"><i class="fas fa-circle-check me-1"></i> Baik</span>
-                                @elseif($sarana->kondisi === 'Normal')
-                                    <span class="badge bg-info text-dark"><i class="fas fa-circle-info me-1"></i> Normal</span>
                                 @else
                                     <span class="badge bg-danger text-white"><i class="fas fa-triangle-exclamation me-1"></i> Perlu Perbaikan</span>
                                 @endif

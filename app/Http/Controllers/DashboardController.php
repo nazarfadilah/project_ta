@@ -141,7 +141,7 @@ class DashboardController extends Controller
                 
                 // Calculate end time
                 $start = \Carbon\Carbon::parse($booking->jamMulai);
-                $isHarian = ($booking->paketRuangan && (stripos($booking->paketRuangan->nama_paket, 'hari') !== false || stripos($booking->paketRuangan->nama_paket, 'harian') !== false));
+                $isHarian = ($booking->paketRuangan && $booking->paketRuangan->tipe_paket == 1);
                 if ($isHarian) {
                     $end = $start->copy()->addDays($booking->durasi);
                 } else {

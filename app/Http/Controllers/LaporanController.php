@@ -187,7 +187,7 @@ class LaporanController extends Controller
 
             // Format Tanggal: d/m/Y - d/m/Y or d/m/Y depending on duration
             $start = Carbon::parse($row->jamMulai);
-            $isHarian = ($row->paketRuangan && (stripos($row->paketRuangan->nama_paket, 'hari') !== false || stripos($row->paketRuangan->nama_paket, 'harian') !== false));
+            $isHarian = ($row->paketRuangan && $row->paketRuangan->tipe_paket == 1);
             if ($isHarian && $row->durasi > 1) {
                 $end = $start->copy()->addDays($row->durasi - 1);
                 $tanggalStr = $start->format('d/m/Y') . ' - ' . $end->format('d/m/Y');

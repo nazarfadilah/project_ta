@@ -94,8 +94,47 @@ class RuanganController extends Controller
 
     public function show($id)
     {
+        $ruangan = Ruangan::with(['mediaFiles', 'paketRuangans'])->findOrFail($id);
+        
+        $paketIds = $ruangan->paketRuangans->pluck('id');
+        
+        $allReviewsQuery = \App\Models\Review::whereIn('transaksi_id', function ($query) use ($paketIds) {
+            $query->select('id')
+                ->from('peminjaman_transaksi')
+                ->whereIn('facilityId', $paketIds);
+        });
+
+        $averageRating = $allReviewsQuery->avg('rating') ?: 0;
+        $totalReviewsCount = $allReviewsQuery->count();
+
+        $reviews = $allReviewsQuery->with('transaksi.guest.user')
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
+
+        return view('main.master.ruangan.show', compact('ruangan', 'reviews', 'averageRating', 'totalReviewsCount'));
+    }
+
+    /**
+     * Display all reviews for a room (admin/petugas/pimpinan side)
+     */
+    public function allReviews($id)
+    {
         $ruangan = Ruangan::findOrFail($id);
-        return redirect()->route('main.ruangan.edit', $id);
+        $paketIds = $ruangan->paketRuangans->pluck('id');
+        
+        $reviews = \App\Models\Review::with('transaksi.guest.user')
+            ->whereIn('transaksi_id', function ($query) use ($paketIds) {
+                $query->select('id')
+                    ->from('peminjaman_transaksi')
+                    ->whereIn('facilityId', $paketIds);
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        $averageRating = $ruangan->average_rating;
+        
+        return view('main.master.ruangan.ulasan', compact('ruangan', 'reviews', 'averageRating'));
     }
 
     public function edit($id)

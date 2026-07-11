@@ -144,7 +144,7 @@
                     <div class="fw-semibold text-dark value" style="font-size: 14px;">
                         @php
                             $pjm = $invoice->peminjamanTransaksi;
-                            $isHarian = ($pjm->paketRuangan && (stripos($pjm->paketRuangan->nama_paket, 'hari') !== false || stripos($pjm->paketRuangan->nama_paket, 'harian') !== false));
+                            $isHarian = ($pjm->paketRuangan && $pjm->paketRuangan->tipe_paket == 1);
                         @endphp
                         @if($isHarian)
                             {{ $pjm->durasi }} hari

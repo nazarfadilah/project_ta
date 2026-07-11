@@ -38,7 +38,7 @@
 
                 <div class="row">
                     {{-- Ruangan --}}
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="ruangan_id" class="form-label fw-semibold" style="font-size: 13px; color: #555;">
                             Pilih Ruangan <span class="text-danger">*</span>
                         </label>
@@ -49,9 +49,6 @@
                             <option value="">-- Pilih Ruangan --</option>
                              @foreach($ruangans as $ruangan)
                                  <option value="{{ $ruangan->id_ruangan }}" {{ old('ruangan_id', $paketRuangan?->ruangan_id) == $ruangan->id_ruangan ? 'selected' : '' }}>
-                                     {{-- Code Lama:
-                                     {{ $ruangan->nama_ruangan }} (Gedung: {{ $ruangan->gedung->nama_gedung ?? 'N/A' }})
-                                     --}}
                                      {{ $ruangan->nama_ruangan }}
                                  </option>
                              @endforeach
@@ -62,7 +59,7 @@
                     </div>
 
                     {{-- Nama Paket --}}
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="nama_paket" class="form-label fw-semibold" style="font-size: 13px; color: #555;">
                             Nama Paket <span class="text-danger">*</span>
                         </label>
@@ -77,22 +74,40 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    {{-- Tipe Paket --}}
+                    <div class="col-md-4 mb-3">
+                        <label for="tipe_paket" class="form-label fw-semibold" style="font-size: 13px; color: #555;">
+                            Tipe Paket <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select border-grey @error('tipe_paket') is-invalid @enderror" 
+                                id="tipe_paket" 
+                                name="tipe_paket" 
+                                style="font-size: 14px; padding: 10px 14px;" required>
+                            <option value="0" {{ old('tipe_paket', $paketRuangan?->tipe_paket) == 0 ? 'selected' : '' }}>Per Jam</option>
+                            <option value="1" {{ old('tipe_paket', $paketRuangan?->tipe_paket) == 1 ? 'selected' : '' }}>Harian</option>
+                        </select>
+                        @error('tipe_paket')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
 
                 <div class="row">
                     {{-- Durasi --}}
                     <div class="col-md-4 mb-3">
                         <label for="durasi" class="form-label fw-semibold" style="font-size: 13px; color: #555;">
-                            Durasi Sewa (Jam - Opsional)
+                            Durasi Sewa (Jam) <span class="text-danger">*</span>
                         </label>
                         <input type="number" 
                                class="form-control border-grey @error('durasi') is-invalid @enderror" 
                                id="durasi" 
                                name="durasi" 
                                value="{{ old('durasi', $paketRuangan?->durasi ?? '') }}" 
-                               placeholder="Contoh: 8 (Biarkan kosong jika fleksibel)"
+                               placeholder="Contoh: 8"
                                style="font-size: 14px; padding: 10px 14px;"
-                               min="1" max="999" maxlength="3">
+                               required
+                               min="1" max="24" maxlength="2">
                         @error('durasi')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -168,4 +183,31 @@
         box-shadow: 0 0 0 0.2rem rgba(201, 169, 97, 0.25);
     }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tipePaketSelect = document.getElementById('tipe_paket');
+    const durasiInput = document.getElementById('durasi');
+
+    function handleTipePaketChange() {
+        if (tipePaketSelect.value == '1') {
+            durasiInput.value = '24';
+            durasiInput.readOnly = true;
+            durasiInput.setAttribute('max', '24');
+        } else {
+            if (durasiInput.value == '24') {
+                durasiInput.value = '';
+            }
+            durasiInput.readOnly = false;
+            durasiInput.setAttribute('max', '23');
+        }
+    }
+
+    tipePaketSelect.addEventListener('change', handleTipePaketChange);
+    // Run initial trigger
+    handleTipePaketChange();
+});
+</script>
 @endpush

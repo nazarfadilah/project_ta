@@ -29,14 +29,52 @@ class UsersRuanganController extends Controller
         $namaRuangan = str_replace('-', ' ', $slug);
         
         // Search for ruangan by name
-        // Code Lama:
-        // $ruangan = Ruangan::where('nama_ruangan', 'like', '%' . $namaRuangan . '%')->with('gedung', 'mediaFiles')->firstOrFail();
-        // Code Baru:
         $ruangan = Ruangan::where('nama_ruangan', 'like', '%' . $namaRuangan . '%')
-                          ->with('mediaFiles')
+                          ->with(['mediaFiles', 'paketRuangans'])
                           ->firstOrFail();
+
+        // Get reviews for this room
+        $paketIds = $ruangan->paketRuangans->pluck('id');
         
-        return view('users.main.ruangan.form', compact('ruangan'));
+        $allReviewsQuery = \App\Models\Review::whereIn('transaksi_id', function ($query) use ($paketIds) {
+            $query->select('id')
+                ->from('peminjaman_transaksi')
+                ->whereIn('facilityId', $paketIds);
+        });
+
+        // Calculate average rating
+        $averageRating = $allReviewsQuery->avg('rating') ?: 0;
+        $totalReviewsCount = $allReviewsQuery->count();
+
+        // Take only top 3 reviews
+        $reviews = $allReviewsQuery->with('transaksi.guest.user')
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
+        
+        return view('users.main.ruangan.form', compact('ruangan', 'reviews', 'averageRating', 'totalReviewsCount'));
+    }
+
+    /**
+     * Display all reviews for a room (users/tamu side)
+     */
+    public function allReviews($id)
+    {
+        $ruangan = Ruangan::findOrFail($id);
+        $paketIds = $ruangan->paketRuangans->pluck('id');
+        
+        $reviews = \App\Models\Review::with('transaksi.guest.user')
+            ->whereIn('transaksi_id', function ($query) use ($paketIds) {
+                $query->select('id')
+                    ->from('peminjaman_transaksi')
+                    ->whereIn('facilityId', $paketIds);
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        $averageRating = $ruangan->average_rating;
+        
+        return view('users.main.ruangan.ulasan', compact('ruangan', 'reviews', 'averageRating'));
     }
 
     /**
@@ -62,7 +100,7 @@ class UsersRuanganController extends Controller
             ->get()
             ->map(function($item) {
                 $start = Carbon::parse($item->jamMulai);
-                $isHarian = ($item->paketRuangan && (stripos($item->paketRuangan->nama_paket, 'hari') !== false || stripos($item->paketRuangan->nama_paket, 'harian') !== false));
+                $isHarian = ($item->paketRuangan && $item->paketRuangan->tipe_paket == 1);
                 if ($isHarian) {
                     $end = $start->copy()->addDays($item->durasi);
                 } else {

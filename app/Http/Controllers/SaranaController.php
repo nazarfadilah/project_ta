@@ -24,7 +24,7 @@ class SaranaController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:128',
-            'kondisi' => 'required|in:Baik,Baik Sekali,Normal,Perlu Perbaikan',
+            'kondisi' => 'required|in:Baik,Baik Sekali,Perlu Perbaikan',
             'tgl_penerimaan' => 'required|date',
             'stok' => 'required|integer|min:0|max:99999',
         ]);
@@ -51,7 +51,7 @@ class SaranaController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:128',
-            'kondisi' => 'required|in:Baik,Baik Sekali,Normal,Perlu Perbaikan',
+            'kondisi' => 'required|in:Baik,Baik Sekali,Perlu Perbaikan',
             'tgl_penerimaan' => 'required|date',
             'stok' => 'required|integer|min:0|max:99999',
         ]);

@@ -92,6 +92,11 @@
                                         </button>
                                     @endif
                                     @if($reservasi->status === 'COMPLETED')
+                                        @if(!$reservasi->review)
+                                            <a href="{{ route('users.review.create', ['transaksi_id' => $reservasi->id]) }}" class="btn btn-sm btn-warning text-dark px-3" style="font-size: 13px; font-weight: 600;">
+                                                <i class="fas fa-star me-1"></i> Beri Ulasan
+                                            </a>
+                                        @endif
                                         @if($reservasi->ruangan && $reservasi->ruangan->id_ruangan)
                                             <a href="{{ route('users.main.reservasi.create', ['ruangan_id' => $reservasi->ruangan->id_ruangan]) }}" class="btn btn-sm btn-success px-3" style="font-size: 13px;">
                                                 <i class="fas fa-redo me-1"></i> Reservasi Lagi

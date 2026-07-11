@@ -7,7 +7,7 @@ return new class extends Migration {
         Schema::create('sarana', function (Blueprint $table) {
             $table->id();
             $table->string('nama', 128);
-            $table->enum('kondisi', ['Baik','Baik Sekali','Normal','Perlu Perbaikan'])->default('Baik');
+            $table->enum('kondisi', ['Baik','Baik Sekali','Perlu Perbaikan'])->default('Baik');
             $table->date('tgl_penerimaan');
             $table->string('stok', 5);
             $table->timestamps();

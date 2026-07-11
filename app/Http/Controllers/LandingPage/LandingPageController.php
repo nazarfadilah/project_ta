@@ -170,6 +170,12 @@ class LandingPageController extends Controller
             ->with(['paketRuangans', 'mediaFiles'])
             ->get();
 
+        $testimonials = \App\Models\Review::where('rating', '>=', 4)
+            ->with(['transaksi.guest'])
+            ->orderBy('created_at', 'desc')
+            ->take(6)
+            ->get();
+
         return compact(
             'settings',
             'contact',
@@ -184,7 +190,8 @@ class LandingPageController extends Controller
             'faqItems',
             'termConditions', 
             'privacyItems',
-            'ruangans'
+            'ruangans',
+            'testimonials'
         );
     }
 

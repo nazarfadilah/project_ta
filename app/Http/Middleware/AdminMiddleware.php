@@ -55,7 +55,7 @@ class AdminMiddleware
             $allowedPatterns = [
                 'main.tamu.index', 'main.tamu.show',
                 'main.gedung.index', 'main.gedung.show',
-                'main.ruangan.index', 'main.ruangan.show',
+                'main.ruangan.index', 'main.ruangan.show', 'main.ruangan.ulasan',
                 'main.sarana.index', 'main.sarana.show',
                 'main.paket_ruangan.index', 'main.paket_ruangan.show',
                 'main.transaksi.peminjaman.index', 'main.transaksi.peminjaman.show',

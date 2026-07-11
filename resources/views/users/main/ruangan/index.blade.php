@@ -26,7 +26,8 @@
                             <th style="width: 15%;">Jenis Ruangan</th>
                             {{-- <th style="width: 15%;">Gedung</th> --}}
                             <th style="width: 10%;">Lantai</th>
-                            <th style="width: 12%;">Kapasitas</th>
+                            <th style="width: 15%;">Kapasitas</th>
+                            <th style="width: 20%;">Rating</th>
                             <th style="width: 15%; text-align: center;">Aksi</th>
                         </tr>
                     </thead>
@@ -53,6 +54,24 @@
                             <td>{{ $ruangan->lantai ?? '-' }}</td>
                             <td>
                                 <i class="fas fa-users me-1 text-muted"></i> {{ $ruangan->kapasitas }} orang
+                            </td>
+                            <td>
+                                @php
+                                    $avgRating = $ruangan->average_rating;
+                                    $reviewsCount = $ruangan->reviews_count;
+                                @endphp
+                                @if($avgRating > 0)
+                                    <div style="color: #ffc107; font-size: 13px;">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <i class="{{ $i <= round($avgRating) ? 'fas' : 'far' }} fa-star"></i>
+                                        @endfor
+                                        <span class="text-muted ms-1">({{ number_format($avgRating, 1) }})</span>
+                                        <br>
+                                        <small class="text-secondary fw-semibold">({{ $reviewsCount }} Ulasan)</small>
+                                    </div>
+                                @else
+                                    <span class="text-muted" style="font-size: 13px;">Belum ada ulasan</span>
+                                @endif
                             </td>
                             <td style="text-align: center;">
                                 <a href="{{ route('users.main.ruangan.show', str_replace(' ', '-', strtolower($ruangan->nama_ruangan))) }}" class="btn btn-sm btn-info text-white px-3" style="font-size: 13px;">

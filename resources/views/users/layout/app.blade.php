@@ -595,6 +595,28 @@
         <div class="navbar-info">
             <span class="page-title">@yield('title', 'Dashboard')</span>
             <div class="vr" style="height: 20px; background-color: #ddd;"></div>
+
+            <!-- Notifications Dropdown -->
+            <div class="dropdown me-2" id="notifDropdownWrapper">
+                <button class="navbar-toggle-btn position-relative" type="button" id="notifDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Notifikasi" style="border: 1px solid #ddd; background: transparent; width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--sidebar-text);">
+                    <i class="fas fa-bell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifCountBadge" style="font-size: 9px; display: none;">0</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0" aria-labelledby="notifDropdownBtn" style="width: 320px; border-radius: 12px; overflow: hidden; margin-top: 10px;">
+                    <div class="d-flex justify-content-between align-items-center p-3 border-bottom" style="background-color: var(--gold-primary); color: white;">
+                        <h6 class="fw-bold mb-0" style="font-size: 14px;"><i class="fas fa-bell me-1"></i> Notifikasi Baru</h6>
+                        <button class="btn btn-link btn-sm text-white p-0 text-decoration-none fw-semibold" id="btnNotifMarkAllRead" style="font-size: 11px;">Tandai Dibaca</button>
+                    </div>
+                    <div class="list-group list-group-flush overflow-auto" id="notifDropdownList" style="max-height: 280px;">
+                        <div class="text-center py-4 text-muted">
+                            <i class="far fa-bell fa-2x mb-2 text-muted" style="opacity: 0.5;"></i>
+                            <p class="mb-0" style="font-size: 12px;">Tidak ada notifikasi baru.</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('notifications.index') }}" class="dropdown-item text-center fw-bold py-2 border-top text-secondary" style="font-size: 12px; background-color: #f8fafc; color: #718096 !important;">Lihat Semua Notifikasi</a>
+                </div>
+            </div>
+
             <span class="welcome-text">
                 <i class="fas fa-hand-wave me-1"></i> Selamat datang, {{ Auth::user()->name ?? 'Pengguna' }}!
             </span>
@@ -790,6 +812,123 @@
             // Initial sync on load
             updateThemeIcon(document.documentElement.classList.contains('dark-theme'));
         });
+
+        // Notifications Javascript Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const notifDropdownBtn = document.getElementById('notifDropdownBtn');
+            const notifCountBadge = document.getElementById('notifCountBadge');
+            const notifDropdownList = document.getElementById('notifDropdownList');
+            const btnNotifMarkAllRead = document.getElementById('btnNotifMarkAllRead');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // 1. Request Browser Native Notification Permission
+            if (window.Notification && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+
+            // 2. Fetch Notifications
+            function loadNotifications() {
+                fetch('{{ route("notifications.unread.json") }}')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update badge
+                        if (data.count > 0) {
+                            notifCountBadge.textContent = data.count;
+                            notifCountBadge.style.display = 'block';
+                            
+                            // Check if we should trigger native push popup (for any new unread notification)
+                            const lastCount = localStorage.getItem('last_notif_count') || 0;
+                            if (data.count > lastCount && window.Notification && Notification.permission === 'granted') {
+                                const latestNotif = data.notifications[0];
+                                const cleanMsg = latestNotif.message.replace(/<[^>]*>?/gm, ''); // strip HTML tags
+                                new Notification(latestNotif.type, {
+                                    body: cleanMsg,
+                                    icon: '{{ asset("assets/image/icon.png") }}'
+                                });
+                            }
+                            localStorage.setItem('last_notif_count', data.count);
+                        } else {
+                            notifCountBadge.style.display = 'none';
+                            localStorage.setItem('last_notif_count', 0);
+                        }
+
+                        // Populate dropdown list
+                        if (data.notifications.length > 0) {
+                            let html = '';
+                            data.notifications.forEach(item => {
+                                const readBg = item.read ? '' : 'background-color: rgba(201, 169, 97, 0.04); font-weight: 500;';
+                                const unreadIndicator = item.read ? '' : '<i class="fas fa-circle text-primary ms-2" style="font-size: 7px;"></i>';
+                                html += `
+                                    <div class="list-group-item list-group-item-action d-flex align-items-start gap-2 border-0 border-bottom p-3 notif-item" data-id="${item.id}" style="cursor: pointer; font-size: 13px; transition: all 0.2s; ${readBg}">
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <strong class="text-dark">${item.type}</strong>
+                                                <small class="text-muted" style="font-size: 10px;">${item.time_ago}</small>
+                                            </div>
+                                            <div class="text-secondary" style="line-height: 1.4;">${item.message}</div>
+                                        </div>
+                                        ${unreadIndicator}
+                                    </div>
+                                `;
+                            });
+                            notifDropdownList.innerHTML = html;
+
+                            // Add click handler to list items to mark as read
+                            notifDropdownList.querySelectorAll('.notif-item').forEach(el => {
+                                el.addEventListener('click', function(e) {
+                                    // Bypassing click redirection if they clicked on links inside message
+                                    const notifId = el.getAttribute('data-id');
+                                    fetch(`/notifications/${notifId}/read`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': csrfToken,
+                                            'Content-Type': 'application/json'
+                                        }
+                                    }).then(() => {
+                                        // Find link clicked, if not, redirect to index
+                                        if (e.target.tagName === 'A') {
+                                            window.location.href = e.target.href;
+                                        } else {
+                                            loadNotifications();
+                                        }
+                                    });
+                                });
+                            });
+                        } else {
+                            notifDropdownList.innerHTML = `
+                                <div class="text-center py-4 text-muted">
+                                    <i class="far fa-bell fa-2x mb-2 text-muted" style="opacity: 0.5;"></i>
+                                    <p class="mb-0" style="font-size: 12px;">Tidak ada notifikasi baru.</p>
+                                </div>
+                            `;
+                        }
+                    });
+            }
+
+            // Load initially
+            loadNotifications();
+
+            // Auto poll every 30 seconds to keep updated
+            setInterval(loadNotifications, 30000);
+
+            // Mark all read inside dropdown
+            if (btnNotifMarkAllRead) {
+                btnNotifMarkAllRead.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    fetch('{{ route("notifications.read.all") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(() => {
+                        loadNotifications();
+                    });
+                });
+            }
+        });
     </script>
+    @yield('js')
+    @stack('scripts')
 </body>
 </html>

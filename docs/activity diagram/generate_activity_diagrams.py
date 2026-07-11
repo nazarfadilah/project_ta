@@ -65,7 +65,8 @@ def draw_text_centered(draw, text, x, y, font, fill):
 def draw_action_node(draw, x, y, label, font):
     w = 180
     h = 48
-    draw.ellipse([x - w//2, y - h//2, x + w//2, y + h//2], fill=(255, 255, 255), outline=(0, 0, 0), width=2)
+    # Draw rounded rectangle (kotak biasa, sudut sedikit membulat)
+    draw.rounded_rectangle([x - w//2, y - h//2, x + w//2, y + h//2], radius=8, fill=(255, 255, 255), outline=(0, 0, 0), width=2)
     
     max_w = w - 24
     lines = wrap_text(label, font, max_w, draw)
@@ -83,6 +84,16 @@ def draw_action_node(draw, x, y, label, font):
         lh = bbox[3] - bbox[1]
         draw.text((x - lw/2, curr_y), line, font=font, fill=(0, 0, 0))
         curr_y += lh + 2
+
+def draw_start_node(draw, x, y):
+    r = 10
+    draw.ellipse([x - r, y - r, x + r, y + r], fill=(0, 0, 0))
+
+def draw_end_node(draw, x, y):
+    r_out = 12
+    r_in = 6
+    draw.ellipse([x - r_out, y - r_out, x + r_out, y + r_out], fill=(255, 255, 255), outline=(0, 0, 0), width=2)
+    draw.ellipse([x - r_in, y - r_in, x + r_in, y + r_in], fill=(0, 0, 0))
 
 def draw_decision_node(draw, x, y):
     s = 18
@@ -103,6 +114,10 @@ def get_connection_offset(node_type, direction):
         return 18, 18
     elif node_type == "action":
         return 90, 24
+    elif node_type == "start":
+        return 10, 10
+    elif node_type == "end":
+        return 12, 12
     return 0, 0
 
 def draw_line_arrow(draw, points, label=None, label_side="top", font=None):
@@ -135,7 +150,7 @@ def draw_line_arrow(draw, points, label=None, label_side="top", font=None):
         elif label_side == "side":
             draw.text((mid_x + 8, mid_y - 4), label, font=font, fill=(0, 0, 0))
 
-def generate_activity_png(name, title_text, nodes, connections, output_dir):
+def generate_activity_png(name, title_text, actor_name, nodes, connections, output_dir):
     max_row = max(node["row"] for node in nodes.values())
     canvas_height = 145 + max_row * 80 + 60
     canvas_width = 600
@@ -150,8 +165,8 @@ def generate_activity_png(name, title_text, nodes, connections, output_dir):
     draw.rounded_rectangle([10, 60, canvas_width - 10, canvas_height - 10], radius=8, outline=(0, 0, 0), width=2)
     draw.line([LANE_DIVIDER_X, 60, LANE_DIVIDER_X, canvas_height - 10], fill=(0, 0, 0), width=2)
 
-    # Draw Swimlane header text Aktor and Sistem
-    draw_text_centered(draw, "Aktor", COL_USER_X, 82, font_bold, (0, 0, 0))
+    # Draw Swimlane header text (Aktor dynamically set, and Sistem)
+    draw_text_centered(draw, actor_name, COL_USER_X, 82, font_bold, (0, 0, 0))
     draw_text_centered(draw, "Sistem", COL_SYSTEM_X, 82, font_bold, (0, 0, 0))
     # Line separating header from content
     draw.line([10, 105, canvas_width - 10, 105], fill=(0, 0, 0), width=2)
@@ -163,6 +178,10 @@ def generate_activity_png(name, title_text, nodes, connections, output_dir):
             draw_action_node(draw, x, y, n["label"], font_regular)
         elif n["type"] == "decision":
             draw_decision_node(draw, x, y)
+        elif n["type"] == "start":
+            draw_start_node(draw, x, y)
+        elif n["type"] == "end":
+            draw_end_node(draw, x, y)
 
     # Draw Connections
     for conn in connections:
@@ -227,6 +246,13 @@ def generate_activity_png(name, title_text, nodes, connections, output_dir):
             p4 = (x_to - dx_to, y_to)
             draw_line_arrow(draw, [p1, p2, p3, p4], label, label_side, font_regular)
 
+        elif route == "loopback_outer_right":
+            p1 = (x_from + dx_from, y_from)
+            p2 = (canvas_width - 25, y_from)
+            p3 = (canvas_width - 25, y_to)
+            p4 = (x_to + dx_to, y_to)
+            draw_line_arrow(draw, [p1, p2, p3, p4], label, label_side, font_regular)
+
     # Save PNG
     img_rgb = Image.new("RGB", img.size, (255, 255, 255))
     img_rgb.paste(img, mask=img.split()[3])
@@ -239,7 +265,7 @@ def xml_escape(text):
         return ""
     return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;").replace("'", "&apos;")
 
-def generate_activity_drawio(name, title_text, nodes, connections, output_dir):
+def generate_activity_drawio(name, title_text, actor_name, nodes, connections, output_dir):
     max_row = max(node["row"] for node in nodes.values())
     canvas_height = 145 + max_row * 80 + 60
     
@@ -256,11 +282,11 @@ def generate_activity_drawio(name, title_text, nodes, connections, output_dir):
     cell_id = 2
     node_id_map = {}
     
-    # Draw Swimlanes (Aktor and Sistem side-by-side)
-    # Aktor lane
+    # Draw Swimlanes (Actor and Sistem side-by-side)
+    # Actor lane
     actor_lane_id = cell_id
     cell_id += 1
-    xml_lines.append(f'        <mxCell id="{actor_lane_id}" value="Aktor" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fillColor=none;strokeColor=#000000;strokeWidth=2;fontStyle=1;align=center;connectable=0;" vertex="1" parent="1">')
+    xml_lines.append(f'        <mxCell id="{actor_lane_id}" value="{xml_escape(actor_name)}" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fillColor=none;strokeColor=#000000;strokeWidth=2;fontStyle=1;align=center;connectable=0;" vertex="1" parent="1">')
     xml_lines.append(f'          <mxGeometry x="10" y="60" width="290" height="{canvas_height - 70}" as="geometry"/>')
     xml_lines.append('        </mxCell>')
     
@@ -289,8 +315,8 @@ def generate_activity_drawio(name, title_text, nodes, connections, output_dir):
         row_y = 145 + n["row"] * 80
         
         if n["type"] == "action":
-            # Oval/ellipse shape
-            style = "ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2;align=center;verticalAlign=middle;"
+            # Rounded rectangle shape
+            style = "rounded=1;whiteSpace=wrap;html=1;arcSize=15;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2;align=center;verticalAlign=middle;"
             w = 180
             h = 48
             x = col_x - w//2
@@ -303,6 +329,26 @@ def generate_activity_drawio(name, title_text, nodes, connections, output_dir):
             style = "rhombus;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2;align=center;verticalAlign=middle;"
             w = 36
             h = 36
+            x = col_x - w//2
+            y = row_y - h//2
+            xml_lines.append(f'        <mxCell id="{node_id}" value="" style="{style}" vertex="1" parent="1">')
+            xml_lines.append(f'          <mxGeometry x="{x}" y="{y}" width="{w}" height="{h}" as="geometry"/>')
+            xml_lines.append('        </mxCell>')
+        elif n["type"] == "start":
+            # Start Node: solid black circle
+            style = "ellipse;whiteSpace=wrap;html=1;fillColor=#000000;strokeColor=#000000;"
+            w = 20
+            h = 20
+            x = col_x - w//2
+            y = row_y - h//2
+            xml_lines.append(f'        <mxCell id="{node_id}" value="" style="{style}" vertex="1" parent="1">')
+            xml_lines.append(f'          <mxGeometry x="{x}" y="{y}" width="{w}" height="{h}" as="geometry"/>')
+            xml_lines.append('        </mxCell>')
+        elif n["type"] == "end":
+            # End Node: circle inside a circle
+            style = "ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;strokeWidth=2;"
+            w = 24
+            h = 24
             x = col_x - w//2
             y = row_y - h//2
             xml_lines.append(f'        <mxCell id="{node_id}" value="" style="{style}" vertex="1" parent="1">')
@@ -340,16 +386,19 @@ def generate_activity_drawio(name, title_text, nodes, connections, output_dir):
 # Helper to construct standardized CRUD workflows
 def get_crud_diagram(title_text, data_singular, data_plural):
     nodes = {
-        "menu": {"type": "action", "column": "user", "row": 0, "label": f"Memilih Menu Kelola {data_singular}"},
-        "index": {"type": "action", "column": "system", "row": 0, "label": f"Menampilkan Daftar Data {data_plural}"},
-        "add_btn": {"type": "action", "column": "user", "row": 1, "label": f"Memilih Tombol Tambah {data_singular}"},
-        "form": {"type": "action", "column": "system", "row": 1, "label": "Menampilkan Form Input"},
-        "input": {"type": "action", "column": "user", "row": 2, "label": f"Menginputkan Data {data_singular} & Klik Simpan"},
-        "validate": {"type": "action", "column": "system", "row": 3, "label": "Memvalidasi Data"},
-        "decision": {"type": "decision", "column": "system", "row": 4},
-        "save": {"type": "action", "column": "system", "row": 5, "label": f"Menyimpan Data ke Database & Tampilkan Pesan Sukses"}
+        "start": {"type": "start", "column": "user", "row": 0},
+        "menu": {"type": "action", "column": "user", "row": 1, "label": f"Memilih Menu Kelola {data_singular}"},
+        "index": {"type": "action", "column": "system", "row": 1, "label": f"Menampilkan Daftar Data {data_plural}"},
+        "add_btn": {"type": "action", "column": "user", "row": 2, "label": f"Memilih Tombol Tambah {data_singular}"},
+        "form": {"type": "action", "column": "system", "row": 2, "label": "Menampilkan Form Input"},
+        "input": {"type": "action", "column": "user", "row": 3, "label": f"Menginputkan Data {data_singular} & Klik Simpan"},
+        "validate": {"type": "action", "column": "system", "row": 4, "label": "Memvalidasi Data"},
+        "decision": {"type": "decision", "column": "system", "row": 5},
+        "save": {"type": "action", "column": "system", "row": 6, "label": f"Menyimpan Data ke Database & Tampilkan Pesan Sukses"},
+        "end": {"type": "end", "column": "system", "row": 7}
     }
     connections = [
+        {"from": "start", "to": "menu", "route": "direct"},
         {"from": "menu", "to": "index", "route": "direct"},
         {"from": "index", "to": "add_btn", "route": "orthogonal"},
         {"from": "add_btn", "to": "form", "route": "direct"},
@@ -357,7 +406,8 @@ def get_crud_diagram(title_text, data_singular, data_plural):
         {"from": "input", "to": "validate", "route": "orthogonal"},
         {"from": "validate", "to": "decision", "route": "direct"},
         {"from": "decision", "to": "save", "route": "direct", "label": "Ya", "label_side": "side"},
-        {"from": "decision", "to": "input", "route": "loopback_outer_left", "label": "Tidak", "label_side": "top"}
+        {"from": "decision", "to": "input", "route": "loopback_outer_left", "label": "Tidak", "label_side": "top"},
+        {"from": "save", "to": "end", "route": "direct"}
     ]
     return title_text, nodes, connections
 
@@ -370,222 +420,356 @@ if __name__ == "__main__":
 
     # Define standard CRUD diagrams based on CRUD helper
     cruds = {
-        "2_kelola_pengguna": ("Kelola Pengguna (User Management)", "Pengguna", "Pengguna"),
-        "3_kelola_tamu": ("Kelola Tamu (Guest Management)", "Tamu", "Tamu"),
-        "4_kelola_gedung": ("Kelola Gedung", "Gedung", "Gedung"),
-        "5_kelola_ruangan": ("Kelola Ruangan", "Ruangan", "Ruangan"),
-        "6_kelola_sarana": ("Kelola Sarana & Prasarana", "Sarana", "Sarana"),
-        "7_kelola_paket": ("Kelola Paket Ruangan", "Paket Ruangan", "Paket Ruangan"),
-        "13_kelola_berita": ("Kelola Berita", "Berita", "Berita"),
-        "14_kelola_landing_page": ("Kelola Landing Page", "Landing Page", "Landing Page"),
-        "16_kelola_profil": ("Kelola Profil", "Profil", "Profil"),
-        "19_kelola_gambar": ("Kelola Gambar", "Gambar", "Gambar"),
-        "20_kelola_tentang": ("Kelola Tentang", "Tentang Halaman", "Tentang Halaman")
+        "3_kelola_pengguna": ("Kelola Pengguna (User Management)", "Aktor", "Pengguna", "Pengguna"),
+        "4_kelola_landing_page": ("Kelola Landing Page", "Aktor", "Landing Page", "Landing Page"),
+        "5_kelola_tamu": ("Kelola Tamu (Guest Management)", "Aktor", "Tamu", "Tamu"),
+        "6_kelola_ulasan": ("Kelola Ulasan Ruangan", "Aktor", "Ulasan", "Ulasan"),
+        "7_kelola_ruangan": ("Kelola Ruangan", "Aktor", "Ruangan", "Ruangan"),
+        "8_kelola_sarana": ("Kelola Sarana & Prasarana", "Aktor", "Sarana", "Sarana"),
+        "9_kelola_paket": ("Kelola Paket Ruangan", "Aktor", "Paket Ruangan", "Paket Ruangan"),
+        "18_kelola_berita": ("Kelola Berita", "Aktor", "Berita", "Berita")
     }
 
-    for key, (title_text, ds, dp) in cruds.items():
+    for key, (title_text, actor, ds, dp) in cruds.items():
         t, n, c = get_crud_diagram(title_text, ds, dp)
-        activity_diagrams[key] = {"title": t, "nodes": n, "connections": c}
+        activity_diagrams[key] = {"title": t, "actor": actor, "nodes": n, "connections": c}
 
     # Define custom activity diagrams
     # 1_login_sistem
     activity_diagrams["1_login_sistem"] = {
         "title": "Login Sistem",
+        "actor": "Aktor",
         "nodes": {
-            "open": {"type": "action", "column": "user", "row": 0, "label": "Membuka Halaman Login"},
-            "show": {"type": "action", "column": "system", "row": 0, "label": "Menampilkan Form Login"},
-            "input": {"type": "action", "column": "user", "row": 1, "label": "Mengisi Email & Password, klik Login"},
-            "validate": {"type": "action", "column": "system", "row": 2, "label": "Memvalidasi Kredensial"},
-            "decision": {"type": "decision", "column": "system", "row": 3},
-            "session": {"type": "action", "column": "system", "row": 4, "label": "Membuat Session & Redirect ke Dashboard"}
+            "start": {"type": "start", "column": "user", "row": 0},
+            "open": {"type": "action", "column": "user", "row": 1, "label": "Membuka Halaman Login"},
+            "show": {"type": "action", "column": "system", "row": 1, "label": "Menampilkan Form Login"},
+            "input": {"type": "action", "column": "user", "row": 2, "label": "Mengisi Email & Password, klik Login"},
+            "validate": {"type": "action", "column": "system", "row": 3, "label": "Memvalidasi Kredensial"},
+            "decision": {"type": "decision", "column": "system", "row": 4},
+            "session": {"type": "action", "column": "system", "row": 5, "label": "Membuat Session & Redirect ke Dashboard"},
+            "end": {"type": "end", "column": "system", "row": 6}
         },
         "connections": [
+            {"from": "start", "to": "open", "route": "direct"},
             {"from": "open", "to": "show", "route": "direct"},
             {"from": "show", "to": "input", "route": "orthogonal"},
             {"from": "input", "to": "validate", "route": "orthogonal"},
             {"from": "validate", "to": "decision", "route": "direct"},
             {"from": "decision", "to": "session", "route": "direct", "label": "Ya", "label_side": "side"},
-            {"from": "decision", "to": "input", "route": "loopback_outer_left", "label": "Tidak", "label_side": "top"}
+            {"from": "decision", "to": "input", "route": "loopback_outer_left", "label": "Tidak", "label_side": "top"},
+            {"from": "session", "to": "end", "route": "direct"}
         ]
     }
 
-    # 8_ajukan_peminjaman
-    activity_diagrams["8_ajukan_peminjaman"] = {
-        "title": "Ajukan Peminjaman (Reservasi)",
+    # 2_registrasi_akun
+    activity_diagrams["2_registrasi_akun"] = {
+        "title": "Registrasi Akun",
+        "actor": "Aktor",
         "nodes": {
-            "open": {"type": "action", "column": "user", "row": 0, "label": "Memilih Menu Pengajuan Peminjaman"},
-            "show": {"type": "action", "column": "system", "row": 0, "label": "Menampilkan Form Pengajuan"},
-            "input": {"type": "action", "column": "user", "row": 1, "label": "Mengisi Formulir & Memilih Fasilitas"},
-            "check": {"type": "action", "column": "system", "row": 2, "label": "Memeriksa Ketersediaan Ruangan & Sarana"},
-            "decision": {"type": "decision", "column": "system", "row": 3},
-            "error_msg": {"type": "action", "column": "system", "row": 4, "label": "Menampilkan Notifikasi Stok Habis / Terbooking"},
-            "save": {"type": "action", "column": "system", "row": 5, "label": "Menyimpan Pengajuan dengan Status: PENDING"}
+            "start": {"type": "start", "column": "user", "row": 0},
+            "open": {"type": "action", "column": "user", "row": 1, "label": "Membuka Halaman Registrasi"},
+            "show": {"type": "action", "column": "system", "row": 1, "label": "Menampilkan Form Registrasi"},
+            "input": {"type": "action", "column": "user", "row": 2, "label": "Mengisi Nama, Email, Password, dan Data Diri, klik Register"},
+            "validate": {"type": "action", "column": "system", "row": 3, "label": "Memvalidasi Data Registrasi"},
+            "decision": {"type": "decision", "column": "system", "row": 4},
+            "save": {"type": "action", "column": "system", "row": 5, "label": "Menyimpan Data Akun (Belum Aktif) & Kirim Kode Verifikasi ke Email"},
+            "show_otp": {"type": "action", "column": "system", "row": 6, "label": "Menampilkan Halaman Verifikasi Email"},
+            "input_otp": {"type": "action", "column": "user", "row": 7, "label": "Menginputkan Kode Verifikasi & Klik Verifikasi"},
+            "validate_otp": {"type": "action", "column": "system", "row": 8, "label": "Memvalidasi Kode Verifikasi"},
+            "decision_otp": {"type": "decision", "column": "system", "row": 9},
+            "activate": {"type": "action", "column": "system", "row": 10, "label": "Mengubah Status Akun Menjadi Aktif & Redirect ke Login"},
+            "end": {"type": "end", "column": "system", "row": 11}
         },
         "connections": [
+            {"from": "start", "to": "open", "route": "direct"},
             {"from": "open", "to": "show", "route": "direct"},
             {"from": "show", "to": "input", "route": "orthogonal"},
-            {"from": "input", "to": "check", "route": "orthogonal"},
-            {"from": "check", "to": "decision", "route": "direct"},
-            {"from": "decision", "to": "save", "route": "direct", "label": "Tersedia", "label_side": "side"},
-            {"from": "decision", "to": "error_msg", "route": "direct", "label": "Penuh", "label_side": "side"},
-            {"from": "error_msg", "to": "input", "route": "loopback_outer_left"}
-        ]
-    }
-
-    # 9_verifikasi_peminjaman
-    activity_diagrams["9_verifikasi_peminjaman"] = {
-        "title": "Verifikasi & Approval Peminjaman",
-        "nodes": {
-            "open": {"type": "action", "column": "user", "row": 0, "label": "Membuka Detail Pengajuan Pending"},
-            "show": {"type": "action", "column": "system", "row": 0, "label": "Menampilkan Berkas Pengajuan"},
-            "verify": {"type": "action", "column": "user", "row": 1, "label": "Memeriksa Validitas & Kelayakan Berkas"},
-            "decision": {"type": "decision", "column": "user", "row": 2},
-            "reject": {"type": "action", "column": "user", "row": 3, "label": "Menolak & Input Alasan Penolakan"},
-            "reject_sys": {"type": "action", "column": "system", "row": 3, "label": "Update Status: Rejected & Kirim email"},
-            "approve": {"type": "action", "column": "user", "row": 4, "label": "Menyetujui Pengajuan Peminjaman"},
-            "approve_sys": {"type": "action", "column": "system", "row": 4, "label": "Update Status: Approved & Generate Invoice"}
-        },
-        "connections": [
-            {"from": "open", "to": "show", "route": "direct"},
-            {"from": "show", "to": "verify", "route": "orthogonal"},
-            {"from": "verify", "to": "decision", "route": "direct"},
-            {"from": "decision", "to": "reject", "route": "direct", "label": "Tolak", "label_side": "side"},
-            {"from": "decision", "to": "approve", "route": "direct", "label": "Setuju", "label_side": "side"},
-            {"from": "reject", "to": "reject_sys", "route": "direct"},
-            {"from": "approve", "to": "approve_sys", "route": "direct"}
-        ]
-    }
-
-    # 10_checkin
-    activity_diagrams["10_checkin"] = {
-        "title": "Proses Check-In Peminjaman",
-        "nodes": {
-            "open": {"type": "action", "column": "user", "row": 0, "label": "Memilih Menu Transaksi & Cari Peminjaman Approved"},
-            "show": {"type": "action", "column": "system", "row": 0, "label": "Menampilkan Halaman Transaksi"},
-            "click": {"type": "action", "column": "user", "row": 1, "label": "Memilih Data & Klik Tombol Check-in"},
-            "validate": {"type": "action", "column": "system", "row": 2, "label": "Memvalidasi Waktu Check-in"},
-            "decision": {"type": "decision", "column": "system", "row": 3},
-            "error_msg": {"type": "action", "column": "system", "row": 4, "label": "Menampilkan Peringatan: Belum Waktunya"},
-            "active": {"type": "action", "column": "system", "row": 5, "label": "Update Status: CHECK_IN & Catat Waktu Masuk"}
-        },
-        "connections": [
-            {"from": "open", "to": "show", "route": "direct"},
-            {"from": "show", "to": "click", "route": "orthogonal"},
-            {"from": "click", "to": "validate", "route": "orthogonal"},
+            {"from": "input", "to": "validate", "route": "orthogonal"},
             {"from": "validate", "to": "decision", "route": "direct"},
-            {"from": "decision", "to": "active", "route": "direct", "label": "Valid", "label_side": "side"},
-            {"from": "decision", "to": "error_msg", "route": "direct", "label": "Tidak", "label_side": "side"}
+            {"from": "decision", "to": "save", "route": "direct", "label": "Valid", "label_side": "side"},
+            {"from": "decision", "to": "input", "route": "loopback_outer_left", "label": "Tidak Valid", "label_side": "top"},
+            {"from": "save", "to": "show_otp", "route": "direct"},
+            {"from": "show_otp", "to": "input_otp", "route": "orthogonal"},
+            {"from": "input_otp", "to": "validate_otp", "route": "orthogonal"},
+            {"from": "validate_otp", "to": "decision_otp", "route": "direct"},
+            {"from": "decision_otp", "to": "activate", "route": "direct", "label": "Valid", "label_side": "side"},
+            {"from": "decision_otp", "to": "input_otp", "route": "loopback_outer_left", "label": "Tidak Valid", "label_side": "top"},
+            {"from": "activate", "to": "end", "route": "direct"}
         ]
     }
 
-    # 11_checkout
-    activity_diagrams["11_checkout"] = {
-        "title": "Proses Check-Out Peminjaman",
+
+    # 10_kelola_profil
+    activity_diagrams["10_kelola_profil"] = {
+        "title": "Kelola Profil",
+        "actor": "Aktor",
         "nodes": {
-            "open": {"type": "action", "column": "user", "row": 0, "label": "Memilih Peminjaman Aktif & Klik Check-out"},
-            "show": {"type": "action", "column": "system", "row": 0, "label": "Menampilkan Form Check-out"},
-            "check": {"type": "action", "column": "user", "row": 1, "label": "Memeriksa Kondisi Sarana & Input Kerusakan (jika ada)"},
-            "calc": {"type": "action", "column": "system", "row": 2, "label": "Menghitung Biaya Tambahan & Denda"},
-            "update": {"type": "action", "column": "system", "row": 3, "label": "Update Status: CHECK_OUT, Simpan Kondisi & Cetak Kwitansi"}
+            "start": {"type": "start", "column": "user", "row": 0},
+            "menu": {"type": "action", "column": "user", "row": 1, "label": "Membuka Halaman Profil Saya"},
+            "show": {"type": "action", "column": "system", "row": 1, "label": "Menampilkan Detail Profil & Form Edit"},
+            "edit": {"type": "action", "column": "user", "row": 2, "label": "Mengubah Data Profil & Klik Simpan Perubahan"},
+            "validate": {"type": "action", "column": "system", "row": 3, "label": "Memvalidasi Data Profil"},
+            "decision": {"type": "decision", "column": "system", "row": 4},
+            "save": {"type": "action", "column": "system", "row": 5, "label": "Menyimpan Perubahan Profil & Tampilkan Pesan Sukses"},
+            "end": {"type": "end", "column": "system", "row": 6}
         },
         "connections": [
-            {"from": "open", "to": "show", "route": "direct"},
-            {"from": "show", "to": "check", "route": "orthogonal"},
-            {"from": "check", "to": "calc", "route": "orthogonal"},
-            {"from": "calc", "to": "update", "route": "direct"}
+            {"from": "start", "to": "menu", "route": "direct"},
+            {"from": "menu", "to": "show", "route": "direct"},
+            {"from": "show", "to": "edit", "route": "orthogonal"},
+            {"from": "edit", "to": "validate", "route": "orthogonal"},
+            {"from": "validate", "to": "decision", "route": "direct"},
+            {"from": "decision", "to": "save", "route": "direct", "label": "Valid", "label_side": "side"},
+            {"from": "decision", "to": "edit", "route": "loopback_outer_left", "label": "Tidak Valid", "label_side": "top"},
+            {"from": "save", "to": "end", "route": "direct"}
         ]
     }
 
-    # 12_kelola_invoice
-    activity_diagrams["12_kelola_invoice"] = {
+    # 11_kelola_invoice
+    activity_diagrams["11_kelola_invoice"] = {
         "title": "Kelola & Cetak Invoice",
+        "actor": "Aktor",
         "nodes": {
-            "open": {"type": "action", "column": "user", "row": 0, "label": "Memilih Menu Invoice / Mengklik Detail Invoice"},
-            "show": {"type": "action", "column": "system", "row": 0, "label": "Menampilkan Halaman Rincian/Detail Invoice"},
-            "edit": {"type": "action", "column": "user", "row": 1, "label": "Mengubah Status Pembayaran ke PAID & Klik Simpan"},
-            "validate": {"type": "action", "column": "system", "row": 2, "label": "Memvalidasi Input Status Pembayaran"},
-            "decision": {"type": "decision", "column": "system", "row": 3},
-            "error_msg": {"type": "action", "column": "system", "row": 4, "label": "Menampilkan Notifikasi Kesalahan Input"},
-            "save": {"type": "action", "column": "system", "row": 5, "label": "Update Status: PAID & LUNAS, Kirim Email, & Tampilkan Sukses"}
+            "start": {"type": "start", "column": "user", "row": 0},
+            "open": {"type": "action", "column": "user", "row": 1, "label": "Memilih Menu Invoice / Mengklik Detail Invoice"},
+            "show": {"type": "action", "column": "system", "row": 1, "label": "Menampilkan Halaman Rincian/Detail Invoice"},
+            "edit": {"type": "action", "column": "user", "row": 2, "label": "Mengubah Status Pembayaran ke PAID & Klik Simpan"},
+            "validate": {"type": "action", "column": "system", "row": 3, "label": "Memvalidasi Input Status Pembayaran"},
+            "decision": {"type": "decision", "column": "system", "row": 4},
+            "error_msg": {"type": "action", "column": "system", "row": 5, "label": "Menampilkan Notifikasi Kesalahan Input"},
+            "save": {"type": "action", "column": "system", "row": 6, "label": "Update Status: PAID & LUNAS, Kirim Email, & Tampilkan Sukses"},
+            "end": {"type": "end", "column": "system", "row": 7}
         },
         "connections": [
+            {"from": "start", "to": "open", "route": "direct"},
             {"from": "open", "to": "show", "route": "direct"},
             {"from": "show", "to": "edit", "route": "orthogonal"},
             {"from": "edit", "to": "validate", "route": "orthogonal"},
             {"from": "validate", "to": "decision", "route": "direct"},
             {"from": "decision", "to": "save", "route": "direct", "label": "Valid", "label_side": "side"},
             {"from": "decision", "to": "error_msg", "route": "direct", "label": "Tidak Valid", "label_side": "side"},
-            {"from": "error_msg", "to": "edit", "route": "loopback_outer_left"}
+            {"from": "error_msg", "to": "edit", "route": "loopback_outer_left"},
+            {"from": "save", "to": "end", "route": "direct"}
         ]
     }
 
-    # 15_lihat_laporan
-    activity_diagrams["15_lihat_laporan"] = {
-        "title": "Lihat Laporan Penggunaan",
+    # 12_checkin
+    activity_diagrams["12_checkin"] = {
+        "title": "Proses Check-In Peminjaman",
+        "actor": "Aktor",
         "nodes": {
-            "open": {"type": "action", "column": "user", "row": 0, "label": "Memilih Menu Laporan"},
-            "show": {"type": "action", "column": "system", "row": 0, "label": "Menampilkan Form Filter Laporan"},
-            "filter": {"type": "action", "column": "user", "row": 1, "label": "Menginputkan Range Tanggal & Klik Filter"},
-            "query": {"type": "action", "column": "system", "row": 2, "label": "Query & Aggregasi Data Penggunaan Fasilitas"},
-            "render": {"type": "action", "column": "system", "row": 3, "label": "Menampilkan Grafik & Rincian Laporan"},
-            "print_choice": {"type": "action", "column": "user", "row": 4, "label": "Memilih Aksi Cetak PDF (Opsional)"},
-            "pdf": {"type": "action", "column": "system", "row": 5, "label": "Generate & Download File PDF Laporan"}
+            "start": {"type": "start", "column": "user", "row": 0},
+            "open": {"type": "action", "column": "user", "row": 1, "label": "Memilih Menu Transaksi & Cari Peminjaman Approved"},
+            "show": {"type": "action", "column": "system", "row": 1, "label": "Menampilkan Halaman Transaksi"},
+            "click": {"type": "action", "column": "user", "row": 2, "label": "Memilih Data & Klik Tombol Check-in"},
+            "validate": {"type": "action", "column": "system", "row": 3, "label": "Memvalidasi Waktu Check-in"},
+            "decision": {"type": "decision", "column": "system", "row": 4},
+            "error_msg": {"type": "action", "column": "system", "row": 5, "label": "Menampilkan Peringatan: Belum Waktunya"},
+            "active": {"type": "action", "column": "system", "row": 6, "label": "Update Status: CHECK_IN & Catat Waktu Masuk"},
+            "end": {"type": "end", "column": "system", "row": 7}
         },
         "connections": [
+            {"from": "start", "to": "open", "route": "direct"},
             {"from": "open", "to": "show", "route": "direct"},
-            {"from": "show", "to": "filter", "route": "orthogonal"},
-            {"from": "filter", "to": "query", "route": "orthogonal"},
-            {"from": "query", "to": "render", "route": "direct"},
-            {"from": "render", "to": "print_choice", "route": "orthogonal"},
-            {"from": "print_choice", "to": "pdf", "route": "direct"}
+            {"from": "show", "to": "click", "route": "orthogonal"},
+            {"from": "click", "to": "validate", "route": "orthogonal"},
+            {"from": "validate", "to": "decision", "route": "direct"},
+            {"from": "decision", "to": "active", "route": "direct", "label": "Valid", "label_side": "side"},
+            {"from": "decision", "to": "error_msg", "route": "direct", "label": "Tidak", "label_side": "side"},
+            {"from": "error_msg", "to": "click", "route": "loopback_outer_left"},
+            {"from": "active", "to": "end", "route": "direct"}
         ]
     }
 
-    # 17_batalkan_peminjaman
-    activity_diagrams["17_batalkan_peminjaman"] = {
-        "title": "Batalkan Peminjaman",
+    # 13_checkout
+    activity_diagrams["13_checkout"] = {
+        "title": "Proses Check-Out Peminjaman",
+        "actor": "Aktor",
         "nodes": {
-            "open": {"type": "action", "column": "user", "row": 0, "label": "Membuka Menu Peminjaman Saya"},
-            "show": {"type": "action", "column": "system", "row": 0, "label": "Menampilkan Daftar Booking Aktif"},
-            "click": {"type": "action", "column": "user", "row": 1, "label": "Memilih Booking & Klik Batal Peminjaman"},
-            "confirm": {"type": "action", "column": "system", "row": 1, "label": "Menampilkan Modal Konfirmasi Pembatalan"},
-            "decision": {"type": "decision", "column": "user", "row": 2},
-            "save": {"type": "action", "column": "system", "row": 3, "label": "Update Status: Cancelled, Lepas Jadwal Booking"},
-            "success": {"type": "action", "column": "system", "row": 4, "label": "Menampilkan Pesan: Pembatalan Sukses"}
+            "start": {"type": "start", "column": "user", "row": 0},
+            "open": {"type": "action", "column": "user", "row": 1, "label": "Memilih Peminjaman Aktif & Klik Check-out"},
+            "show": {"type": "action", "column": "system", "row": 1, "label": "Menampilkan Form Check-out"},
+            "check": {"type": "action", "column": "user", "row": 2, "label": "Memeriksa Kondisi Sarana & Input Kerusakan (jika ada)"},
+            "calc": {"type": "action", "column": "system", "row": 3, "label": "Menghitung Biaya Tambahan & Denda"},
+            "update": {"type": "action", "column": "system", "row": 4, "label": "Update Status: CHECK_OUT, Simpan Kondisi & Cetak Kwitansi"},
+            "end": {"type": "end", "column": "system", "row": 5}
         },
         "connections": [
+            {"from": "start", "to": "open", "route": "direct"},
+            {"from": "open", "to": "show", "route": "direct"},
+            {"from": "show", "to": "check", "route": "orthogonal"},
+            {"from": "check", "to": "calc", "route": "orthogonal"},
+            {"from": "calc", "to": "update", "route": "direct"},
+            {"from": "update", "to": "end", "route": "direct"}
+        ]
+    }
+
+    # 14_verifikasi_peminjaman
+    activity_diagrams["14_verifikasi_peminjaman"] = {
+        "title": "Verifikasi & Approval Peminjaman",
+        "actor": "Aktor",
+        "nodes": {
+            "start": {"type": "start", "column": "user", "row": 0},
+            "open": {"type": "action", "column": "user", "row": 1, "label": "Membuka Detail Pengajuan Pending"},
+            "show": {"type": "action", "column": "system", "row": 1, "label": "Menampilkan Berkas Pengajuan"},
+            "verify": {"type": "action", "column": "user", "row": 2, "label": "Memeriksa Validitas & Kelayakan Berkas"},
+            "decision": {"type": "decision", "column": "user", "row": 3},
+            "reject": {"type": "action", "column": "user", "row": 4, "label": "Menolak & Input Alasan Penolakan"},
+            "reject_sys": {"type": "action", "column": "system", "row": 4, "label": "Update Status: Rejected & Kirim email"},
+            "approve": {"type": "action", "column": "user", "row": 5, "label": "Menyetujui Pengajuan Peminjaman"},
+            "approve_sys": {"type": "action", "column": "system", "row": 5, "label": "Update Status: Approved & Generate Invoice"},
+            "end": {"type": "end", "column": "system", "row": 6}
+        },
+        "connections": [
+            {"from": "start", "to": "open", "route": "direct"},
+            {"from": "open", "to": "show", "route": "direct"},
+            {"from": "show", "to": "verify", "route": "orthogonal"},
+            {"from": "verify", "to": "decision", "route": "direct"},
+            {"from": "decision", "to": "reject", "route": "direct", "label": "Tolak", "label_side": "side"},
+            {"from": "decision", "to": "approve", "route": "direct", "label": "Setuju", "label_side": "side"},
+            {"from": "reject", "to": "reject_sys", "route": "direct"},
+            {"from": "approve", "to": "approve_sys", "route": "direct"},
+            {"from": "reject_sys", "to": "end", "route": "orthogonal"},
+            {"from": "approve_sys", "to": "end", "route": "direct"}
+        ]
+    }
+
+    # 15_ajukan_peminjaman
+    activity_diagrams["15_ajukan_peminjaman"] = {
+        "title": "Ajukan Peminjaman (Reservasi)",
+        "actor": "Aktor",
+        "nodes": {
+            "start": {"type": "start", "column": "user", "row": 0},
+            "open": {"type": "action", "column": "user", "row": 1, "label": "Memilih Menu Pengajuan Peminjaman"},
+            "show": {"type": "action", "column": "system", "row": 1, "label": "Menampilkan Form Pengajuan"},
+            "input": {"type": "action", "column": "user", "row": 2, "label": "Mengisi Formulir & Memilih Fasilitas"},
+            "check": {"type": "action", "column": "system", "row": 3, "label": "Memeriksa Ketersediaan Ruangan & Sarana"},
+            "decision": {"type": "decision", "column": "system", "row": 4},
+            "error_msg": {"type": "action", "column": "system", "row": 5, "label": "Menampilkan Notifikasi Stok Habis / Terbooking"},
+            "save": {"type": "action", "column": "system", "row": 6, "label": "Menyimpan Pengajuan dengan Status: PENDING"},
+            "end": {"type": "end", "column": "system", "row": 7}
+        },
+        "connections": [
+            {"from": "start", "to": "open", "route": "direct"},
+            {"from": "open", "to": "show", "route": "direct"},
+            {"from": "show", "to": "input", "route": "orthogonal"},
+            {"from": "input", "to": "check", "route": "orthogonal"},
+            {"from": "check", "to": "decision", "route": "direct"},
+            {"from": "decision", "to": "save", "route": "direct", "label": "Tersedia", "label_side": "side"},
+            {"from": "decision", "to": "error_msg", "route": "direct", "label": "Penuh", "label_side": "side"},
+            {"from": "error_msg", "to": "input", "route": "loopback_outer_left"},
+            {"from": "save", "to": "end", "route": "direct"}
+        ]
+    }
+
+    # 16_batalkan_peminjaman
+    activity_diagrams["16_batalkan_peminjaman"] = {
+        "title": "Batalkan Peminjaman",
+        "actor": "Aktor",
+        "nodes": {
+            "start": {"type": "start", "column": "user", "row": 0},
+            "open": {"type": "action", "column": "user", "row": 1, "label": "Membuka Menu Peminjaman Saya"},
+            "show": {"type": "action", "column": "system", "row": 1, "label": "Menampilkan Daftar Booking Aktif"},
+            "click": {"type": "action", "column": "user", "row": 2, "label": "Memilih Booking & Klik Batal Peminjaman"},
+            "confirm": {"type": "action", "column": "system", "row": 2, "label": "Menampilkan Modal Konfirmasi Pembatalan"},
+            "decision": {"type": "decision", "column": "user", "row": 3},
+            "save": {"type": "action", "column": "system", "row": 4, "label": "Update Status: Cancelled, Lepas Jadwal Booking"},
+            "success": {"type": "action", "column": "system", "row": 5, "label": "Menampilkan Pesan: Pembatalan Sukses"},
+            "end": {"type": "end", "column": "system", "row": 6}
+        },
+        "connections": [
+            {"from": "start", "to": "open", "route": "direct"},
             {"from": "open", "to": "show", "route": "direct"},
             {"from": "show", "to": "click", "route": "orthogonal"},
             {"from": "click", "to": "confirm", "route": "direct"},
             {"from": "confirm", "to": "decision", "route": "orthogonal"},
             {"from": "decision", "to": "save", "route": "orthogonal", "label": "Ya", "label_side": "side"},
             {"from": "decision", "to": "click", "route": "loopback_outer_left", "label": "Tidak"},
-            {"from": "save", "to": "success", "route": "direct"}
+            {"from": "save", "to": "success", "route": "direct"},
+            {"from": "success", "to": "end", "route": "direct"}
         ]
     }
 
-    # 18_lihat_ketersediaan
-    activity_diagrams["18_lihat_ketersediaan"] = {
-        "title": "Lihat Data Ketersediaan",
+    # 17_lihat_laporan
+    activity_diagrams["17_lihat_laporan"] = {
+        "title": "Lihat Laporan Penggunaan",
+        "actor": "Aktor",
         "nodes": {
-            "open": {"type": "action", "column": "user", "row": 0, "label": "Membuka Halaman Cek Ketersediaan"},
-            "show": {"type": "action", "column": "system", "row": 0, "label": "Menampilkan Kalender & List Ruangan"},
-            "select": {"type": "action", "column": "user", "row": 1, "label": "Memilih Ruangan & Rentang Tanggal"},
-            "query": {"type": "action", "column": "system", "row": 2, "label": "Query Status Booking & Ketersediaan"},
-            "render": {"type": "action", "column": "system", "row": 3, "label": "Menampilkan Status Jadwal (Hijau/Merah)"}
+            "start": {"type": "start", "column": "user", "row": 0},
+            "open": {"type": "action", "column": "user", "row": 1, "label": "Memilih Menu Laporan"},
+            "show": {"type": "action", "column": "system", "row": 1, "label": "Menampilkan Form Filter Laporan"},
+            "filter": {"type": "action", "column": "user", "row": 2, "label": "Menginputkan Range Tanggal & Klik Filter"},
+            "query": {"type": "action", "column": "system", "row": 3, "label": "Query & Aggregasi Data Penggunaan Fasilitas"},
+            "render": {"type": "action", "column": "system", "row": 4, "label": "Menampilkan Grafik & Rincian Laporan"},
+            "print_choice": {"type": "action", "column": "user", "row": 5, "label": "Memilih Aksi Cetak PDF (Opsional)"},
+            "pdf": {"type": "action", "column": "system", "row": 6, "label": "Generate & Download File PDF Laporan"},
+            "end": {"type": "end", "column": "system", "row": 7}
         },
         "connections": [
+            {"from": "start", "to": "open", "route": "direct"},
             {"from": "open", "to": "show", "route": "direct"},
-            {"from": "show", "to": "select", "route": "orthogonal"},
-            {"from": "select", "to": "query", "route": "orthogonal"},
-            {"from": "query", "to": "render", "route": "direct"}
+            {"from": "show", "to": "filter", "route": "orthogonal"},
+            {"from": "filter", "to": "query", "route": "orthogonal"},
+            {"from": "query", "to": "render", "route": "direct"},
+            {"from": "render", "to": "print_choice", "route": "orthogonal"},
+            {"from": "print_choice", "to": "pdf", "route": "direct"},
+            {"from": "pdf", "to": "end", "route": "direct"}
         ]
     }
+
+    # 19_publish_berita
+    activity_diagrams["19_publish_berita"] = {
+        "title": "Publish Berita",
+        "actor": "Aktor",
+        "nodes": {
+            "start": {"type": "start", "column": "user", "row": 0},
+            "open": {"type": "action", "column": "user", "row": 1, "label": "Membuka Detail Berita Draf"},
+            "show": {"type": "action", "column": "system", "row": 1, "label": "Menampilkan Rincian Berita & Tombol Publish"},
+            "click": {"type": "action", "column": "user", "row": 2, "label": "Mengklik Tombol Publish Berita"},
+            "confirm": {"type": "action", "column": "system", "row": 2, "label": "Menampilkan Konfirmasi Publikasi"},
+            "decision": {"type": "decision", "column": "user", "row": 3},
+            "publish": {"type": "action", "column": "system", "row": 4, "label": "Mengubah Status Berita ke PUBLISHED & Tampilkan ke Publik"},
+            "success": {"type": "action", "column": "system", "row": 5, "label": "Menampilkan Pesan: Berita Berhasil Dipublish"},
+            "end": {"type": "end", "column": "system", "row": 6}
+        },
+        "connections": [
+            {"from": "start", "to": "open", "route": "direct"},
+            {"from": "open", "to": "show", "route": "direct"},
+            {"from": "show", "to": "click", "route": "orthogonal"},
+            {"from": "click", "to": "confirm", "route": "direct"},
+            {"from": "confirm", "to": "decision", "route": "orthogonal"},
+            {"from": "decision", "to": "publish", "route": "orthogonal", "label": "Ya"},
+            {"from": "decision", "to": "open", "route": "loopback_outer_left", "label": "Tidak"},
+            {"from": "publish", "to": "success", "route": "direct"},
+            {"from": "success", "to": "end", "route": "direct"}
+        ]
+    }
+
+    # Set of expected file names
+    valid_names = {
+        "1_login_sistem", "2_registrasi_akun", "3_kelola_pengguna", "4_kelola_landing_page",
+        "5_kelola_tamu", "6_kelola_ulasan", "7_kelola_ruangan", "8_kelola_sarana", "9_kelola_paket",
+        "10_kelola_profil", "11_kelola_invoice", "12_checkin", "13_checkout", "14_verifikasi_peminjaman",
+        "15_ajukan_peminjaman", "16_batalkan_peminjaman", "17_lihat_laporan", "18_kelola_berita",
+        "19_publish_berita"
+    }
+
+    # Cleanup old diagram files
+    for filename in os.listdir(output_dir):
+        base, ext = os.path.splitext(filename)
+        if ext in [".png", ".drawio"]:
+            if base not in valid_names:
+                filepath = os.path.join(output_dir, filename)
+                try:
+                    os.remove(filepath)
+                    print(f"Removed old diagram file: {filepath}")
+                except Exception as e:
+                    print(f"Failed to remove {filepath}: {e}")
 
     # Run generator
     print(f"Compiling {len(activity_diagrams)} Activity Diagrams...")
     for filename, data in activity_diagrams.items():
-        generate_activity_png(filename, data["title"], data["nodes"], data["connections"], output_dir)
-        generate_activity_drawio(filename, data["title"], data["nodes"], data["connections"], output_dir)
+        generate_activity_png(filename, data["title"], data["actor"], data["nodes"], data["connections"], output_dir)
+        generate_activity_drawio(filename, data["title"], data["actor"], data["nodes"], data["connections"], output_dir)
 
     print("Activity Diagrams generation completed successfully.")

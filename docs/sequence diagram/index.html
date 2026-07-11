@@ -479,418 +479,336 @@
       }
     });
 
+    function getCrudSteps(actor, menu, dataKey) {
+      let controller = `${menu} Controller`;
+      let model = `${menu} Model`;
+      let halaman = `Halaman Manajemen ${menu}`;
+      
+      if (menu === "Pengguna") {
+        controller = "User Controller";
+        model = "User Model";
+        halaman = "Halaman Manajemen Pengguna";
+      } else if (menu === "Landing Page") {
+        controller = "Landing Page Controller";
+        model = "Landing Page Model";
+        halaman = "Halaman Landing Page";
+      } else if (menu === "Tamu") {
+        halaman = "Halaman Tamu";
+      } else if (menu === "Ulasan") {
+        halaman = "Halaman Ulasan";
+      } else if (menu === "Ruangan") {
+        halaman = "Halaman Ruangan";
+      } else if (menu === "Sarana") {
+        halaman = "Halaman Sarana";
+      } else if (menu === "Paket") {
+        halaman = "Halaman Paket";
+      } else if (menu === "Berita") {
+        halaman = "Halaman Berita";
+      }
+      
+      return [
+        ["msg", actor, "Halaman Utama", `1: Membuka menu ${menu}()`, "call"],
+        ["self", "Halaman Utama", `1.1: Menampilkan submenu Manajemen()`],
+        ["msg", actor, "Halaman Utama", `2: Memilih submenu Manajemen()`, "call"],
+        ["msg", "Halaman Utama", controller, `2.1: Request halaman Manajemen()`, "call"],
+        ["msg", controller, model, `2.1.1: Query data ${dataKey}()`, "call"],
+        ["msg", model, controller, "2.1.2: Return query()", "reply"],
+        ["msg", controller, halaman, `2.1.3: Menampilkan halaman Manajemen ${menu}()`, "reply"],
+        ["msg", actor, halaman, `3: Memilih menu Tambah ${menu}()`, "call"],
+        ["self", halaman, `3.1: Menampilkan form tambah ${dataKey}()`],
+        ["msg", actor, halaman, "4: Menekan tombol Simpan()", "call"],
+        ["self", halaman, "4.1: Menampilkan form input"],
+        ["alt_start", "Input data benar"],
+        ["msg", actor, halaman, `5: Menginputkan data ${dataKey} dan menekan tombol Kirim()`, "call"],
+        ["msg", halaman, controller, `5.1: Request tambah ${dataKey}()`, "call"],
+        ["msg", controller, model, `5.1.1: Query tambah ${dataKey}()`, "call"],
+        ["msg", model, controller, "5.1.2: Return query()", "reply"],
+        ["msg", controller, halaman, "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
+        ["alt_else", "Input data salah atau kosong"],
+        ["msg", actor, halaman, "6: Menekan tombol Kirim()", "call"],
+        ["msg", halaman, controller, `6.1: Request tambah ${dataKey}()`, "call"],
+        ["msg", controller, halaman, "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
+        ["alt_end"]
+      ];
+    }
+
     // Diagrams data structures matching the python generator
     const diagrams = {
-      "1_autentikasi": {
-        "title": "1. Autentikasi (Login & Logout)",
+      "1_login_sistem": {
+        "title": "1. Login Sistem",
         "description": "Alur masuk (login) dan keluar (logout) sistem untuk seluruh pengguna.",
-        "roles": ["Admin", "Petugas", "Pimpinan", "Guest"],
-        "participants": ["Actor", "Halaman Autentikasi", "Auth Controller", "User Model"],
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Login", "Auth Controller", "User Model"],
         "steps": [
-          ["msg", "Actor", "Halaman Autentikasi", "1: Input username & password, klik Login", "call"],
-          ["msg", "Halaman Autentikasi", "Auth Controller", "1.1: Kirim data login (POST)", "call"],
-          ["msg", "Auth Controller", "User Model", "1.1.1: Cari user berdasarkan email/username", "call"],
+          ["msg", "Aktor", "Halaman Login", "1: Input email & password, klik Login", "call"],
+          ["msg", "Halaman Login", "Auth Controller", "1.1: Kirim data login (POST)", "call"],
+          ["msg", "Auth Controller", "User Model", "1.1.1: Cari user berdasarkan email", "call"],
           ["msg", "User Model", "Auth Controller", "1.1.2: Kembalikan data user & password hash", "reply"],
           ["self", "Auth Controller", "1.1.3: Verifikasi password & session"],
           ["alt_start", "Password Valid"],
-          ["msg", "Auth Controller", "Halaman Autentikasi", "1.1.4: Redirect ke Dashboard (Session Aktif)", "reply"],
+          ["msg", "Auth Controller", "Halaman Login", "1.1.4: Redirect ke Dashboard", "reply"],
           ["alt_else", "Password Salah"],
-          ["msg", "Auth Controller", "Halaman Autentikasi", "1.1.5: Kembalikan pesan error (401)", "reply"],
+          ["msg", "Auth Controller", "Halaman Login", "1.1.5: Tampilkan notifikasi error", "reply"],
           ["alt_end"],
-          ["msg", "Actor", "Halaman Autentikasi", "2: Klik Logout", "call"],
-          ["msg", "Halaman Autentikasi", "Auth Controller", "2.1: Request logout (POST)", "call"],
-          ["msg", "Auth Controller", "Halaman Autentikasi", "2.2: Destroy session, redirect ke Login", "reply"]
+          ["msg", "Aktor", "Halaman Login", "2: Klik Logout", "call"],
+          ["msg", "Halaman Login", "Auth Controller", "2.1: Request logout (POST)", "call"],
+          ["msg", "Auth Controller", "Halaman Login", "2.2: Destroy session, redirect ke Login", "reply"]
         ]
       },
-      "2_kelola_pengguna": {
-        "title": "2. Kelola Pengguna (User Management)",
-        "description": "Pengelolaan data pengguna sistem (Admin memiliki akses penuh, Pimpinan & Petugas diblokir).",
-        "roles": ["Admin"],
-        "participants": ["Admin", "Halaman Utama", "User Controller", "User Model", "Halaman Manajemen Pengguna"],
+      "2_registrasi_akun": {
+        "title": "2. Registrasi Akun",
+        "description": "Alur registrasi akun baru oleh Aktor beserta pengiriman kode verifikasi ke email.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Registrasi", "Auth Controller", "User Model", "Halaman Verifikasi"],
         "steps": [
-          ["msg", "Admin", "Halaman Utama", "1: Membuka menu Pengguna()", "call"],
-          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
-          ["msg", "Admin", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
-          ["msg", "Halaman Utama", "User Controller", "2.1: Request halaman Manajemen()", "call"],
-          ["msg", "User Controller", "User Model", "2.1.1: Query data pengguna()", "call"],
-          ["msg", "User Model", "User Controller", "2.1.2: Return query()", "reply"],
-          ["msg", "User Controller", "Halaman Manajemen Pengguna", "2.1.3: Menampilkan halaman Halaman Manajemen Pengguna()", "reply"],
-          ["msg", "Admin", "Halaman Manajemen Pengguna", "3: Memilih menu Tambah Pengguna()", "call"],
-          ["self", "Halaman Manajemen Pengguna", "3.1: Menampilkan form tambah pengguna()"],
-          ["msg", "Admin", "Halaman Manajemen Pengguna", "4: Menekan tombol Simpan()", "call"],
-          ["self", "Halaman Manajemen Pengguna", "4.1: Menampilkan form input"],
-          ["alt_start", "Input data benar"],
-          ["msg", "Admin", "Halaman Manajemen Pengguna", "5: Menginputkan data pengguna dan menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Pengguna", "User Controller", "5.1: Request tambah pengguna()", "call"],
-          ["msg", "User Controller", "User Model", "5.1.1: Query tambah pengguna()", "call"],
-          ["msg", "User Model", "User Controller", "5.1.2: Return query()", "reply"],
-          ["msg", "User Controller", "Halaman Manajemen Pengguna", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
-          ["alt_else", "Input data salah atau kosong"],
-          ["msg", "Admin", "Halaman Manajemen Pengguna", "6: Menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Pengguna", "User Controller", "6.1: Request tambah pengguna()", "call"],
-          ["msg", "User Controller", "Halaman Manajemen Pengguna", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
+          ["msg", "Aktor", "Halaman Registrasi", "1: Isi form registrasi & klik Register", "call"],
+          ["msg", "Halaman Registrasi", "Auth Controller", "1.1: POST /register", "call"],
+          ["self", "Auth Controller", "1.1.1: Validasi data input"],
+          ["alt_start", "Validasi Sukses"],
+          ["msg", "Auth Controller", "User Model", "1.1.2: Simpan user baru (status=INACTIVE)", "call"],
+          ["self", "Auth Controller", "1.1.3: Kirim kode verifikasi ke email"],
+          ["msg", "Auth Controller", "Halaman Verifikasi", "1.1.4: Redirect ke Halaman Verifikasi Email", "reply"],
+          ["msg", "Aktor", "Halaman Verifikasi", "2: Input kode OTP & klik Verifikasi", "call"],
+          ["msg", "Halaman Verifikasi", "Auth Controller", "2.1: POST /verify", "call"],
+          ["self", "Auth Controller", "2.1.1: Validasi OTP"],
+          ["alt_start", "OTP Benar"],
+          ["msg", "Auth Controller", "User Model", "2.1.2: Update status user=ACTIVE", "call"],
+          ["msg", "Auth Controller", "Halaman Verifikasi", "2.1.3: Redirect ke Login dengan sukses", "reply"],
+          ["alt_else", "OTP Salah"],
+          ["msg", "Auth Controller", "Halaman Verifikasi", "2.1.4: Tampilkan error OTP tidak valid", "reply"],
+          ["alt_end"],
+          ["alt_else", "Validasi Gagal"],
+          ["msg", "Auth Controller", "Halaman Registrasi", "1.1.5: Tampilkan error validasi", "reply"],
           ["alt_end"]
         ]
       },
-      "3_kelola_tamu": {
-        "title": "3. Kelola Tamu (Guest Management)",
-        "description": "Pengelolaan data tamu (Guest) penyewa (Admin kelola penuh, Pimpinan read-only, Petugas diblokir).",
-        "roles": ["Admin", "Pimpinan"],
-        "participants": ["Admin", "Halaman Utama", "Tamu Controller", "Tamu Model", "Halaman Manajemen Tamu"],
+      "3_kelola_pengguna": {
+        "title": "3. Kelola Pengguna (User Management)",
+        "description": "Pengelolaan data pengguna oleh Aktor (tambah, lihat, ubah, hapus).",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Utama", "User Controller", "User Model", "Halaman Manajemen Pengguna"],
+        "steps": getCrudSteps("Aktor", "Pengguna", "pengguna")
+      },
+      "4_kelola_landing_page": {
+        "title": "4. Kelola Landing Page",
+        "description": "Pengelolaan slider galeri, Frequently Asked Questions (FAQ), dan landing page oleh Aktor.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Utama", "Landing Page Controller", "Landing Page Model", "Halaman Landing Page"],
+        "steps": getCrudSteps("Aktor", "Landing Page", "landing page")
+      },
+      "5_kelola_tamu": {
+        "title": "5. Kelola Tamu (Guest Management)",
+        "description": "Pengelolaan data profil tamu oleh Aktor.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Utama", "Tamu Controller", "Tamu Model", "Halaman Tamu"],
+        "steps": getCrudSteps("Aktor", "Tamu", "tamu")
+      },
+      "6_kelola_ulasan": {
+        "title": "6. Kelola Ulasan Ruangan",
+        "description": "Pengelolaan ulasan dan testimoni tentang ruangan oleh Aktor.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Utama", "Ulasan Controller", "Ulasan Model", "Halaman Ulasan"],
+        "steps": getCrudSteps("Aktor", "Ulasan", "ulasan")
+      },
+      "7_kelola_ruangan": {
+        "title": "7. Kelola Ruangan",
+        "description": "Pengelolaan master data ruangan oleh Aktor (kapasitas, fasilitas, tarif).",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Utama", "Ruangan Controller", "Ruangan Model", "Halaman Ruangan"],
+        "steps": getCrudSteps("Aktor", "Ruangan", "ruangan")
+      },
+      "8_kelola_sarana": {
+        "title": "8. Kelola Sarana & Prasarana",
+        "description": "Pengelolaan data sarana pendukung sewa oleh Aktor.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Utama", "Sarana Controller", "Sarana Model", "Halaman Sarana"],
+        "steps": getCrudSteps("Aktor", "Sarana", "sarana")
+      },
+      "9_kelola_paket": {
+        "title": "9. Kelola Paket Ruangan",
+        "description": "Pengelolaan paket bundling ruangan dan sarana beserta tarif oleh Aktor.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Utama", "Paket Controller", "Paket Model", "Halaman Paket"],
+        "steps": getCrudSteps("Aktor", "Paket", "paket")
+      },
+      "10_kelola_profil": {
+        "title": "10. Kelola Profil",
+        "description": "Pembaruan informasi data diri dan password oleh Aktor.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Profil", "Profil Controller", "User Model"],
         "steps": [
-          ["msg", "Admin", "Halaman Utama", "1: Membuka menu Tamu()", "call"],
-          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
-          ["msg", "Admin", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
-          ["msg", "Halaman Utama", "Tamu Controller", "2.1: Request halaman Manajemen()", "call"],
-          ["msg", "Tamu Controller", "Tamu Model", "2.1.1: Query data tamu()", "call"],
-          ["msg", "Tamu Model", "Tamu Controller", "2.1.2: Return query()", "reply"],
-          ["msg", "Tamu Controller", "Halaman Manajemen Tamu", "2.1.3: Menampilkan halaman Halaman Manajemen Tamu()", "reply"],
-          ["msg", "Admin", "Halaman Manajemen Tamu", "3: Memilih menu Tambah Tamu()", "call"],
-          ["self", "Halaman Manajemen Tamu", "3.1: Menampilkan form tambah tamu()"],
-          ["msg", "Admin", "Halaman Manajemen Tamu", "4: Menekan tombol Simpan()", "call"],
-          ["self", "Halaman Manajemen Tamu", "4.1: Menampilkan form input"],
-          ["alt_start", "Input data benar"],
-          ["msg", "Admin", "Halaman Manajemen Tamu", "5: Menginputkan data tamu dan menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Tamu", "Tamu Controller", "5.1: Request tambah tamu()", "call"],
-          ["msg", "Tamu Controller", "Tamu Model", "5.1.1: Query tambah tamu()", "call"],
-          ["msg", "Tamu Model", "Tamu Controller", "5.1.2: Return query()", "reply"],
-          ["msg", "Tamu Controller", "Halaman Manajemen Tamu", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
-          ["alt_else", "Input data salah atau kosong"],
-          ["msg", "Admin", "Halaman Manajemen Tamu", "6: Menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Tamu", "Tamu Controller", "6.1: Request tambah tamu()", "call"],
-          ["msg", "Tamu Controller", "Halaman Manajemen Tamu", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
+          ["msg", "Aktor", "Halaman Profil", "1: Membuka Halaman Profil Saya", "call"],
+          ["msg", "Halaman Profil", "Profil Controller", "1.1: GET /users/profil", "call"],
+          ["msg", "Profil Controller", "User Model", "1.1.1: Query data user login", "call"],
+          ["msg", "User Model", "Profil Controller", "1.1.2: Return data user", "reply"],
+          ["msg", "Profil Controller", "Halaman Profil", "1.1.3: Tampilkan Halaman Profil dengan form edit", "reply"],
+          ["msg", "Aktor", "Halaman Profil", "2: Mengubah data profil & Klik Simpan", "call"],
+          ["msg", "Halaman Profil", "Profil Controller", "2.1: PUT /users/profil", "call"],
+          ["self", "Profil Controller", "2.1.1: Validasi data diri"],
+          ["alt_start", "Validasi Berhasil"],
+          ["msg", "Profil Controller", "User Model", "2.1.2: Update data user & password", "call"],
+          ["msg", "User Model", "Profil Controller", "2.1.3: Success", "reply"],
+          ["msg", "Profil Controller", "Halaman Profil", "2.1.4: Tampilkan pesan sukses update", "reply"],
+          ["alt_else", "Validasi Gagal"],
+          ["msg", "Profil Controller", "Halaman Profil", "2.1.5: Tampilkan pesan error validasi", "reply"],
           ["alt_end"]
         ]
       },
-      "4_kelola_gedung": {
-        "title": "4. Kelola Gedung",
-        "description": "Pengelolaan master data gedung (Admin kelola penuh, Pimpinan read-only, Petugas diblokir).",
-        "roles": ["Admin", "Pimpinan"],
-        "participants": ["Admin", "Halaman Utama", "Gedung Controller", "Gedung Model", "Halaman Manajemen Gedung"],
+      "11_kelola_invoice": {
+        "title": "11. Kelola & Cetak Invoice",
+        "description": "Pengelolaan data invoice transaksi peminjaman oleh Aktor (update status lunas/unpaid).",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Detail Invoice", "Invoice Controller", "Invoice Model"],
         "steps": [
-          ["msg", "Admin", "Halaman Utama", "1: Membuka menu Gedung()", "call"],
-          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
-          ["msg", "Admin", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
-          ["msg", "Halaman Utama", "Gedung Controller", "2.1: Request halaman Manajemen()", "call"],
-          ["msg", "Gedung Controller", "Gedung Model", "2.1.1: Query data gedung()", "call"],
-          ["msg", "Gedung Model", "Gedung Controller", "2.1.2: Return query()", "reply"],
-          ["msg", "Gedung Controller", "Halaman Manajemen Gedung", "2.1.3: Menampilkan halaman Halaman Manajemen Gedung()", "reply"],
-          ["msg", "Admin", "Halaman Manajemen Gedung", "3: Memilih menu Tambah Gedung()", "call"],
-          ["self", "Halaman Manajemen Gedung", "3.1: Menampilkan form tambah gedung()"],
-          ["msg", "Admin", "Halaman Manajemen Gedung", "4: Menekan tombol Simpan()", "call"],
-          ["self", "Halaman Manajemen Gedung", "4.1: Menampilkan form input"],
-          ["alt_start", "Input data benar"],
-          ["msg", "Admin", "Halaman Manajemen Gedung", "5: Menginputkan data gedung dan menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Gedung", "Gedung Controller", "5.1: Request tambah gedung()", "call"],
-          ["msg", "Gedung Controller", "Gedung Model", "5.1.1: Query tambah gedung()", "call"],
-          ["msg", "Gedung Model", "Gedung Controller", "5.1.2: Return query()", "reply"],
-          ["msg", "Gedung Controller", "Halaman Manajemen Gedung", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
-          ["alt_else", "Input data salah atau kosong"],
-          ["msg", "Admin", "Halaman Manajemen Gedung", "6: Menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Gedung", "Gedung Controller", "6.1: Request tambah gedung()", "call"],
-          ["msg", "Gedung Controller", "Halaman Manajemen Gedung", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
+          ["msg", "Aktor", "Halaman Detail Invoice", "1: Buka halaman detail invoice", "call"],
+          ["msg", "Halaman Detail Invoice", "Invoice Controller", "1.1: GET /admin/transaksi/invoice/{id}", "call"],
+          ["msg", "Invoice Controller", "Invoice Model", "1.1.1: Get invoice & peminjaman details", "call"],
+          ["msg", "Invoice Model", "Invoice Controller", "1.1.2: Return data", "reply"],
+          ["msg", "Invoice Controller", "Halaman Detail Invoice", "1.1.3: Tampilkan detail invoice", "reply"],
+          ["msg", "Aktor", "Halaman Detail Invoice", "2: Konfirmasi Pembayaran Lunas", "call"],
+          ["msg", "Halaman Detail Invoice", "Invoice Controller", "2.1: POST /admin/transaksi/invoice/{id}/pay", "call"],
+          ["self", "Invoice Controller", "2.1.1: Validasi status pembayaran"],
+          ["alt_start", "Valid"],
+          ["msg", "Invoice Controller", "Invoice Model", "2.1.2: Update statusInvoice=PAID, status_pembayaran=LUNAS", "call"],
+          ["msg", "Invoice Model", "Invoice Controller", "2.1.3: Success", "reply"],
+          ["msg", "Invoice Controller", "Halaman Detail Invoice", "2.1.4: Tampilkan status PAID & Cetak Kuitansi", "reply"],
+          ["alt_else", "Tidak Valid"],
+          ["msg", "Invoice Controller", "Halaman Detail Invoice", "2.1.5: Tampilkan pesan kesalahan", "reply"],
           ["alt_end"]
         ]
       },
-      "5_kelola_ruangan": {
-        "title": "5. Kelola Ruangan",
-        "description": "Pengelolaan master data ruangan (Petugas kelola penuh, Pimpinan read-only, Admin diblokir).",
-        "roles": ["Petugas", "Pimpinan"],
-        "participants": ["Petugas", "Halaman Utama", "Ruangan Controller", "Ruangan Model", "Halaman Manajemen Ruangan"],
+      "12_checkin": {
+        "title": "12. Proses Check-In Peminjaman",
+        "description": "Proses check-in peminjam pada hari H penggunaan fasilitas oleh Aktor.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Transaksi", "Peminjaman Controller", "Peminjaman Model"],
         "steps": [
-          ["msg", "Petugas", "Halaman Utama", "1: Membuka menu Ruangan()", "call"],
-          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
-          ["msg", "Petugas", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
-          ["msg", "Halaman Utama", "Ruangan Controller", "2.1: Request halaman Manajemen()", "call"],
-          ["msg", "Ruangan Controller", "Ruangan Model", "2.1.1: Query data ruangan()", "call"],
-          ["msg", "Ruangan Model", "Ruangan Controller", "2.1.2: Return query()", "reply"],
-          ["msg", "Ruangan Controller", "Halaman Manajemen Ruangan", "2.1.3: Menampilkan halaman Halaman Manajemen Ruangan()", "reply"],
-          ["msg", "Petugas", "Halaman Manajemen Ruangan", "3: Memilih menu Tambah Ruangan()", "call"],
-          ["self", "Halaman Manajemen Ruangan", "3.1: Menampilkan form tambah ruangan()"],
-          ["msg", "Petugas", "Halaman Manajemen Ruangan", "4: Menekan tombol Simpan()", "call"],
-          ["self", "Halaman Manajemen Ruangan", "4.1: Menampilkan form input"],
-          ["alt_start", "Input data benar"],
-          ["msg", "Petugas", "Halaman Manajemen Ruangan", "5: Menginputkan data ruangan dan menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Ruangan", "Ruangan Controller", "5.1: Request tambah ruangan()", "call"],
-          ["msg", "Ruangan Controller", "Ruangan Model", "5.1.1: Query tambah ruangan()", "call"],
-          ["msg", "Ruangan Model", "Ruangan Controller", "5.1.2: Return query()", "reply"],
-          ["msg", "Ruangan Controller", "Halaman Manajemen Ruangan", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
-          ["alt_else", "Input data salah atau kosong"],
-          ["msg", "Petugas", "Halaman Manajemen Ruangan", "6: Menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Ruangan", "Ruangan Controller", "6.1: Request tambah ruangan()", "call"],
-          ["msg", "Ruangan Controller", "Halaman Manajemen Ruangan", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
+          ["msg", "Aktor", "Halaman Transaksi", "1: Klik tombol Proses Check-In", "call"],
+          ["msg", "Halaman Transaksi", "Peminjaman Controller", "1.1: POST /admin/transaksi/peminjaman/{id}/check-in", "call"],
+          ["self", "Peminjaman Controller", "1.1.1: Validasi tanggal hari H"],
+          ["alt_start", "Valid"],
+          ["msg", "Peminjaman Controller", "Peminjaman Model", "1.1.2: Update statusPeminjaman=CHECK_IN, checkIn=now()", "call"],
+          ["msg", "Peminjaman Model", "Peminjaman Controller", "1.1.3: Success", "reply"],
+          ["msg", "Peminjaman Controller", "Halaman Transaksi", "1.1.4: Tampilkan status CHECK_IN", "reply"],
+          ["alt_else", "Tidak Valid"],
+          ["msg", "Peminjaman Controller", "Halaman Transaksi", "1.1.5: Tampilkan peringatan belum hari H", "reply"],
           ["alt_end"]
         ]
       },
-      "6_kelola_sarana": {
-        "title": "6. Kelola Sarana & Prasarana",
-        "description": "Pengelolaan master data sarana (Petugas kelola penuh, Pimpinan read-only, Admin diblokir).",
-        "roles": ["Petugas", "Pimpinan"],
-        "participants": ["Petugas", "Halaman Utama", "Sarana Controller", "Sarana Model", "Halaman Manajemen Sarana"],
+      "13_checkout": {
+        "title": "13. Proses Check-Out Peminjaman",
+        "description": "Proses check-out peminjam setelah pemakaian fasilitas berakhir oleh Aktor.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Transaksi", "Peminjaman Controller", "Peminjaman Model"],
         "steps": [
-          ["msg", "Petugas", "Halaman Utama", "1: Membuka menu Sarana()", "call"],
-          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
-          ["msg", "Petugas", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
-          ["msg", "Halaman Utama", "Sarana Controller", "2.1: Request halaman Manajemen()", "call"],
-          ["msg", "Sarana Controller", "Sarana Model", "2.1.1: Query data sarana()", "call"],
-          ["msg", "Sarana Model", "Sarana Controller", "2.1.2: Return query()", "reply"],
-          ["msg", "Sarana Controller", "Halaman Manajemen Sarana", "2.1.3: Menampilkan halaman Halaman Manajemen Sarana()", "reply"],
-          ["msg", "Petugas", "Halaman Manajemen Sarana", "3: Memilih menu Tambah Sarana()", "call"],
-          ["self", "Halaman Manajemen Sarana", "3.1: Menampilkan form tambah sarana()"],
-          ["msg", "Petugas", "Halaman Manajemen Sarana", "4: Menekan tombol Simpan()", "call"],
-          ["self", "Halaman Manajemen Sarana", "4.1: Menampilkan form input"],
-          ["alt_start", "Input data benar"],
-          ["msg", "Petugas", "Halaman Manajemen Sarana", "5: Menginputkan data sarana dan menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Sarana", "Sarana Controller", "5.1: Request tambah sarana()", "call"],
-          ["msg", "Sarana Controller", "Sarana Model", "5.1.1: Query tambah sarana()", "call"],
-          ["msg", "Sarana Model", "Sarana Controller", "5.1.2: Return query()", "reply"],
-          ["msg", "Sarana Controller", "Halaman Manajemen Sarana", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
-          ["alt_else", "Input data salah atau kosong"],
-          ["msg", "Petugas", "Halaman Manajemen Sarana", "6: Menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Sarana", "Sarana Controller", "6.1: Request tambah sarana()", "call"],
-          ["msg", "Sarana Controller", "Halaman Manajemen Sarana", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
+          ["msg", "Aktor", "Halaman Transaksi", "1: Klik Check-Out & isi form kerusakan", "call"],
+          ["msg", "Halaman Transaksi", "Peminjaman Controller", "1.1: POST /admin/transaksi/peminjaman/{id}/check-out", "call"],
+          ["msg", "Peminjaman Controller", "Peminjaman Model", "1.1.1: Update statusPeminjaman=SELESAI, checkOut=now()", "call"],
+          ["msg", "Peminjaman Controller", "Peminjaman Model", "1.1.2: Simpan kondisiReturn, denda, & biayaTambahan", "call"],
+          ["msg", "Peminjaman Model", "Peminjaman Controller", "1.1.3: Success", "reply"],
+          ["msg", "Peminjaman Controller", "Halaman Transaksi", "1.1.4: Redirect & status menjadi SELESAI", "reply"]
+        ]
+      },
+      "14_verifikasi_peminjaman": {
+        "title": "14. Verifikasi & Approval Peminjaman",
+        "description": "Verifikasi dan persetujuan pengajuan reservasi masuk oleh Aktor.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Detail Peminjaman", "Approval Controller", "Peminjaman Model"],
+        "steps": [
+          ["msg", "Aktor", "Halaman Detail Peminjaman", "1: Buka detail peminjaman pending", "call"],
+          ["msg", "Halaman Detail Peminjaman", "Approval Controller", "1.1: GET /admin/transaksi/peminjaman/{id}", "call"],
+          ["msg", "Approval Controller", "Peminjaman Model", "1.1.1: Get peminjaman & detail berkas", "call"],
+          ["msg", "Peminjaman Model", "Approval Controller", "1.1.2: Return data", "reply"],
+          ["msg", "Approval Controller", "Halaman Detail Peminjaman", "1.1.3: Tampilkan detail peminjaman", "reply"],
+          ["alt_start", "Setujui"],
+          ["msg", "Aktor", "Halaman Detail Peminjaman", "2: Klik tombol Setujui", "call"],
+          ["msg", "Halaman Detail Peminjaman", "Approval Controller", "2.1: POST /admin/transaksi/peminjaman/{id}/approve", "call"],
+          ["msg", "Approval Controller", "Peminjaman Model", "2.1.1: Update statusApproval=APPROVED & set tglApproval", "call"],
+          ["msg", "Approval Controller", "Peminjaman Model", "2.1.2: Auto-generate Invoice record (status=UNPAID)", "call"],
+          ["msg", "Peminjaman Model", "Approval Controller", "2.1.3: Success", "reply"],
+          ["msg", "Approval Controller", "Halaman Detail Peminjaman", "2.1.4: Tampilkan status APPROVED", "reply"],
+          ["alt_else", "Tolak"],
+          ["msg", "Aktor", "Halaman Detail Peminjaman", "3: Klik tombol Tolak & input alasan", "call"],
+          ["msg", "Halaman Detail Peminjaman", "Approval Controller", "3.1: POST /admin/transaksi/peminjaman/{id}/reject", "call"],
+          ["msg", "Approval Controller", "Peminjaman Model", "3.1.1: Update statusApproval=REJECTED & simpan alasan", "call"],
+          ["msg", "Peminjaman Model", "Approval Controller", "3.1.2: Success", "reply"],
+          ["msg", "Approval Controller", "Halaman Detail Peminjaman", "3.1.3: Tampilkan status REJECTED", "reply"],
           ["alt_end"]
         ]
       },
-      "7_kelola_paket_ruangan": {
-        "title": "7. Kelola Paket Ruangan",
-        "description": "Pengelolaan paket sewa dan durasi sewa ruangan (Petugas kelola penuh, Pimpinan read-only, Admin diblokir).",
-        "roles": ["Petugas", "Pimpinan"],
-        "participants": ["Petugas", "Halaman Utama", "Paket Controller", "Paket Model", "Halaman Manajemen Paket"],
+      "15_ajukan_peminjaman": {
+        "title": "15. Ajukan Peminjaman (Reservasi)",
+        "description": "Pengajuan permohonan sewa ruangan dan sarana oleh Aktor.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Pengajuan", "Peminjaman Controller", "Peminjaman Model"],
         "steps": [
-          ["msg", "Petugas", "Halaman Utama", "1: Membuka menu Paket()", "call"],
-          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
-          ["msg", "Petugas", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
-          ["msg", "Halaman Utama", "Paket Controller", "2.1: Request halaman Manajemen()", "call"],
-          ["msg", "Paket Controller", "Paket Model", "2.1.1: Query data paket()", "call"],
-          ["msg", "Paket Model", "Paket Controller", "2.1.2: Return query()", "reply"],
-          ["msg", "Paket Controller", "Halaman Manajemen Paket", "2.1.3: Menampilkan halaman Halaman Manajemen Paket()", "reply"],
-          ["msg", "Petugas", "Halaman Manajemen Paket", "3: Memilih menu Tambah Paket()", "call"],
-          ["self", "Halaman Manajemen Paket", "3.1: Menampilkan form tambah paket()"],
-          ["msg", "Petugas", "Halaman Manajemen Paket", "4: Menekan tombol Simpan()", "call"],
-          ["self", "Halaman Manajemen Paket", "4.1: Menampilkan form input"],
-          ["alt_start", "Input data benar"],
-          ["msg", "Petugas", "Halaman Manajemen Paket", "5: Menginputkan data paket dan menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Paket", "Paket Controller", "5.1: Request tambah paket()", "call"],
-          ["msg", "Paket Controller", "Paket Model", "5.1.1: Query tambah paket()", "call"],
-          ["msg", "Paket Model", "Paket Controller", "5.1.2: Return query()", "reply"],
-          ["msg", "Paket Controller", "Halaman Manajemen Paket", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
-          ["alt_else", "Input data salah atau kosong"],
-          ["msg", "Petugas", "Halaman Manajemen Paket", "6: Menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Paket", "Paket Controller", "6.1: Request tambah paket()", "call"],
-          ["msg", "Paket Controller", "Halaman Manajemen Paket", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
-          ["alt_end"]
-        ]
-      },
-      "8_pengajuan_peminjaman": {
-        "title": "8. Pengajuan Peminjaman (Reservasi)",
-        "description": "Alur pengajuan sewa ruangan dan sarana pendukung oleh Guest (Peminjam).",
-        "roles": ["Guest"],
-        "participants": ["Actor (Peminjam)", "Halaman Pengajuan", "Peminjaman Controller", "Peminjaman Model"],
-        "steps": [
-          ["msg", "Actor (Peminjam)", "Halaman Pengajuan", "1: Isi Form Permohonan Peminjaman", "call"],
+          ["msg", "Aktor", "Halaman Pengajuan", "1: Isi Form Permohonan Peminjaman", "call"],
           ["msg", "Halaman Pengajuan", "Peminjaman Controller", "1.1: Kirim Permohonan Peminjaman (POST)", "call"],
           ["msg", "Peminjaman Controller", "Peminjaman Model", "1.1.1: Cek ketersediaan Ruangan & Sarana", "call"],
           ["msg", "Peminjaman Model", "Peminjaman Controller", "1.1.2: Return status ketersediaan", "reply"],
           ["alt_start", "Fasilitas Tersedia"],
           ["msg", "Peminjaman Controller", "Peminjaman Model", "1.1.3: Simpan data peminjaman (status=PENDING)", "call"],
-          ["msg", "Peminjaman Controller", "Peminjaman Model", "1.1.4: Simpan detail sarana yang dipinjam", "call"],
-          ["msg", "Peminjaman Model", "Peminjaman Controller", "1.1.5: Success", "reply"],
-          ["msg", "Peminjaman Controller", "Halaman Pengajuan", "1.1.6: Tampilkan sukses (Menunggu Verifikasi)", "reply"],
-          ["alt_else", "Fasilitas Terbooking / Stok Habis"],
-          ["msg", "Peminjaman Controller", "Halaman Pengajuan", "1.1.7: Tampilkan pesan error ketersediaan", "reply"],
+          ["msg", "Peminjaman Model", "Peminjaman Controller", "1.1.4: Success", "reply"],
+          ["msg", "Peminjaman Controller", "Halaman Pengajuan", "1.1.5: Tampilkan sukses (Menunggu Verifikasi)", "reply"],
+          ["alt_else", "Fasilitas Terbooking"],
+          ["msg", "Peminjaman Controller", "Halaman Pengajuan", "1.1.6: Tampilkan pesan error ketersediaan", "reply"],
           ["alt_end"]
         ]
       },
-      "9_batalkan_peminjaman": {
-        "title": "9. Batalkan Peminjaman",
-        "description": "Alur pembatalan pengajuan peminjaman sewa ruangan/sarana oleh Tamu sebelum check-in.",
-        "roles": ["Guest"],
-        "participants": ["Actor (Peminjam)", "Halaman Detail Peminjaman", "Peminjaman Controller", "Peminjaman Model", "Invoice Model"],
+      "16_batalkan_peminjaman": {
+        "title": "16. Batalkan Peminjaman",
+        "description": "Proses pembatalan sewa fasilitas sebelum hari H oleh Aktor.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Detail Peminjaman", "Peminjaman Controller", "Peminjaman Model"],
         "steps": [
-          ["msg", "Actor (Peminjam)", "Halaman Detail Peminjaman", "1: Klik tombol Batalkan Peminjaman", "call"],
+          ["msg", "Aktor", "Halaman Detail Peminjaman", "1: Klik tombol Batalkan Peminjaman", "call"],
           ["self", "Halaman Detail Peminjaman", "1.1: Tampilkan pop-up konfirmasi pembatalan"],
-          ["msg", "Actor (Peminjam)", "Halaman Detail Peminjaman", "2: Konfirmasi pembatalan (Klik Ya)", "call"],
+          ["msg", "Aktor", "Halaman Detail Peminjaman", "2: Konfirmasi pembatalan (Klik Ya)", "call"],
           ["msg", "Halaman Detail Peminjaman", "Peminjaman Controller", "2.1: POST /users/main/reservasi/{id}/batal", "call"],
           ["msg", "Peminjaman Controller", "Peminjaman Model", "2.1.1: Update statusPeminjaman=BATAL & statusApproval=REJECTED", "call"],
-          ["msg", "Peminjaman Controller", "Invoice Model", "2.1.2: Update statusInvoice=CANCELLED", "call"],
-          ["msg", "Peminjaman Model", "Peminjaman Controller", "2.1.3: Success", "reply"],
-          ["msg", "Peminjaman Controller", "Halaman Detail Peminjaman", "2.1.4: Redirect ke daftar reservasi dengan pesan sukses", "reply"]
+          ["msg", "Peminjaman Model", "Peminjaman Controller", "2.1.2: Success", "reply"],
+          ["msg", "Peminjaman Controller", "Halaman Detail Peminjaman", "2.1.3: Redirect ke daftar reservasi dengan pesan sukses", "reply"]
         ]
       },
-      "10_verifikasi_approval": {
-        "title": "10. Verifikasi & Approval Peminjaman",
-        "description": "Proses persetujuan or penolakan pengajuan sewa oleh Admin or Petugas.",
-        "roles": ["Admin", "Petugas", "Pimpinan (View-only)"],
-        "participants": ["Actor", "Halaman Detail Peminjaman", "Approval Controller", "Peminjaman Model"],
+      "17_lihat_laporan": {
+        "title": "17. Lihat Laporan Penggunaan",
+        "description": "Penyaringan dan cetak laporan okupansi/transaksi sewa oleh Aktor.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Laporan", "Laporan Controller", "Peminjaman Model"],
         "steps": [
-          ["msg", "Actor", "Halaman Detail Peminjaman", "1: Buka detail peminjaman pending", "call"],
-          ["msg", "Halaman Detail Peminjaman", "Approval Controller", "1.1: GET /admin/transaksi/peminjaman/{id}", "call"],
-          ["msg", "Approval Controller", "Peminjaman Model", "1.1.1: Get peminjaman & detail sarana", "call"],
-          ["msg", "Peminjaman Model", "Approval Controller", "1.1.2: Return data", "reply"],
-          ["msg", "Approval Controller", "Halaman Detail Peminjaman", "1.1.3: Tampilkan detail peminjaman", "reply"],
-          ["alt_start", "Role == Pimpinan"],
-          ["self", "Halaman Detail Peminjaman", "1.1.4: Sembunyikan tombol Setujui/Tolak"],
-          ["alt_else", "Role == Admin atau Petugas"],
-          ["msg", "Actor", "Halaman Detail Peminjaman", "2: Klik tombol Setujui", "call"],
-          ["msg", "Halaman Detail Peminjaman", "Approval Controller", "2.1: POST /admin/transaksi/peminjaman/{id}/approve", "call"],
-          ["msg", "Approval Controller", "Peminjaman Model", "2.1.1: Update statusApproval=APPROVED & set tglApproval", "call"],
-          ["msg", "Approval Controller", "Peminjaman Model", "2.1.2: Auto-generate Invoice record (status=UNPAID)", "call"],
-          ["msg", "Peminjaman Model", "Approval Controller", "2.1.3: Success", "reply"],
-          ["msg", "Approval Controller", "Halaman Detail Peminjaman", "2.1.4: Redirect & tampilkan status APPROVED", "reply"],
-          ["alt_end"]
-        ]
-      },
-      "11_proses_checkin": {
-        "title": "11. Proses Check-In",
-        "description": "Pemberian check-in tamu pada hari H oleh petugas atau admin.",
-        "roles": ["Petugas", "Admin"],
-        "participants": ["Actor (Petugas)", "Halaman Transaksi", "Peminjaman Controller", "Peminjaman Model"],
-        "steps": [
-          ["msg", "Actor (Petugas)", "Halaman Transaksi", "1: Klik tombol Proses Check-In", "call"],
-          ["msg", "Halaman Transaksi", "Peminjaman Controller", "1.1: POST /admin/transaksi/peminjaman/{id}/check-in", "call"],
-          ["msg", "Peminjaman Controller", "Peminjaman Model", "1.1.1: Update statusPeminjaman=CHECK_IN, checkIn=now()", "call"],
-          ["msg", "Peminjaman Model", "Peminjaman Controller", "1.1.2: Success", "reply"],
-          ["msg", "Peminjaman Controller", "Halaman Transaksi", "1.1.3: Refresh page & status menjadi CHECK_IN", "reply"]
-        ]
-      },
-      "12_proses_checkout": {
-        "title": "12. Proses Check-Out",
-        "description": "Proses check-out saat masa sewa berakhir, pencatatan kerusakan/denda.",
-        "roles": ["Petugas", "Admin"],
-        "participants": ["Actor (Petugas)", "Halaman Transaksi", "Peminjaman Controller", "Peminjaman Model"],
-        "steps": [
-          ["msg", "Actor (Petugas)", "Halaman Transaksi", "1: Klik Check-Out & isi form kerusakan", "call"],
-          ["msg", "Halaman Transaksi", "Peminjaman Controller", "2.1: POST /admin/transaksi/peminjaman/{id}/check-out", "call"],
-          ["msg", "Peminjaman Controller", "Peminjaman Model", "2.1.1: Update statusPeminjaman=SELESAI, checkOut=now()", "call"],
-          ["msg", "Peminjaman Controller", "Peminjaman Model", "2.1.2: Simpan kondisiReturn, denda, & biayaTambahan", "call"],
-          ["msg", "Peminjaman Controller", "Peminjaman Model", "2.1.3: Update Invoice (tambah biaya denda ke totalHarga)", "call"],
-          ["msg", "Peminjaman Model", "Peminjaman Controller", "2.1.4: Success", "reply"],
-          ["msg", "Peminjaman Controller", "Halaman Transaksi", "2.1.5: Redirect & status menjadi SELESAI", "reply"]
-        ]
-      },
-      "13_kelola_invoice": {
-        "title": "13. Kelola & Cetak Invoice",
-        "description": "Pembuatan invoice tagihan sewa dan update status pembayaran oleh Admin.",
-        "roles": ["Admin"],
-        "participants": ["Actor", "Halaman Detail Invoice", "Invoice Controller", "Invoice Model"],
-        "steps": [
-          ["msg", "Actor", "Halaman Detail Invoice", "1: Buka halaman kelola invoice", "call"],
-          ["msg", "Halaman Detail Invoice", "Invoice Controller", "1.1: GET /admin/transaksi/invoice/{id}", "call"],
-          ["msg", "Invoice Controller", "Invoice Model", "1.1.1: Get invoice & peminjaman details", "call"],
-          ["msg", "Invoice Model", "Invoice Controller", "1.1.2: Return data", "reply"],
-          ["msg", "Invoice Controller", "Halaman Detail Invoice", "1.1.3: Tampilkan Invoice Detail", "reply"],
-          ["msg", "Actor", "Halaman Detail Invoice", "2: Konfirmasi Pembayaran Lunas", "call"],
-          ["msg", "Halaman Detail Invoice", "Invoice Controller", "2.1: POST /admin/transaksi/invoice/{id}/pay", "call"],
-          ["alt_start", "Role == Pimpinan"],
-          ["msg", "Invoice Controller", "Halaman Detail Invoice", "2.1.1: 403 Forbidden (Blocked)", "reply"],
-          ["alt_else", "Role == Admin"],
-          ["msg", "Invoice Controller", "Invoice Model", "2.1.2: Update statusInvoice=PAID, status_pembayaran=LUNAS", "call"],
-          ["msg", "Invoice Model", "Invoice Controller", "2.1.3: Success", "reply"],
-          ["msg", "Invoice Controller", "Halaman Detail Invoice", "2.1.4: Tampilkan status PAID", "reply"],
-          ["alt_end"]
-        ]
-      },
-      "14_kelola_berita": {
-        "title": "14. Kelola Berita",
-        "description": "Penyusunan berita oleh Petugas (sebagai draft) dan penerbitan oleh Admin.",
-        "roles": ["Petugas", "Admin"],
-        "participants": ["Petugas", "Halaman Utama", "Berita Controller", "Berita Model", "Halaman Manajemen Berita"],
-        "steps": [
-          ["msg", "Petugas", "Halaman Utama", "1: Membuka menu Berita()", "call"],
-          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
-          ["msg", "Petugas", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
-          ["msg", "Halaman Utama", "Berita Controller", "2.1: Request halaman Manajemen()", "call"],
-          ["msg", "Berita Controller", "Berita Model", "2.1.1: Query data berita()", "call"],
-          ["msg", "Berita Model", "Berita Controller", "2.1.2: Return query()", "reply"],
-          ["msg", "Berita Controller", "Halaman Manajemen Berita", "2.1.3: Menampilkan halaman Halaman Manajemen Berita()", "reply"],
-          ["msg", "Petugas", "Halaman Manajemen Berita", "3: Memilih menu Tambah Berita()", "call"],
-          ["self", "Halaman Manajemen Berita", "3.1: Menampilkan form tambah berita()"],
-          ["msg", "Petugas", "Halaman Manajemen Berita", "4: Menekan tombol Simpan()", "call"],
-          ["self", "Halaman Manajemen Berita", "4.1: Menampilkan form input"],
-          ["alt_start", "Input data benar"],
-          ["msg", "Petugas", "Halaman Manajemen Berita", "5: Menginputkan data berita dan menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Berita", "Berita Controller", "5.1: Request tambah berita()", "call"],
-          ["msg", "Berita Controller", "Berita Model", "5.1.1: Query tambah berita()", "call"],
-          ["msg", "Berita Model", "Berita Controller", "5.1.2: Return query()", "reply"],
-          ["msg", "Berita Controller", "Halaman Manajemen Berita", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
-          ["alt_else", "Input data salah atau kosong"],
-          ["msg", "Petugas", "Halaman Manajemen Berita", "6: Menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Berita", "Berita Controller", "6.1: Request tambah berita()", "call"],
-          ["msg", "Berita Controller", "Halaman Manajemen Berita", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
-          ["alt_end"]
-        ]
-      },
-      "15_kelola_landing_page": {
-        "title": "15. Kelola Landing Page",
-        "description": "Pengaturan informasi profil, FAQ, dan galeri web publik (Hanya untuk Admin).",
-        "roles": ["Admin"],
-        "participants": ["Admin", "Halaman Utama", "Landing Page Controller", "Landing Page Model", "Halaman Manajemen Landing Page"],
-        "steps": [
-          ["msg", "Admin", "Halaman Utama", "1: Membuka menu Landing Page()", "call"],
-          ["self", "Halaman Utama", "1.1: Menampilkan submenu Manajemen()"],
-          ["msg", "Admin", "Halaman Utama", "2: Memilih submenu Manajemen()", "call"],
-          ["msg", "Halaman Utama", "Landing Page Controller", "2.1: Request halaman Manajemen()", "call"],
-          ["msg", "Landing Page Controller", "Landing Page Model", "2.1.1: Query data landing page()", "call"],
-          ["msg", "Landing Page Model", "Landing Page Controller", "2.1.2: Return query()", "reply"],
-          ["msg", "Landing Page Controller", "Halaman Manajemen Landing Page", "2.1.3: Menampilkan halaman Halaman Manajemen Landing Page()", "reply"],
-          ["msg", "Admin", "Halaman Manajemen Landing Page", "3: Memilih menu Edit Landing Page()", "call"],
-          ["self", "Halaman Manajemen Landing Page", "3.1: Menampilkan form edit landing page()"],
-          ["msg", "Admin", "Halaman Manajemen Landing Page", "4: Menekan tombol Simpan()", "call"],
-          ["self", "Halaman Manajemen Landing Page", "4.1: Menampilkan form input"],
-          ["alt_start", "Input data benar"],
-          ["msg", "Admin", "Halaman Manajemen Landing Page", "5: Menginputkan data baru dan menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Landing Page", "Landing Page Controller", "5.1: Request edit landing page()", "call"],
-          ["msg", "Landing Page Controller", "Landing Page Model", "5.1.1: Query edit landing page()", "call"],
-          ["msg", "Landing Page Model", "Landing Page Controller", "5.1.2: Return query()", "reply"],
-          ["msg", "Landing Page Controller", "Halaman Manajemen Landing Page", "5.1.3: Menampilkan notifikasi berhasil()", "reply"],
-          ["alt_else", "Input data salah or kosong"],
-          ["msg", "Admin", "Halaman Manajemen Landing Page", "6: Menekan tombol Kirim()", "call"],
-          ["msg", "Halaman Manajemen Landing Page", "Landing Page Controller", "6.1: Request edit landing page()", "call"],
-          ["msg", "Landing Page Controller", "Halaman Manajemen Landing Page", "6.1.1: Menampilkan notifikasi kesalahan()", "reply"],
-          ["alt_end"]
-        ]
-      },
-      "16_cetak_laporan": {
-        "title": "16. Cetak Laporan",
-        "description": "Cetak dan ekspor laporan peminjaman & penggunaan fasilitas (Admin & Pimpinan).",
-        "roles": ["Admin", "Pimpinan"],
-        "participants": ["Actor", "Halaman Laporan", "Laporan Controller", "Peminjaman Model"],
-        "steps": [
-          ["msg", "Actor", "Halaman Laporan", "1: Buka Halaman Laporan & pilih filter tanggal", "call"],
+          ["msg", "Aktor", "Halaman Laporan", "1: Buka Halaman Laporan & pilih filter tanggal", "call"],
           ["msg", "Halaman Laporan", "Laporan Controller", "1.1: GET /admin/laporan", "call"],
-          ["alt_start", "Role == Petugas"],
-          ["msg", "Laporan Controller", "Halaman Laporan", "1.1.1: 403 Forbidden (Blocked)", "reply"],
-          ["alt_else", "Role in [Admin, Pimpinan]"],
-          ["msg", "Laporan Controller", "Peminjaman Model", "1.1.2: Query aggregated data", "call"],
-          ["msg", "Peminjaman Model", "Laporan Controller", "1.1.3: Return data", "reply"],
-          ["msg", "Laporan Controller", "Halaman Laporan", "1.1.4: Tampilkan Halaman Laporan dengan data & tombol Cetak", "reply"],
-          ["alt_end"]
+          ["msg", "Laporan Controller", "Peminjaman Model", "1.1.1: Query aggregated data", "call"],
+          ["msg", "Peminjaman Model", "Laporan Controller", "1.1.2: Return data", "reply"],
+          ["msg", "Laporan Controller", "Halaman Laporan", "1.1.3: Tampilkan Halaman Laporan dengan data & grafik", "reply"],
+          ["msg", "Aktor", "Halaman Laporan", "2: Klik tombol Cetak PDF", "call"],
+          ["msg", "Halaman Laporan", "Laporan Controller", "2.1: GET /admin/laporan/export-pdf", "call"],
+          ["msg", "Laporan Controller", "Halaman Laporan", "2.2: Export & download file PDF Laporan", "reply"]
         ]
       },
-      "17_kelola_profil": {
-        "title": "17. Kelola Profil",
-        "description": "Pembaruan informasi profil dan data diri tamu secara mandiri.",
-        "roles": ["Guest"],
-        "participants": ["Actor (Tamu)", "Halaman Profil", "Profil Controller", "User Model", "Guest Model"],
+      "18_kelola_berita": {
+        "title": "18. Kelola Berita",
+        "description": "Pengelolaan data berita (tulis draf pengumuman/berita) oleh Aktor.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Utama", "Berita Controller", "Berita Model", "Halaman Berita"],
+        "steps": getCrudSteps("Aktor", "Berita", "berita")
+      },
+      "19_publish_berita": {
+        "title": "19. Publish Berita",
+        "description": "Proses mempublikasikan draf berita oleh Aktor ke laman publik.",
+        "roles": ["Aktor"],
+        "participants": ["Aktor", "Halaman Detail Berita", "Berita Controller", "Berita Model"],
         "steps": [
-          ["msg", "Actor (Tamu)", "Halaman Profil", "1: Membuka Halaman Profil Saya", "call"],
-          ["msg", "Halaman Profil", "Profil Controller", "1.1: GET /users/profil", "call"],
-          ["msg", "Profil Controller", "User Model", "1.1.1: Query data user login", "call"],
-          ["msg", "Profil Controller", "Guest Model", "1.1.2: Query detail data tamu", "call"],
-          ["msg", "Guest Model", "Profil Controller", "1.1.3: Return data", "reply"],
-          ["msg", "Profil Controller", "Halaman Profil", "1.1.4: Tampilkan Halaman Profil dengan form edit", "reply"],
-          ["msg", "Actor (Tamu)", "Halaman Profil", "2: Mengubah data profil & Klik Simpan", "call"],
-          ["msg", "Halaman Profil", "Profil Controller", "2.1: PUT /users/profil", "call"],
-          ["self", "Profil Controller", "2.1.1: Validasi data diri"],
-          ["alt_start", "Validasi Berhasil"],
-          ["msg", "Profil Controller", "Guest Model", "2.1.2: Update data tamu (nik, nama, gender, dll)", "call"],
-          ["msg", "Profil Controller", "User Model", "2.1.3: Update data user (nomor telepon & password)", "call"],
-          ["msg", "User Model", "Profil Controller", "2.1.4: Success", "reply"],
-          ["msg", "Profil Controller", "Halaman Profil", "2.1.5: Tampilkan pesan sukses update", "reply"],
-          ["alt_else", "Validasi Gagal"],
-          ["msg", "Profil Controller", "Halaman Profil", "2.1.6: Tampilkan pesan error validasi", "reply"],
-          ["alt_end"]
+          ["msg", "Aktor", "Halaman Detail Berita", "1: Buka detail berita status draft", "call"],
+          ["msg", "Halaman Detail Berita", "Berita Controller", "1.1: GET /admin/berita/{id}", "call"],
+          ["msg", "Berita Controller", "Berita Model", "1.1.1: Get detail data berita", "call"],
+          ["msg", "Berita Model", "Berita Controller", "1.1.2: Return data", "reply"],
+          ["msg", "Berita Controller", "Halaman Detail Berita", "1.1.3: Tampilkan detail berita & tombol Publish", "reply"],
+          ["msg", "Aktor", "Halaman Detail Berita", "2: Klik tombol Publish Berita", "call"],
+          ["msg", "Halaman Detail Berita", "Berita Controller", "2.1: POST /admin/berita/{id}/publish", "call"],
+          ["msg", "Berita Controller", "Berita Model", "2.1.1: Update statusBerita=PUBLISHED", "call"],
+          ["msg", "Berita Model", "Berita Controller", "2.1.2: Success", "reply"],
+          ["msg", "Berita Controller", "Halaman Detail Berita", "2.1.3: Tampilkan pesan sukses & status PUBLISHED", "reply"]
         ]
       }
     };

@@ -99,6 +99,17 @@ class AdminPeminjamanTransaksiController extends Controller
             ]);
         }
 
+        // Send notification to Tamu
+        $guestUser = User::where('guestId', $peminjaman->guestId)->first();
+        if ($guestUser) {
+            \App\Models\Notification::send(
+                $guestUser->id,
+                'Peminjaman Disetujui',
+                'Selamat! Pengajuan reservasi Anda untuk Ruangan ' . ($peminjaman->paketRuangan->ruangan->nama_ruangan ?? 'Ruangan') . ' (Kode: ' . $peminjaman->kodePeminjaman . ') telah disetujui.',
+                $peminjaman->id
+            );
+        }
+
         // Kirim email notification
         $user = $peminjaman->user ?? User::where('guestId', $peminjaman->guestId)->first();
         if ($user && $user->email) {
@@ -130,6 +141,17 @@ class AdminPeminjamanTransaksiController extends Controller
             'catatanApproval' => $validated['catatanApproval'],
             'tanggalApproval' => Carbon::now(),
         ]);
+
+        // Send notification to Tamu
+        $guestUser = User::where('guestId', $peminjaman->guestId)->first();
+        if ($guestUser) {
+            \App\Models\Notification::send(
+                $guestUser->id,
+                'Peminjaman Dibatalkan',
+                'Mohon maaf, pengajuan reservasi Anda untuk Ruangan ' . ($peminjaman->paketRuangan->ruangan->nama_ruangan ?? 'Ruangan') . ' (Kode: ' . $peminjaman->kodePeminjaman . ') ditolak. Catatan: ' . $peminjaman->catatanApproval,
+                $peminjaman->id
+            );
+        }
 
         // Kirim email notification
         $user = $peminjaman->user ?? User::where('guestId', $peminjaman->guestId)->first();
@@ -169,6 +191,17 @@ class AdminPeminjamanTransaksiController extends Controller
             'checkIn' => Carbon::now(),
         ]);
 
+        // Send notification to Tamu
+        $guestUser = User::where('guestId', $peminjaman->guestId)->first();
+        if ($guestUser) {
+            \App\Models\Notification::send(
+                $guestUser->id,
+                'Proses Check-In',
+                'Proses check-in selesai. Selamat menggunakan ruangan ' . ($peminjaman->paketRuangan->ruangan->nama_ruangan ?? 'Ruangan') . '!',
+                $peminjaman->id
+            );
+        }
+
         return redirect()->route('main.transaksi.peminjaman.show', $id)
             ->with('success', 'Check-in berhasil diproses. Selamat menggunakan ruangan!');
     }
@@ -199,6 +232,18 @@ class AdminPeminjamanTransaksiController extends Controller
             'estimasiDamage' => $validated['estimasiDamage'] ?? 0.00,
             'biayaTambahan' => $validated['biayaTambahan'] ?? 0.00,
         ]);
+
+        // Send notification to Tamu
+        $guestUser = User::where('guestId', $peminjaman->guestId)->first();
+        if ($guestUser) {
+            $reviewUrl = route('users.review.create', ['transaksi_id' => $peminjaman->id]);
+            \App\Models\Notification::send(
+                $guestUser->id,
+                'Proses Check-Out',
+                'Proses check-out selesai. Terima kasih telah menggunakan fasilitas Asrama Haji. Silakan <a href="' . $reviewUrl . '" class="fw-bold text-decoration-underline" style="color: #ab8b46;">Beri Ulasan Ruangan</a> untuk membantu meningkatkan pelayanan kami.',
+                $peminjaman->id
+            );
+        }
 
         // Update associated invoice if exists
         $invoice = Invoice::where('peminjamanId', $peminjaman->id)->first();
@@ -267,7 +312,7 @@ class AdminPeminjamanTransaksiController extends Controller
             ->get()
             ->map(function($item) {
                 $start = Carbon::parse($item->jamMulai);
-                $itemIsHarian = ($item->paketRuangan && (stripos($item->paketRuangan->nama_paket, 'hari') !== false || stripos($item->paketRuangan->nama_paket, 'harian') !== false));
+                $itemIsHarian = ($item->paketRuangan && $item->paketRuangan->tipe_paket == 1);
                 if ($itemIsHarian) {
                     $end = $start->copy()->addDays($item->durasi);
                 } else {
@@ -324,10 +369,7 @@ class AdminPeminjamanTransaksiController extends Controller
         $paket = \App\Models\PaketRuangan::findOrFail($validated['paket_id']);
 
         // Deteksi apakah paket harian
-        $isHarian = false;
-        if ($paket->nama_paket && (stripos($paket->nama_paket, 'hari') !== false || stripos($paket->nama_paket, 'harian') !== false)) {
-            $isHarian = true;
-        }
+        $isHarian = (bool)$paket->tipe_paket;
 
         // Tentukan durasi transaksi
         if ($isHarian) {
@@ -361,7 +403,7 @@ class AdminPeminjamanTransaksiController extends Controller
             ->get()
             ->filter(function ($item) use ($startDateTime, $endDateTime) {
                 $itemStart = Carbon::parse($item->jamMulai);
-                $itemIsHarian = ($item->paketRuangan && (stripos($item->paketRuangan->nama_paket, 'hari') !== false || stripos($item->paketRuangan->nama_paket, 'harian') !== false));
+                $itemIsHarian = ($item->paketRuangan && $item->paketRuangan->tipe_paket == 1);
                 if ($itemIsHarian) {
                     $itemEnd = $itemStart->copy()->addDays($item->durasi);
                 } else {
