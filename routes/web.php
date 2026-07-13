@@ -335,3 +335,11 @@ Route::get('/dashboard', function () {
     return redirect()->route('users.dashboard');
 })->name('dashboard');
 
+// Fallback route for unmatched requests to show custom 404 with session/auth context
+Route::fallback(function () {
+    return response()->view('errors.custom', [
+        'status' => 404,
+        'message' => 'Halaman yang Anda cari tidak ditemukan.'
+    ], 404);
+});
+

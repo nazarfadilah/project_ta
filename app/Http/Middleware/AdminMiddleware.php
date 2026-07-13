@@ -22,8 +22,7 @@ class AdminMiddleware
         
         // Role 1: Admin, 2: Pimpinan, 3: Petugas
         if (!in_array($user->roleId, [1, 2, 3])) {
-            Auth::guard('web')->logout();
-            return redirect()->route('login')->withErrors(['login' => 'Anda tidak memiliki hak akses ke halaman Administrator.']);
+            abort(403, 'Akses ditolak. Anda tidak memiliki hak akses ke halaman ini.');
         }
 
         $routeName = $request->route() ? $request->route()->getName() : '';

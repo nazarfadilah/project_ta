@@ -17,8 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'tamu' => \App\Http\Middleware\TamuMiddleware::class,
         ]);
 
-        // Register global exception middleware
-        $middleware->append(\App\Http\Middleware\GlobalExceptionMiddleware::class);
+        // Register global exception middleware inside 'web' group to ensure session and auth are active
+        $middleware->appendToGroup('web', \App\Http\Middleware\GlobalExceptionMiddleware::class);
 
         // Exclude logout routes from CSRF checking to guarantee user can logout after 419 CSRF mismatch
         $middleware->validateCsrfTokens(except: [
