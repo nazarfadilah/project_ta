@@ -309,12 +309,12 @@ Route::middleware(['auth:web', 'tamu'])->prefix('users')->name('users.')->group(
         Route::prefix('invoice')->name('invoice.')->group(function () {
             Route::get('/{peminjaman_id}', [UsersInvoiceController::class, 'index'])->name('index');
         });
+    });
 
-        // Reviews
-        Route::prefix('review')->name('review.')->group(function () {
-            Route::get('/create/{transaksi_id}', [App\Http\Controllers\ReviewController::class, 'create'])->name('create');
-            Route::post('/', [App\Http\Controllers\ReviewController::class, 'store'])->name('store');
-        });
+    // Reviews
+    Route::prefix('main/review')->name('review.')->group(function () {
+        Route::get('/create/{transaksi_id}', [App\Http\Controllers\ReviewController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\ReviewController::class, 'store'])->name('store');
     });
 });
 
