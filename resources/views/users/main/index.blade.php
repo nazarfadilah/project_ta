@@ -315,129 +315,61 @@
 @section('content')
 <div class="container-fluid py-4" style="padding-left: 30px; padding-right: 30px;">
     
-    <!-- Header dengan Tombol Kalender -->
+    <!-- Header Dashboard -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="fw-bold mb-0 text-dark" style="font-family: 'Outfit', sans-serif;">Dashboard Utama</h4>
         </div>
-        <div>
-            <button class="btn d-flex align-items-center gap-2 shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#calendarCollapse" aria-expanded="false" aria-controls="calendarCollapse" id="btnToggleCalendar" style="background: linear-gradient(135deg, #C9A961 0%, #B89750 100%); border: none; color: #fff; font-weight: 600; font-size: 14px; border-radius: 8px; padding: 8px 16px; transition: all 0.3s;">
-                <i class="fas fa-calendar-alt"></i>
-                <span id="calendarToggleText">Buka Kalender</span>
-            </button>
+    </div>
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner mb-4">
+        <div class="welcome-content">
+            <h1 class="welcome-title">Selamat Datang, {{ Auth::user()->name ?? 'Pengguna' }}!</h1>
+            <p class="welcome-subtitle">
+                Di portal layanan SIPRASA (Sistem Informasi Peminjaman Ruangan & Sarana). Kami berkomitmen memberikan kemudahan bagi Anda untuk mengelola profil pribadi, menelusuri ketersediaan gedung, ruangan, sarana pendukung, hingga melakukan pengajuan reservasi dengan cepat dan akurat.
+            </p>
         </div>
     </div>
 
-    <!-- Main Content Row -->
-    <div class="row">
-        <!-- Kolom Kiri: Kartu Statistik & Actions (Dapat Menyusut) -->
-        <div class="col-xl-12 col-lg-12 col-md-12 transition-all-layout" id="mainCardsContainer">
-            
-            <!-- Welcome Banner -->
-            <div class="welcome-banner">
-                <div class="welcome-content">
-                    <h1 class="welcome-title">Selamat Datang, {{ Auth::user()->name ?? 'Pengguna' }}!</h1>
-                    <p class="welcome-subtitle">
-                        Di portal layanan SIPRASA (Sistem Informasi Peminjaman Ruangan & Sarana). Kami berkomitmen memberikan kemudahan bagi Anda untuk mengelola profil pribadi, menelusuri ketersediaan gedung, ruangan, sarana pendukung, hingga melakukan pengajuan reservasi dengan cepat dan akurat.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Stat Cards Row -->
-            <div class="row g-4 mb-5">
-                <!-- Card Ruangan -->
-                <div class="col-md-6">
-                    <a href="{{ route('users.main.ruangan.index') }}" class="stat-card card-ruangan" style="background: linear-gradient(135deg, #C9A961 0%, #856404 100%);">
-                        <div class="stat-body">
-                            <div>
-                                <div class="stat-number">{{ $rooms }}</div>
-                                <div class="stat-label">Jumlah Ruangan</div>
-                            </div>
-                            <div style="font-size: 13px; opacity: 0.8; font-weight: 500;">
-                                Lihat Daftar Ruangan <i class="fas fa-arrow-right ms-1"></i>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Card Sarana -->
-                <div class="col-md-6">
-                    <a href="{{ route('users.main.sarana.index') }}" class="stat-card card-sarana" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-                        <div class="stat-body">
-                            <div>
-                                <div class="stat-number">{{ $saranas }}</div>
-                                <div class="stat-label">Jumlah Sarana</div>
-                            </div>
-                            <div style="font-size: 13px; opacity: 0.8; font-weight: 500;">
-                                Lihat Daftar Sarana <i class="fas fa-arrow-right ms-1"></i>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Action Cards Row -->
-            <div class="row g-4 mb-4">
-                <!-- Action: Kelola Profil -->
-                <div class="col-lg-4 col-md-6 col-sm-12">
-                    <div class="action-card">
-                        <div class="action-icon icon-profile">
-                            <i class="fas fa-user-gear"></i>
-                        </div>
-                        <h4 class="action-title">Kelola Profil Peminjam</h4>
-                        <p class="action-desc">
-                            Lengkapi atau perbarui informasi data diri Anda seperti Nomor NIK, Nama Lengkap, Alamat, Golongan Darah, hingga pengaturan kata sandi baru untuk menjaga keamanan akun Anda.
-                        </p>
-                        <div>
-                            <a href="{{ route('users.profil.edit') }}" class="btn-action-card btn-profile">
-                                <i class="fas fa-sliders me-1"></i> Pengaturan Profil Saya
-                            </a>
-                        </div>
+    <!-- Stat Cards Row -->
+    <div class="row g-4 mb-4">
+        <!-- Card Ruangan -->
+        <div class="col-md-6">
+            <a href="{{ route('users.main.ruangan.index') }}" class="stat-card card-ruangan" style="background: linear-gradient(135deg, #C9A961 0%, #856404 100%);">
+                <div class="stat-body">
+                    <div>
+                        <div class="stat-number">{{ $rooms }}</div>
+                        <div class="stat-label">Jumlah Ruangan</div>
+                    </div>
+                    <div style="font-size: 13px; opacity: 0.8; font-weight: 500;">
+                        Lihat Daftar Ruangan <i class="fas fa-arrow-right ms-1"></i>
                     </div>
                 </div>
-
-                <!-- Action: Reservasi Ruangan -->
-                <div class="col-lg-4 col-md-6 col-sm-12">
-                    <div class="action-card">
-                        <div class="action-icon icon-reservasi">
-                            <i class="fas fa-calendar-days"></i>
-                        </div>
-                        <h4 class="action-title">Mulai Reservasi Ruangan</h4>
-                        <p class="action-desc">
-                            Jelajahi berbagai tipe ruangan yang ditawarkan Asrama Haji, periksa kapasitas peserta, fasilitas yang ada di setiap ruangan, lalu buat pengajuan peminjaman baru secara instan.
-                        </p>
-                        <div>
-                            <a href="{{ route('users.main.ruangan.index') }}" class="btn-action-card btn-reservasi">
-                                <i class="fas fa-plus me-1"></i> Cari & Pesan Ruangan
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Action: Cek Ketersediaan -->
-                <div class="col-lg-4 col-md-12 col-sm-12">
-                    <div class="action-card">
-                        <div class="action-icon icon-ketersediaan">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <h4 class="action-title">Cek Ketersediaan Ruangan</h4>
-                        <p class="action-desc">
-                            Periksa ketersediaan ruangan yang kosong pada tanggal penyewaan pilihan Anda berdasarkan kategori tertentu untuk merencanakan acara Anda dengan tepat.
-                        </p>
-                        <div>
-                            <a href="{{ route('users.main.ruangan.ketersediaan') }}" class="btn-action-card btn-ketersediaan">
-                                <i class="fas fa-magnifying-glass me-1"></i> Cek Ketersediaan Ruangan
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </a>
         </div>
 
-        <!-- Kolom Kanan: Collapsible Calendar (Col-xl-4) -->
-        <div class="col-xl-4 col-lg-4 col-md-12 collapse mb-4" id="calendarCollapse">
-            <!-- Card Kalender -->
-            <div class="card border-0 shadow-sm rounded-3 mb-3" style="background: #fff; border: 1px solid #eef2f5 !important; overflow: hidden;">
+        <!-- Card Sarana -->
+        <div class="col-md-6">
+            <a href="{{ route('users.main.sarana.index') }}" class="stat-card card-sarana" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <div class="stat-body">
+                    <div>
+                        <div class="stat-number">{{ $saranas }}</div>
+                        <div class="stat-label">Jumlah Sarana</div>
+                    </div>
+                    <div style="font-size: 13px; opacity: 0.8; font-weight: 500;">
+                        Lihat Daftar Sarana <i class="fas fa-arrow-right ms-1"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Row: Kalender & Ketersediaan Ruangan -->
+    <div class="row mb-5">
+        <!-- Kolom Kiri: Kalender -->
+        <div class="col-xl-5 col-lg-5 col-md-12 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 h-100" style="background: #fff; border: 1px solid #eef2f5 !important; overflow: hidden; min-height: 480px;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h6 class="fw-bold mb-0 text-dark" id="calendarMonthYear" style="font-family: 'Outfit', sans-serif; font-size: 15px;"></h6>
@@ -478,19 +410,100 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Card Detail Reservasi -->
-            <div class="card border-0 shadow-sm rounded-3 bg-light-subtle" style="border: 1px solid #eef2f5 !important; overflow: hidden;">
-                <div class="card-body p-3">
-                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-3" style="font-family: 'Outfit', sans-serif; font-size: 14px;">
+        </div>
+
+        <!-- Kolom Kanan: Rincian Ketersediaan (Terbooking di atas, Tersedia di bawah) -->
+        <div class="col-xl-7 col-lg-7 col-md-12 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 h-100" style="background: #fff; border: 1px solid #eef2f5 !important; overflow: hidden; min-height: 480px;">
+                <div class="card-body p-3 d-flex flex-column" style="height: 100%;">
+                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-3" style="font-family: 'Outfit', sans-serif; font-size: 15px;">
                         <i class="fas fa-info-circle text-primary me-2"></i>Jadwal Sewa: <span id="selectedDateLabel" class="text-secondary fw-semibold">Pilih Tanggal</span>
                     </h6>
-                    <div class="overflow-auto" id="selectedDateReservations" style="max-height: 250px;">
-                        <div class="text-center text-muted py-4">
-                            <i class="far fa-calendar-check fa-2x mb-2" style="color: #ddd;"></i>
-                            <p class="mb-0" style="font-size: 12px;">Pilih tanggal dengan indikator untuk melihat rincian.</p>
+                    
+                    <div class="d-flex flex-column gap-3 overflow-auto flex-grow-1" id="availabilityDetailsContainer" style="max-height: 400px; padding-right: 5px;">
+                        <!-- Default Placeholder -->
+                        <div class="text-center text-muted py-5 my-auto" id="defaultPlaceholder">
+                            <i class="far fa-calendar-check fa-2x mb-3" style="color: #ddd;"></i>
+                            <p class="mb-0" style="font-size: 13px;">Pilih tanggal dengan indikator untuk melihat rincian.</p>
+                        </div>
+                        
+                        <!-- Seksi Terbooking (Booked Rooms) - Stacked Top -->
+                        <div id="sectionBooked" style="display: none;">
+                            <div class="fw-bold text-secondary mb-2 small text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">
+                                <i class="fas fa-user-lock text-danger me-1"></i> Ruangan Terbooking
+                            </div>
+                            <div class="d-flex flex-column gap-2" id="selectedDateReservations">
+                                <!-- Booked rooms render here -->
+                            </div>
+                        </div>
+
+                        <!-- Seksi Tersedia (Available Rooms) - Stacked Bottom -->
+                        <div id="sectionAvailable" style="display: none;">
+                            <div class="fw-bold text-secondary mb-2 mt-2 small text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">
+                                <i class="fas fa-check-circle text-success me-1"></i> Ruangan Tersedia
+                            </div>
+                            <div class="d-flex flex-column gap-2" id="selectedDateAvailability">
+                                <!-- Available rooms render here -->
+                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Cards Row -->
+    <div class="row g-4 mb-4">
+        <!-- Action: Kelola Profil -->
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="action-card">
+                <div class="action-icon icon-profile">
+                    <i class="fas fa-user-gear"></i>
+                </div>
+                <h4 class="action-title">Kelola Profil Peminjam</h4>
+                <p class="action-desc">
+                    Lengkapi atau perbarui informasi data diri Anda seperti Nomor NIK, Nama Lengkap, Alamat, Golongan Darah, hingga pengaturan kata sandi baru untuk menjaga keamanan akun Anda.
+                </p>
+                <div>
+                    <a href="{{ route('users.profil.edit') }}" class="btn-action-card btn-profile">
+                        <i class="fas fa-sliders me-1"></i> Pengaturan Profil Saya
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action: Reservasi Ruangan -->
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="action-card">
+                <div class="action-icon icon-reservasi">
+                    <i class="fas fa-calendar-days"></i>
+                </div>
+                <h4 class="action-title">Mulai Reservasi Ruangan</h4>
+                <p class="action-desc">
+                    Jelajahi berbagai tipe ruangan yang ditawarkan Asrama Haji, periksa kapasitas peserta, fasilitas yang ada di setiap ruangan, lalu buat pengajuan peminjaman baru secara instan.
+                </p>
+                <div>
+                    <a href="{{ route('users.main.ruangan.index') }}" class="btn-action-card btn-reservasi">
+                        <i class="fas fa-plus me-1"></i> Cari & Pesan Ruangan
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action: Cek Ketersediaan -->
+        <div class="col-lg-4 col-md-12 col-sm-12">
+            <div class="action-card">
+                <div class="action-icon icon-ketersediaan">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h4 class="action-title">Cek Ketersediaan Ruangan</h4>
+                <p class="action-desc">
+                    Periksa ketersediaan ruangan yang kosong pada tanggal penyewaan pilihan Anda berdasarkan kategori tertentu untuk merencanakan acara Anda dengan tepat.
+                </p>
+                <div>
+                    <a href="{{ route('users.main.ruangan.ketersediaan') }}" class="btn-action-card btn-ketersediaan">
+                        <i class="fas fa-magnifying-glass me-1"></i> Cek Ketersediaan Ruangan
+                    </a>
                 </div>
             </div>
         </div>
@@ -503,8 +516,9 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Reservasi data passed from controller
+        // Reservasi & Rooms data passed from controller
         const bookings = @json($calendarBookings);
+        const allRooms = @json($allRooms);
 
         let currentDate = new Date();
 
@@ -512,18 +526,13 @@
         const calendarDaysContainer = document.getElementById('calendarDaysContainer');
         const prevMonthBtn = document.getElementById('prevMonthBtn');
         const nextMonthBtn = document.getElementById('nextMonthBtn');
+        
         const selectedDateLabel = document.getElementById('selectedDateLabel');
+        const defaultPlaceholder = document.getElementById('defaultPlaceholder');
+        const sectionBooked = document.getElementById('sectionBooked');
         const selectedDateReservations = document.getElementById('selectedDateReservations');
-
-        // Toggle calendar collapse layout size changes
-        $('#calendarCollapse').on('show.bs.collapse', function () {
-            $('#mainCardsContainer').removeClass('col-xl-12 col-lg-12').addClass('col-xl-8 col-lg-8');
-            $('#calendarToggleText').text('Tutup Kalender');
-        });
-        $('#calendarCollapse').on('hide.bs.collapse', function () {
-            $('#mainCardsContainer').removeClass('col-xl-8 col-lg-8').addClass('col-xl-12 col-lg-12');
-            $('#calendarToggleText').text('Buka Kalender');
-        });
+        const sectionAvailable = document.getElementById('sectionAvailable');
+        const selectedDateAvailability = document.getElementById('selectedDateAvailability');
 
         // Initialize Calendar
         renderCalendar();
@@ -627,7 +636,7 @@
         }
 
         function showDateDetails(dateKey, dayBookings) {
-            if (!selectedDateLabel || !selectedDateReservations) return;
+            if (!selectedDateLabel) return;
             
             // Format readable date
             const dateObj = new Date(dateKey);
@@ -635,53 +644,90 @@
             const formattedDate = dateObj.toLocaleDateString('id-ID', options);
             selectedDateLabel.textContent = formattedDate;
 
+            // Hide default placeholder
+            if (defaultPlaceholder) defaultPlaceholder.style.display = 'none';
+
+            // 1. Render Booked Section (Top)
             if (dayBookings.length === 0) {
                 selectedDateReservations.innerHTML = `
-                    <div class="text-center text-muted py-5">
-                        <i class="far fa-calendar fa-3x mb-3" style="color: #ddd;"></i>
-                        <p class="mb-0" style="font-size: 13px;">Tidak ada reservasi pada tanggal ini.</p>
+                    <div class="text-center text-muted py-3">
+                        <p class="mb-0" style="font-size: 12px; font-style: italic;">Tidak ada ruangan terbooking pada tanggal ini.</p>
                     </div>
                 `;
-                return;
-            }
-
-            let html = '<div class="d-flex flex-column gap-3">';
-            dayBookings.forEach(b => {
-                const isApproved = b.status === 'APPROVED';
-                
-                let badgeColor = '';
-                let statusLabel = '';
-                
-                if (b.status_peminjaman === 'SELESAI') {
-                    badgeColor = 'bg-success';
-                    statusLabel = 'Selesai';
-                } else if (b.status_peminjaman === 'BATAL') {
-                    badgeColor = 'bg-secondary';
-                    statusLabel = 'Dibatalkan';
-                } else if (b.status_peminjaman === 'CHECK_IN') {
-                    badgeColor = 'bg-primary';
-                    statusLabel = 'Sudah Check-In';
-                } else if (b.status_peminjaman === 'CHECK_OUT') {
-                    badgeColor = 'bg-success';
-                    statusLabel = 'Sudah Check-Out';
-                } else {
-                    badgeColor = isApproved ? 'bg-success' : 'bg-warning text-dark';
-                    statusLabel = isApproved ? 'Disetujui' : 'Menunggu';
-                }
-                
-                html += `
-                    <div class="card border-0 shadow-sm p-3 position-relative" style="background: #fff; border-left: 4px solid ${isApproved ? '#48bb78' : '#ecc94b'} !important;">
-                        <span class="badge ${badgeColor} position-absolute top-0 end-0 m-3" style="font-size: 10px; font-weight: 700;">${statusLabel}</span>
-                        <h6 class="fw-bold mb-1 text-dark" style="font-size: 13.5px; padding-right: 60px;">${b.guest_name}</h6>
-                        <div class="text-secondary" style="font-size: 12px; line-height: 1.5;">
-                            <div class="mb-1"><i class="fas fa-door-open me-1" style="width: 14px;"></i>${b.ruangan}</div>
-                            <div class="mb-1"><i class="far fa-clock me-1" style="width: 14px;"></i>${b.jam_mulai} - ${b.jam_selesai} WIB (${b.durasi})</div>
+            } else {
+                let bookedHtml = '';
+                dayBookings.forEach(b => {
+                    const isApproved = b.status === 'APPROVED';
+                    
+                    let badgeColor = '';
+                    let statusLabel = '';
+                    
+                    if (b.status_peminjaman === 'SELESAI') {
+                        badgeColor = 'bg-success';
+                        statusLabel = 'Selesai';
+                    } else if (b.status_peminjaman === 'BATAL') {
+                        badgeColor = 'bg-secondary';
+                        statusLabel = 'Dibatalkan';
+                    } else if (b.status_peminjaman === 'CHECK_IN') {
+                        badgeColor = 'bg-primary';
+                        statusLabel = 'Sudah Check-In';
+                    } else if (b.status_peminjaman === 'CHECK_OUT') {
+                        badgeColor = 'bg-success';
+                        statusLabel = 'Sudah Check-Out';
+                    } else {
+                        badgeColor = isApproved ? 'bg-success' : 'bg-warning text-dark';
+                        statusLabel = isApproved ? 'Disetujui' : 'Menunggu';
+                    }
+                    
+                    bookedHtml += `
+                        <div class="card border-0 shadow-sm p-3 position-relative" style="background: #fff; border-left: 4px solid ${isApproved ? '#48bb78' : '#ecc94b'} !important;">
+                            <span class="badge ${badgeColor} position-absolute top-0 end-0 m-3" style="font-size: 10px; font-weight: 700;">${statusLabel}</span>
+                            <h6 class="fw-bold mb-1 text-dark" style="font-size: 13.5px; padding-right: 60px;">${b.guest_name}</h6>
+                            <div class="text-secondary" style="font-size: 12px; line-height: 1.5;">
+                                <div class="mb-1"><i class="fas fa-door-open me-1" style="width: 14px;"></i>${b.ruangan}</div>
+                                <div class="mb-1"><i class="far fa-clock me-1" style="width: 14px;"></i>${b.jam_mulai} - ${b.jam_selesai} WIB (${b.durasi})</div>
+                            </div>
                         </div>
+                    `;
+                });
+                selectedDateReservations.innerHTML = bookedHtml;
+            }
+            if (sectionBooked) sectionBooked.style.display = 'block';
+
+            // 2. Render Available Section (Bottom)
+            // Filter allRooms to find which rooms are NOT in dayBookings
+            const bookedRoomIds = dayBookings.map(b => b.ruangan_id);
+            const availableRooms = allRooms.filter(r => !bookedRoomIds.includes(r.id_ruangan));
+
+            if (availableRooms.length === 0) {
+                selectedDateAvailability.innerHTML = `
+                    <div class="text-center text-muted py-3">
+                        <p class="mb-0" style="font-size: 12px; font-style: italic;">Semua ruangan telah terbooking pada tanggal ini.</p>
                     </div>
                 `;
-            });
-            html += '</div>';
-            selectedDateReservations.innerHTML = html;
+            } else {
+                let availHtml = '';
+                availableRooms.forEach(r => {
+                    const bookingUrl = `{{ route('users.main.reservasi.create') }}?ruangan_id=${r.id_ruangan}&tanggal=${dateKey}`;
+                    availHtml += `
+                        <div class="card border-0 shadow-sm p-3 position-relative mb-2" style="background: #fff; border-left: 4px solid #48bb78 !important;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="fw-bold mb-1 text-dark" style="font-size: 13.5px;">${r.nama_ruangan}</h6>
+                                    <div class="text-secondary mb-0" style="font-size: 11.5px;">
+                                        <i class="fas fa-users me-1"></i> Kapasitas: ${r.kapasitas} Orang
+                                    </div>
+                                </div>
+                                <a href="${bookingUrl}" class="btn btn-sm btn-success fw-semibold" style="font-size: 11px; background-color: #48bb78; border: none; padding: 5px 12px; border-radius: 6px; color: #fff;">
+                                    <i class="fas fa-plus me-1"></i>Pesan
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+                selectedDateAvailability.innerHTML = availHtml;
+            }
+            if (sectionAvailable) sectionAvailable.style.display = 'block';
         }
     });
 </script>

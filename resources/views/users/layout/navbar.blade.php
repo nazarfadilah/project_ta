@@ -73,6 +73,14 @@
                 </a>
             </li>
 
+            <!-- Ulasan Saya -->
+            <li class="nav-item">
+                <a href="{{ route('users.review.my') }}" class="nav-link {{ request()->routeIs('users.review.my') || request()->routeIs('users.review.edit') ? 'active' : '' }}" title="Ulasan Saya">
+                    <i class="fas fa-star menu-icon"></i>
+                    <span class="menu-text">Ulasan Saya</span>
+                </a>
+            </li>
+
             <!-- Profil Saya -->
             <li class="nav-item">
                 <a href="{{ route('users.profil.edit') }}" class="nav-link {{ request()->routeIs('users.profil.*') ? 'active' : '' }}" title="Profil Saya">

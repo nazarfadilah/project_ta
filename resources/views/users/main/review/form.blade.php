@@ -1,6 +1,6 @@
 @extends('users.layout.app')
 
-@section('title', 'Beri Ulasan Ruangan')
+@section('title', isset($review) ? 'Edit Ulasan Ruangan' : 'Beri Ulasan Ruangan')
 
 @section('css')
 <style>
@@ -56,15 +56,15 @@
 <div class="container py-4" style="max-width: 650px;">
     
     <div class="mb-4">
-        <a href="{{ route('users.main.reservasi.index') }}" class="text-decoration-none text-muted" style="font-size: 13px;">
-            <i class="fas fa-arrow-left me-1"></i> Kembali ke Riwayat Reservasi
+        <a href="{{ isset($review) ? route('users.review.my') : route('users.main.reservasi.index') }}" class="text-decoration-none text-muted" style="font-size: 13px;">
+            <i class="fas fa-arrow-left me-1"></i> Kembali ke {{ isset($review) ? 'Ulasan Saya' : 'Riwayat Reservasi' }}
         </a>
     </div>
 
     <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
         <div class="card-header border-bottom-0 text-white p-4" style="background-color: #C9A961;">
-            <h5 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">Beri Ulasan Ruangan</h5>
-            <p class="mb-0" style="font-size: 12.5px; opacity: 0.9;">Bantu kami meningkatkan kualitas layanan dengan memberikan ulasan jujur Anda.</p>
+            <h5 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">{{ isset($review) ? 'Edit Ulasan Ruangan' : 'Beri Ulasan Ruangan' }}</h5>
+            <p class="mb-0" style="font-size: 12.5px; opacity: 0.9;">{{ isset($review) ? 'Perbarui ulasan dan rating Anda untuk ruangan ini.' : 'Bantu kami meningkatkan kualitas layanan dengan memberikan ulasan jujur Anda.' }}</p>
         </div>
         <div class="card-body p-4">
             {{-- Room Summary Card --}}
@@ -76,27 +76,30 @@
                 </div>
             </div>
 
-            <form action="{{ route('users.review.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ isset($review) ? route('users.review.update', $review->id) : route('users.review.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                @if(isset($review))
+                    @method('PUT')
+                @endif
                 <input type="hidden" name="transaksi_id" value="{{ $transaksi->id }}">
 
                 {{-- Rating input (1-5) --}}
                 <div class="mb-4">
                     <label class="form-label fw-bold text-dark mb-2" style="font-size: 14px;">Rating Ruangan <span class="text-danger">*</span></label>
                     <div class="star-rating">
-                        <input type="radio" id="star5" name="rating" value="5" required />
+                        <input type="radio" id="star5" name="rating" value="5" required {{ (old('rating', isset($review) ? $review->rating : '') == 5) ? 'checked' : '' }} />
                         <label for="star5" title="Sangat Bagus"><i class="fas fa-star"></i></label>
                         
-                        <input type="radio" id="star4" name="rating" value="4" />
+                        <input type="radio" id="star4" name="rating" value="4" {{ (old('rating', isset($review) ? $review->rating : '') == 4) ? 'checked' : '' }} />
                         <label for="star4" title="Bagus"><i class="fas fa-star"></i></label>
                         
-                        <input type="radio" id="star3" name="rating" value="3" />
+                        <input type="radio" id="star3" name="rating" value="3" {{ (old('rating', isset($review) ? $review->rating : '') == 3) ? 'checked' : '' }} />
                         <label for="star3" title="Cukup"><i class="fas fa-star"></i></label>
                         
-                        <input type="radio" id="star2" name="rating" value="2" />
+                        <input type="radio" id="star2" name="rating" value="2" {{ (old('rating', isset($review) ? $review->rating : '') == 2) ? 'checked' : '' }} />
                         <label for="star2" title="Buruk"><i class="fas fa-star"></i></label>
                         
-                        <input type="radio" id="star1" name="rating" value="1" />
+                        <input type="radio" id="star1" name="rating" value="1" {{ (old('rating', isset($review) ? $review->rating : '') == 1) ? 'checked' : '' }} />
                         <label for="star1" title="Sangat Buruk"><i class="fas fa-star"></i></label>
                     </div>
                     @error('rating')
@@ -107,7 +110,7 @@
                 {{-- Komentar input --}}
                 <div class="mb-4">
                     <label for="komentar" class="form-label fw-bold text-dark" style="font-size: 14px;">Teks Ulasan / Komentar <span class="text-muted fw-normal">(Opsional)</span></label>
-                    <textarea class="form-control" id="komentar" name="komentar" rows="4" placeholder="Bagikan pengalaman Anda menggunakan ruangan ini (kebersihan, fasilitas, kenyamanan)..." style="font-size: 13.5px; border-radius: 8px;"></textarea>
+                    <textarea class="form-control" id="komentar" name="komentar" rows="4" placeholder="Bagikan pengalaman Anda menggunakan ruangan ini (kebersihan, fasilitas, kenyamanan)..." style="font-size: 13.5px; border-radius: 8px;">{{ old('komentar', isset($review) ? $review->komentar : '') }}</textarea>
                     @error('komentar')
                         <div class="text-danger mt-1" style="font-size: 12px;">{{ $message }}</div>
                     @enderror
@@ -118,12 +121,21 @@
                     <label class="form-label fw-bold text-dark mb-2" style="font-size: 14px;">Foto Kondisi Ruangan <span class="text-muted fw-normal">(Opsional, Maks 2MB)</span></label>
                     
                     <div class="image-preview-container" id="uploadTrigger">
-                        <div class="image-preview-placeholder" id="placeholder">
-                            <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
-                            <p class="mb-0 fw-semibold">Pilih Foto Gambar</p>
-                            <small class="text-muted">Klik untuk mencari file foto</small>
-                        </div>
-                        <img src="" id="imgPreview" alt="Pratinjau Foto" />
+                        @if(isset($review) && $review->foto_ulasan)
+                            <div class="image-preview-placeholder" id="placeholder" style="display: none;">
+                                <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
+                                <p class="mb-0 fw-semibold">Pilih Foto Gambar</p>
+                                <small class="text-muted">Klik untuk mencari file foto</small>
+                            </div>
+                            <img src="{{ asset($review->foto_ulasan) }}" id="imgPreview" alt="Pratinjau Foto" style="display: block;" />
+                        @else
+                            <div class="image-preview-placeholder" id="placeholder">
+                                <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
+                                <p class="mb-0 fw-semibold">Pilih Foto Gambar</p>
+                                <small class="text-muted">Klik untuk mencari file foto</small>
+                            </div>
+                            <img src="" id="imgPreview" alt="Pratinjau Foto" />
+                        @endif
                     </div>
                     <input type="file" id="foto_ulasan" name="foto_ulasan" class="d-none" accept="image/*" />
                     
@@ -134,7 +146,7 @@
 
                 <div class="d-grid mt-4">
                     <button type="submit" class="btn btn-warning py-2 fw-bold text-dark rounded-3" style="background-color: #C9A961; border: none; font-size: 14.5px;">
-                        Kirim Ulasan & Rating
+                        {{ isset($review) ? 'Simpan Perubahan Ulasan' : 'Kirim Ulasan & Rating' }}
                     </button>
                 </div>
             </form>

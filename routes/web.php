@@ -315,6 +315,9 @@ Route::middleware(['auth:web', 'tamu'])->prefix('users')->name('users.')->group(
     Route::prefix('main/review')->name('review.')->group(function () {
         Route::get('/create/{transaksi_id}', [App\Http\Controllers\ReviewController::class, 'create'])->name('create');
         Route::post('/', [App\Http\Controllers\ReviewController::class, 'store'])->name('store');
+        Route::get('/my-reviews', [App\Http\Controllers\ReviewController::class, 'myReviews'])->name('my');
+        Route::get('/{id}/edit', [App\Http\Controllers\ReviewController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\ReviewController::class, 'update'])->name('update');
     });
 });
 

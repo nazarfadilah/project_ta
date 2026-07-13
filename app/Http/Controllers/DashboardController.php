@@ -156,6 +156,7 @@ class DashboardController extends Controller
                     'guest_name' => $isOwnBooking ? ($booking->guest->name ?? 'Saya') : 'Tamu (Terbooking)',
                     'is_own' => $isOwnBooking,
                     'ruangan' => $booking->paketRuangan->ruangan->nama_ruangan ?? 'Ruangan',
+                    'ruangan_id' => $booking->paketRuangan->ruangan->id_ruangan ?? null,
                     'jam_mulai' => $start->format('H:i'),
                     'jam_selesai' => $end->format('H:i'),
                     'durasi' => $booking->durasi . ($isHarian ? ' Hari' : ' Jam'),
@@ -166,8 +167,12 @@ class DashboardController extends Controller
             })
             ->values();
 
+        // Fetch all rooms for availability checking on frontend
+        $allRooms = Ruangan::select('id_ruangan', 'nama_ruangan', 'kapasitas')->get();
+
         return view('users.main.index', array_merge($stats, [
             'calendarBookings' => $calendarBookings,
+            'allRooms' => $allRooms,
         ]));
     }
 }
