@@ -38,16 +38,16 @@ return Application::configure(basePath: dirname(__DIR__))
         // Fallback exception handling for 404 Route Not Found
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
             return response()->view('errors.custom', [
-                'status' => 404,
-                'message' => 'Halaman yang Anda cari tidak ditemukan.'
+                'status' => '403/404',
+                'message' => 'Halaman yang Anda cari tidak ditemukan atau Anda tidak memiliki akses ke halaman ini.'
             ], 404);
         });
 
         // Fallback exception handling for 403 Access Denied
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException $e, $request) {
             return response()->view('errors.custom', [
-                'status' => 403,
-                'message' => 'Anda tidak memiliki hak akses untuk mengakses halaman ini.'
+                'status' => '403/404',
+                'message' => 'Halaman yang Anda cari tidak ditemukan atau Anda tidak memiliki akses ke halaman ini.'
             ], 403);
         });
     })->create();

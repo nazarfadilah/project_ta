@@ -191,12 +191,9 @@
             $title = 'Terjadi Kesalahan';
             $desc = $message ?? 'Ada kendala internal pada server. Silakan coba kembali.';
             
-            if ($status == 404) {
+            if (str_contains($status, '403') || str_contains($status, '404')) {
                 $icon = 'fa-compass';
                 $title = 'Halaman Tidak Ditemukan';
-            } elseif ($status == 403) {
-                $icon = 'fa-user-slash';
-                $title = 'Akses Dibatasi';
             } elseif ($status == 419) {
                 $icon = 'fa-key';
                 $title = 'Sesi Berakhir / Token CSRF Kedaluwarsa';

@@ -25,19 +25,12 @@ class GlobalExceptionMiddleware
         try {
             $response = $next($request);
 
-            // Intercept standard HTTP error status codes
-            if ($response->getStatusCode() === 404) {
+            // Intercept standard HTTP error status codes (e.g. 403 and 404)
+            if ($response->getStatusCode() === 404 || $response->getStatusCode() === 403) {
                 return response()->view('errors.custom', [
-                    'status' => 404,
-                    'message' => 'Halaman yang Anda cari tidak ditemukan.'
-                ], 404);
-            }
-
-            if ($response->getStatusCode() === 403) {
-                return response()->view('errors.custom', [
-                    'status' => 403,
-                    'message' => 'Anda tidak memiliki hak akses untuk mengakses halaman ini.'
-                ], 403);
+                    'status' => '403/404',
+                    'message' => 'Halaman yang Anda cari tidak ditemukan atau Anda tidak memiliki akses ke halaman ini.'
+                ], $response->getStatusCode());
             }
 
             return $response;
@@ -48,18 +41,18 @@ class GlobalExceptionMiddleware
             ], 419);
         } catch (NotFoundHttpException $e) {
             return response()->view('errors.custom', [
-                'status' => 404,
-                'message' => 'Halaman yang Anda cari tidak ditemukan.'
+                'status' => '403/404',
+                'message' => 'Halaman yang Anda cari tidak ditemukan atau Anda tidak memiliki akses ke halaman ini.'
             ], 404);
         } catch (AccessDeniedHttpException $e) {
             return response()->view('errors.custom', [
-                'status' => 403,
-                'message' => 'Anda tidak memiliki hak akses untuk mengakses halaman ini.'
+                'status' => '403/404',
+                'message' => 'Halaman yang Anda cari tidak ditemukan atau Anda tidak memiliki akses ke halaman ini.'
             ], 403);
         } catch (AuthorizationException $e) {
             return response()->view('errors.custom', [
-                'status' => 403,
-                'message' => 'Anda tidak memiliki hak akses untuk mengakses halaman ini.'
+                'status' => '403/404',
+                'message' => 'Halaman yang Anda cari tidak ditemukan atau Anda tidak memiliki akses ke halaman ini.'
             ], 403);
         } catch (Throwable $e) {
             // For 500 Internal Server Error
