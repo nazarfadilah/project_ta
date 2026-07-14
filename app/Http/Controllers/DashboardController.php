@@ -148,6 +148,16 @@ class DashboardController extends Controller
                     $end = $start->copy()->addHours($booking->durasi);
                 }
 
+                $tanggalRange = null;
+                if ($isHarian && $booking->tanggal) {
+                    // Set locale to Indonesian for month names
+                    \Carbon\Carbon::setLocale('id');
+                    $startFormatted = $booking->tanggal->translatedFormat('d M Y');
+                    $endRange = $booking->tanggal->copy()->addDays($booking->durasi - 1);
+                    $endFormatted = $endRange->translatedFormat('d M Y');
+                    $tanggalRange = $startFormatted . ' - ' . $endFormatted;
+                }
+
                 return [
                     'id' => $booking->id,
                     'tanggal' => $booking->tanggal ? $booking->tanggal->format('Y-m-d') : null,
@@ -160,6 +170,9 @@ class DashboardController extends Controller
                     'jam_mulai' => $start->format('H:i'),
                     'jam_selesai' => $end->format('H:i'),
                     'durasi' => $booking->durasi . ($isHarian ? ' Hari' : ' Jam'),
+                    'is_harian' => $isHarian,
+                    'durasi_val' => (int) $booking->durasi,
+                    'tanggal_range' => $tanggalRange,
                 ];
             })
             ->filter(function ($booking) {

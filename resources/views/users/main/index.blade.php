@@ -520,6 +520,20 @@
         const bookings = @json($calendarBookings);
         const allRooms = @json($allRooms);
 
+        function isBookingActiveOnDate(b, dateKey) {
+            if (!b.tanggal) return false;
+            if (!b.is_harian) {
+                return b.tanggal === dateKey;
+            }
+            // Parse start and target dates in local timezone
+            const start = new Date(b.tanggal + 'T00:00:00');
+            const target = new Date(dateKey + 'T00:00:00');
+            const end = new Date(start);
+            end.setDate(start.getDate() + b.durasi_val - 1);
+            
+            return target >= start && target <= end;
+        }
+
         let currentDate = new Date();
 
         const calendarMonthYear = document.getElementById('calendarMonthYear');
@@ -607,8 +621,8 @@
             const indicatorsDiv = document.createElement('div');
             indicatorsDiv.className = 'indicators';
 
-            // Filter bookings for this day
-            const dayBookings = bookings.filter(b => b.tanggal === dateKey);
+            // Filter bookings for this day using helper that supports multiday daily bookings
+            const dayBookings = bookings.filter(b => isBookingActiveOnDate(b, dateKey));
             const hasPending = dayBookings.some(b => b.status === 'PENDING');
             const hasApproved = dayBookings.some(b => b.status === 'APPROVED');
 
@@ -685,7 +699,12 @@
                             <h6 class="fw-bold mb-1 text-dark" style="font-size: 13.5px; padding-right: 60px;">${b.guest_name}</h6>
                             <div class="text-secondary" style="font-size: 12px; line-height: 1.5;">
                                 <div class="mb-1"><i class="fas fa-door-open me-1" style="width: 14px;"></i>${b.ruangan}</div>
-                                <div class="mb-1"><i class="far fa-clock me-1" style="width: 14px;"></i>${b.jam_mulai} - ${b.jam_selesai} WIB (${b.durasi})</div>
+                                <div class="mb-1">
+                                    ${b.is_harian 
+                                        ? `<i class="far fa-calendar-alt me-1" style="width: 14px;"></i>${b.tanggal_range} (${b.durasi})` 
+                                        : `<i class="far fa-clock me-1" style="width: 14px;"></i>${b.jam_mulai} - ${b.jam_selesai} WIB (${b.durasi})`
+                                    }
+                                </div>
                             </div>
                         </div>
                     `;
