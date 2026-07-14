@@ -771,6 +771,19 @@ document.addEventListener('DOMContentLoaded', function() {
             this.value = selectedRoomMaxCapacity;
         }
     });
+
+    // Parse URL params for pre-filling
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramRuanganId = urlParams.get('ruangan_id');
+    const paramTanggal = urlParams.get('tanggal');
+
+    if (paramRuanganId && ruanganSelect) {
+        ruanganSelect.value = paramRuanganId;
+        handleRoomChange(paramRuanganId);
+    }
+    if (paramTanggal && tanggalInput) {
+        tanggalInput.value = paramTanggal;
+    }
 });
 </script>
 @endpush

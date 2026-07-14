@@ -65,13 +65,27 @@ class DashboardController extends Controller
 
         $isAdminOrPimpinan = $user ? in_array($user->roleId, [1, 2]) : true;
 
-        // Code Lama:
-        // $calendarBookings = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan.gedung')
-        // Code Baru:
         $calendarBookings = PeminjamanTransaksi::with('guest', 'paketRuangan.ruangan')
             ->whereIn('statusApproval', ['PENDING', 'APPROVED'])
             ->get()
             ->map(function ($booking) use ($isAdminOrPimpinan) {
+                $start = \Carbon\Carbon::parse($booking->jamMulai);
+                $isHarian = ($booking->paketRuangan && $booking->paketRuangan->tipe_paket == 1);
+                if ($isHarian) {
+                    $end = $start->copy()->addDays($booking->durasi);
+                } else {
+                    $end = $start->copy()->addHours($booking->durasi);
+                }
+
+                $tanggalRange = null;
+                if ($isHarian && $booking->tanggal) {
+                    \Carbon\Carbon::setLocale('id');
+                    $startFormatted = $booking->tanggal->translatedFormat('d M Y');
+                    $endRange = $booking->tanggal->copy()->addDays($booking->durasi - 1);
+                    $endFormatted = $endRange->translatedFormat('d M Y');
+                    $tanggalRange = $startFormatted . ' - ' . $endFormatted;
+                }
+
                 return [
                     'id' => $booking->id,
                     'tanggal' => $booking->tanggal ? $booking->tanggal->format('Y-m-d') : null,
@@ -79,12 +93,14 @@ class DashboardController extends Controller
                     'status_peminjaman' => $booking->statusPeminjaman,
                     'guest_name' => $isAdminOrPimpinan ? null : ($booking->guest->name ?? 'Tamu'),
                     'ruangan' => $isAdminOrPimpinan ? null : ($booking->paketRuangan->ruangan->nama_ruangan ?? 'Ruangan'),
-                    // Code Lama:
-                    // 'gedung' => $isAdminOrPimpinan ? null : ($booking->paketRuangan->ruangan->gedung->nama_gedung ?? 'Gedung'),
-                    // Code Baru:
+                    'ruangan_id' => $booking->paketRuangan->ruangan->id_ruangan ?? null,
                     'gedung' => null,
-                    'jam_mulai' => $isAdminOrPimpinan ? null : ($booking->jamMulai ? $booking->jamMulai->format('H:i') : null),
-                    'durasi' => $isAdminOrPimpinan ? null : ($booking->durasi . ' Jam'),
+                    'jam_mulai' => $isAdminOrPimpinan ? null : $start->format('H:i'),
+                    'jam_selesai' => $isAdminOrPimpinan ? null : $end->format('H:i'),
+                    'durasi' => $booking->durasi . ($isHarian ? ' Hari' : ' Jam'),
+                    'is_harian' => $isHarian,
+                    'durasi_val' => (int) $booking->durasi,
+                    'tanggal_range' => $tanggalRange,
                 ];
             })
             ->filter(function ($booking) {
@@ -92,12 +108,15 @@ class DashboardController extends Controller
             })
             ->values();
 
+        $allRooms = Ruangan::select('id_ruangan', 'nama_ruangan', 'kapasitas')->get();
+
         return view('main.index', array_merge($stats, [
             'pendingBookings' => $pendingBookings,
             'brokenSaranas' => $brokenSaranas,
             'draftBeritas' => $draftBeritas,
             'todayCheckins' => $todayCheckins,
             'calendarBookings' => $calendarBookings,
+            'allRooms' => $allRooms,
         ]));
     }
 

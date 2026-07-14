@@ -140,7 +140,7 @@
         <div class="login-left">
             <div class="logo-box">
                 <h2>SIPRASA</h2>
-                <p>Sistem Informasi Peminjaman Ruangan & Sarana</p>
+                <p>Sistem Informasi Peminjaman Sarana & Prasarana</p>
             </div>
             <p style="font-size: 14px; text-align: center; line-height: 1.6; max-width: 300px; color: rgba(255,255,255,0.85);">
                 Dapatkan kemudahan proses peminjaman tempat dan sarana di Asrama Haji Landasan Ulin dengan cepat dan transparan.

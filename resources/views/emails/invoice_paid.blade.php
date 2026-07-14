@@ -83,7 +83,7 @@
     <div class="container">
         <div class="header">
             <h1>SIPRASA</h1>
-            <p>Sistem Informasi Peminjaman Ruangan & Sarana</p>
+            <p>Sistem Informasi Peminjaman Sarana & Prasarana</p>
         </div>
         <div class="content">
             <p>Halo, <strong>{{ $peminjaman->guest->name ?? 'Pengguna' }}</strong>.</p>

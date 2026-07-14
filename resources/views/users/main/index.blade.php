@@ -327,7 +327,7 @@
         <div class="welcome-content">
             <h1 class="welcome-title">Selamat Datang, {{ Auth::user()->name ?? 'Pengguna' }}!</h1>
             <p class="welcome-subtitle">
-                Di portal layanan SIPRASA (Sistem Informasi Peminjaman Ruangan & Sarana). Kami berkomitmen memberikan kemudahan bagi Anda untuk mengelola profil pribadi, menelusuri ketersediaan gedung, ruangan, sarana pendukung, hingga melakukan pengajuan reservasi dengan cepat dan akurat.
+                Di portal layanan SIPRASA (Sistem Informasi Peminjaman Sarana & Prasarana). Kami berkomitmen memberikan kemudahan bagi Anda untuk mengelola profil pribadi, menelusuri ketersediaan gedung, ruangan, sarana pendukung, hingga melakukan pengajuan reservasi dengan cepat dan akurat.
             </p>
         </div>
     </div>

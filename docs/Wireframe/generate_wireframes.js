@@ -325,7 +325,7 @@ const views = {
   "2_login": standaloneWrapper("http://siprasa.com/login", "Halaman Login", `
     <div style="width: 40%; background: #000; color: #fff; padding: 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid #000;">
       <div class="wf-logo" style="margin-bottom: 20px; font-size: 28px; background: #fff; color: #000; padding: 15px 30px;">SIPRASA</div>
-      <p style="text-align: center; font-size: 12px; line-height: 1.6; color: #ccc;">Sistem Informasi Peminjaman Ruangan & Sarana</p>
+      <p style="text-align: center; font-size: 12px; line-height: 1.6; color: #ccc;">Sistem Informasi Peminjaman Sarana & Prasarana</p>
     </div>
     <div style="width: 60%; background: #fff; padding: 40px;">
       <h3 class="wf-title-md" style="font-size: 24px; margin-bottom: 5px;">Masuk ke Sistem</h3>
@@ -376,7 +376,7 @@ const views = {
     
     <div class="wf-card" style="background-color: #fcfcfc; border-left: 5px solid #000;">
       <h2 style="font-size: 16px; margin-bottom: 5px;">Selamat Datang, Rudi Hidayat!</h2>
-      <p class="wf-text-muted" style="font-size: 13px;">Di portal layanan SIPRASA (Sistem Informasi Peminjaman Ruangan & Sarana). Kami berkomitmen memberikan kemudahan bagi Anda untuk mengelola profil pribadi, menelusuri ketersediaan gedung, ruangan, sarana pendukung, hingga melakukan pengajuan reservasi dengan cepat dan akurat.</p>
+      <p class="wf-text-muted" style="font-size: 13px;">Di portal layanan SIPRASA (Sistem Informasi Peminjaman Sarana & Prasarana). Kami berkomitmen memberikan kemudahan bagi Anda untuk mengelola profil pribadi, menelusuri ketersediaan gedung, ruangan, sarana pendukung, hingga melakukan pengajuan reservasi dengan cepat dan akurat.</p>
     </div>
     
     <div class="wf-grid wf-col-3" style="margin-top: 20px;">
