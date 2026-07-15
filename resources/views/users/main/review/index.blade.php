@@ -97,16 +97,8 @@
                                     
                                     {{-- Star Rating --}}
                                     <div class="mb-2">
-                                        <div class="star-rating-display">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                @if($i <= $review->rating)
-                                                    <i class="fas fa-star"></i>
-                                                @else
-                                                    <i class="far fa-star"></i>
-                                                @endif
-                                            @endfor
-                                            <span class="text-secondary small fw-semibold ms-1">({{ $review->rating }}/5)</span>
-                                        </div>
+                                        <x-star-rating :rating="$review->rating" fontSize="15px" />
+                                        <span class="text-secondary small fw-semibold ms-1">({{ $review->rating }}/5)</span>
                                     </div>
                                     
                                     {{-- Review Comment --}}

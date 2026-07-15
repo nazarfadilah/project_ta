@@ -58,9 +58,7 @@
                         {{ $ruangan->nama_ruangan }}
                         <div class="mt-1" style="color: #ffc107; font-size: 12px;">
                              @if(isset($averageRating) && $averageRating > 0)
-                                @for($i = 1; $i <= 5; $i++)
-                                    <i class="{{ $i <= round($averageRating) ? 'fas' : 'far' }} fa-star"></i>
-                                @endfor
+                                <x-star-rating :rating="$averageRating" fontSize="12px" />
                                 <span class="text-muted ms-1" style="font-size: 11px;">({{ number_format($averageRating, 1) }}/5 dari {{ $totalReviewsCount ?? $ruangan->reviews_count }} ulasan)</span>
                             @else
                                 <span class="text-muted" style="font-size: 11px;">Belum ada ulasan</span>
@@ -194,10 +192,8 @@
                                 </div>
                             </div>
                             
-                            <div class="mb-2" style="color: #ffc107; font-size: 12px;">
-                                @for($i = 1; $i <= 5; $i++)
-                                    <i class="{{ $i <= $review->rating ? 'fas' : 'far' }} fa-star"></i>
-                                @endfor
+                            <div class="mb-2">
+                                <x-star-rating :rating="$review->rating" fontSize="12px" />
                             </div>
 
                             @if($review->komentar)

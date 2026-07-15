@@ -330,10 +330,8 @@
           <div class="col-md-4 col-sm-6">
             <div class="testimonial-card" style="background: white; border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); height: 100%; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease;">
               <div>
-                <div class="stars mb-3" style="color: #ffc107; font-size: 14px;">
-                  @for($i = 1; $i <= 5; $i++)
-                    <i class="{{ $i <= $testi->rating ? 'fas' : 'far' }} fa-star"></i>
-                  @endfor
+                <div class="stars mb-3">
+                  <x-star-rating :rating="$testi->rating" fontSize="14px" />
                 </div>
                 <p style="font-size: 14px; color: #4a5568; line-height: 1.6; font-style: italic; margin-bottom: 20px;">
                   "{{ Str::limit($testi->komentar ?? 'Pelayanan sangat memuaskan, ruangan bersih dan nyaman untuk acara kami.', 150) }}"

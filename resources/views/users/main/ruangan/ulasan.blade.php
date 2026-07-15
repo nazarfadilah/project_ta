@@ -42,10 +42,8 @@
                 <div class="col-md-4 text-md-end mt-3 mt-md-0">
                     <div class="d-inline-block p-3 bg-white border rounded shadow-sm text-center" style="min-width: 150px;">
                         <h3 class="fw-bold text-dark mb-1">{{ number_format($averageRating, 1) }} <span class="text-muted" style="font-size: 16px;">/ 5</span></h3>
-                        <div class="star-color mb-1" style="font-size: 14px;">
-                            @for($i = 1; $i <= 5; $i++)
-                                <i class="{{ $i <= round($averageRating) ? 'fas' : 'far' }} fa-star"></i>
-                            @endfor
+                        <div class="mb-1">
+                            <x-star-rating :rating="$averageRating" fontSize="14px" />
                         </div>
                         <span class="text-muted small fw-semibold" style="font-size: 11px;">({{ $reviews->total() }} Ulasan)</span>
                     </div>
@@ -84,10 +82,8 @@
                                 </div>
                             </div>
                             
-                            <div class="mb-2 star-color" style="font-size: 12px;">
-                                @for($i = 1; $i <= 5; $i++)
-                                    <i class="{{ $i <= $review->rating ? 'fas' : 'far' }} fa-star"></i>
-                                @endfor
+                            <div class="mb-2">
+                                <x-star-rating :rating="$review->rating" fontSize="12px" />
                             </div>
 
                             @if($review->komentar)

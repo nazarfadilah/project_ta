@@ -61,10 +61,8 @@
                                     $reviewsCount = $ruangan->reviews_count;
                                 @endphp
                                 @if($avgRating > 0)
-                                    <div style="color: #ffc107; font-size: 13px;">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            <i class="{{ $i <= round($avgRating) ? 'fas' : 'far' }} fa-star"></i>
-                                        @endfor
+                                    <div style="font-size: 13px;">
+                                        <x-star-rating :rating="$avgRating" fontSize="13px" />
                                         <span class="text-muted ms-1">({{ number_format($avgRating, 1) }})</span>
                                         <br>
                                         <small class="text-secondary fw-semibold">({{ $reviewsCount }} Ulasan)</small>
