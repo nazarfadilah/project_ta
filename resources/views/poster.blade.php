@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poster Tata Cara Peminjaman - SIPRASA Asrama Haji Banjarmasin</title>
+  <!-- Google Fonts: Outfit & Playfair Display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* ==========================================
+       DESIGN SYSTEM & GOLD COLOR PALETTE (SIPRASA)
+       ========================================== */
+    :root {
+      --gold-primary: #C9A961;
+      --gold-dark: #B8953F;
+      --gold-deep: #8E7026;
+      --gold-light: #F3E5C8;
+      --gold-shimmer: #FFF6DF;
+      --gold-metallic: linear-gradient(135deg, #C9A961 0%, #FFF2D1 25%, #B8953F 50%, #FBF5B7 75%, #AA771C 100%);
+      --gold-glow: rgba(201, 169, 97, 0.45);
+      --bg-dark: #0B0A07;
+      --bg-card: rgba(24, 20, 14, 0.9);
+      --bg-card-hover: rgba(38, 31, 21, 0.98);
+      --text-main: #F7F3E9;
+      --text-muted: #CBD2D9;
+      --border-gold: rgba(201, 169, 97, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #050403;
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Floating Canvas Particle System */
+    #goldParticles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Top Interactive Toolbar */
+    .action-toolbar {
+      position: fixed;
+      top: 20px;
+      z-index: 100;
+      display: flex;
+      gap: 14px;
+      background: rgba(15, 12, 8, 0.92);
+      padding: 12px 24px;
+      border-radius: 50px;
+      border: 1.5px solid var(--gold-primary);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.85), 0 0 20px var(--gold-glow);
+      backdrop-filter: blur(12px);
+    }
+
+    .btn-action {
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+      color: #000;
+      font-weight: 800;
+      font-size: 14px;
+      padding: 10px 22px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .btn-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--gold-glow);
+      filter: brightness(1.2);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--gold-light);
+      border: 1.5px solid var(--gold-primary);
+    }
+
+    .btn-outline:hover {
+      background: rgba(201, 169, 97, 0.2);
+      color: #FFF;
+    }
+
+    /* ==========================================
+       A3 POSTER CONTAINER & DIMENSIONS
+       Aspect Ratio 1 : 1.414 (A3 Standard)
+       ========================================== */
+    .poster-viewport {
+      width: 100%;
+      max-width: 1250px;
+      margin-top: 60px;
+      z-index: 2;
+    }
+
+    .poster-container {
+      width: 100%;
+      aspect-ratio: 1 / 1.414;
+      background: radial-gradient(circle at 50% 15%, #221b0e 0%, #0d0b07 60%, #050403 100%);
+      border: 3.5px solid var(--gold-primary);
+      border-radius: 18px;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.95), 0 0 60px rgba(201, 169, 97, 0.3);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 45px 50px;
+    }
+
+    .poster-container::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      border: 1.5px dashed var(--gold-primary);
+      border-radius: 12px;
+      pointer-events: none;
+      opacity: 0.65;
+    }
+
+    /* Corner Ornaments */
+    .corner-ornament {
+      position: absolute;
+      width: 65px;
+      height: 65px;
+      border: 2.5px solid var(--gold-primary);
+      pointer-events: none;
+      z-index: 3;
+    }
+    .corner-tl { top: 22px; left: 22px; border-right: none; border-bottom: none; }
+    .corner-tr { top: 22px; right: 22px; border-left: none; border-bottom: none; }
+    .corner-bl { bottom: 22px; left: 22px; border-right: none; border-top: none; }
+    .corner-br { bottom: 22px; right: 22px; border-left: none; border-top: none; }
+
+    /* ==========================================
+       HEADER SECTION & TOP URL BAR
+       ========================================== */
+    .poster-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2.5px solid rgba(201, 169, 97, 0.4);
+      padding-bottom: 22px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .header-left {
+      max-width: 66%;
+    }
+
+    /* TOP URL & BADGE CONTAINER */
+    .header-top-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    .system-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(90deg, rgba(201, 169, 97, 0.25), transparent);
+      border-left: 4px solid var(--gold-primary);
+      padding: 5px 14px;
+      border-radius: 0 20px 20px 0;
+      font-size: 13.5px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--gold-shimmer);
+      text-transform: uppercase;
+    }
+
+    /* PROMINENT TOP URL BADGE */
+    .url-badge-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(201, 169, 97, 0.15);
+      border: 1.5px solid var(--gold-primary);
+      padding: 5px 16px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--gold-shimmer);
+      box-shadow: 0 0 12px var(--gold-glow);
+    }
+
+    .url-badge-top i {
+      color: var(--gold-primary);
+      font-size: 15px;
+    }
+
+    .poster-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 44px;
+      font-weight: 900;
+      line-height: 1.15;
+      background: var(--gold-metallic);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    }
+
+    .poster-subtitle {
+      font-size: 17px;
+      color: var(--text-main);
+      margin-top: 8px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    /* TOP RIGHT LOGOS (ALIGNED SIDE BY SIDE) */
+    .header-logos {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      background: rgba(18, 14, 9, 0.85);
+      padding: 12px 22px;
+      border-radius: 18px;
+      border: 1.5px solid var(--border-gold);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .logo-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .logo-img-wrapper {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #2e2414 0%, #120e07 100%);
+      border: 2.5px solid var(--gold-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+
+    .logo-img-wrapper img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .logo-caption {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .logo-divider {
+      width: 1.5px;
+      height: 50px;
+      background: linear-gradient(to bottom, transparent, var(--gold-primary), transparent);
+    }
+
+    /* ==========================================
+       SUMMARY INFO BOXES (APA ITU, FUNGSI, KEUNGGULAN)
+       ========================================== */
+    .info-summary-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      gap: 16px;
+      margin-top: 18px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .info-card {
+      background: rgba(26, 21, 14, 0.85);
+      border: 1.5px solid var(--border-gold);
+      border-radius: 14px;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .info-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(201, 169, 97, 0.3);
+      padding-bottom: 6px;
+    }
+
+    .info-card-header i {
+      font-size: 18px;
+      color: var(--gold-primary);
+    }
+
+    .info-card-header h4 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-card-body {
+      font-size: 13.5px;
+      color: var(--text-main);
+      line-height: 1.4;
+      font-weight: 400;
+    }
+
+    /* ==========================================
+       STEPS FLOW GRID & BIGGER FONTS
+       ========================================== */
+    .flow-section-title {
+      text-align: center;
+      margin-top: 22px;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .flow-section-title h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--gold-light);
+      display: inline-block;
+      position: relative;
+      padding: 0 24px;
+    }
+
+    .flow-section-title h3::before,
+    .flow-section-title h3::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 70px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold-primary));
+    }
+    .flow-section-title h3::before { right: 100%; }
+    .flow-section-title h3::after { left: 100%; background: linear-gradient(90deg, var(--gold-primary), transparent); }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      position: relative;
+      z-index: 5;
+      margin-bottom: 18px;
+    }
+
+    /* Step Card Base */
+    .step-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-gold);
+      border-radius: 16px;
+      padding: 22px 18px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.35s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      overflow: hidden;
+    }
+
+    .step-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: var(--gold-primary);
+      box-shadow: 0 16px 35px rgba(0,0,0,0.8), 0 0 30px var(--gold-glow);
+      background: var(--bg-card-hover);
+    }
+
+    .card-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Step Badge Number */
+    .step-badge {
+      position: absolute;
+      top: -12px;
+      left: 16px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+      color: #000;
+      font-weight: 900;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.7), 0 0 12px var(--gold-glow);
+      border: 2px solid #000;
+    }
+
+    /* Step Icon Box */
+    .step-icon-wrapper {
+      width: 62px;
+      height: 62px;
+      border-radius: 18px;
+      background: radial-gradient(circle, rgba(201, 169, 97, 0.25) 0%, rgba(10, 8, 5, 0.9) 100%);
+      border: 2px solid var(--gold-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 8px;
+      margin-bottom: 14px;
+    }
+
+    .step-icon-wrapper i {
+      font-size: 26px;
+      color: var(--gold-shimmer);
+    }
+
+    /* Step Text - DIBESARKAN */
+    .step-title {
+      font-size: 16.5px;
+      font-weight: 800;
+      color: var(--gold-light);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      line-height: 1.25;
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      font-weight: 400;
+    }
+
+    .step-arrow-right {
+      position: absolute;
+      right: -13px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #000;
+      border: 1.5px solid var(--gold-primary);
+      color: var(--gold-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      z-index: 10;
+      box-shadow: 0 0 10px var(--gold-glow);
+    }
+
+    /* ==========================================
+       POSTER FOOTER & CONTACT INFORMATION
+       ========================================== */
+    .poster-footer {
+      border-top: 2.5px solid rgba(201, 169, 97, 0.4);
+      padding-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 5;
+    }
+
+    .footer-contacts {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .contact-item i {
+      color: var(--gold-primary);
+      font-size: 16px;
+    }
+
+    .footer-qr-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(201, 169, 97, 0.15);
+      padding: 8px 18px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border-gold);
+    }
+
+    .qr-text {
+      text-align: right;
+    }
+
+    .qr-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--gold-light);
+      text-transform: uppercase;
+    }
+
+    .qr-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .qr-code-placeholder {
+      width: 40px;
+      height: 40px;
+      background: #FFF;
+      padding: 3px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-code-placeholder i {
+      font-size: 34px;
+      color: #000;
+    }
+
+    /* ==========================================
+       PRINT SPECIFICATIONS FOR A3 PDF EXPORT
+       ========================================== */
+    @media print {
+      body {
+        background: #000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+      }
+
+      .action-toolbar, #goldParticles {
+        display: none !important;
+      }
+
+      .poster-viewport {
+        margin-top: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+      }
+
+      .poster-container {
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        padding: 40px 45px !important;
+        page-break-after: always;
+        page-break-inside: avoid;
+      }
+
+      @page {
+        size: A3 portrait;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Sparkle Particle Canvas Background -->
+  <canvas id="goldParticles"></canvas>
+
+  <!-- Top Action Control Bar -->
+  <div class="action-toolbar">
+    <button class="btn-action" onclick="window.print()">
+      <i class="fas fa-print"></i> Cetak A3 / Simpan PDF
+    </button>
+    <button class="btn-action btn-outline" id="toggleAnimBtn" onclick="toggleParticles()">
+      <i class="fas fa-magic"></i> Toggle Animasi
+    </button>
+  </div>
+
+  <!-- A3 Poster Viewport Container -->
+  <div class="poster-viewport">
+    <div class="poster-container">
+      
+      <!-- Ambient Corner Metallic Ornaments -->
+      <div class="corner-ornament corner-tl"></div>
+      <div class="corner-ornament corner-tr"></div>
+      <div class="corner-ornament corner-bl"></div>
+      <div class="corner-ornament corner-br"></div>
+
+      <!-- HEADER SECTION -->
+      <header class="poster-header">
+        <div class="header-left">
+          <div class="header-top-meta">
+            <div class="system-badge">
+              <i class="fas fa-gem"></i> Panduan Digital Resmi
+            </div>
+            <!-- PROMINENT TOP URL BADGE -->
+            <div class="url-badge-top">
+              <i class="fas fa-globe"></i>
+              <span>siprasa.asramahajibdj.com</span>
+            </div>
+          </div>
+          <h1 class="poster-title">SIPRASA - PEMINJAMAN SARANA & PRASARANA</h1>
+          <p class="poster-subtitle">Layanan Peminjaman Gedung, Ruang Rapat, Penginapan, & Alat Acara UPTD Asrama Haji Kelas I Banjarmasin</p>
+        </div>
+
+        <!-- TOP RIGHT LOGOS (ALIGNED SIDE BY SIDE) -->
+        <div class="header-logos">
+          <!-- Logo tambahan / Instansi / Kemenag -->
+          <div class="logo-item">
+            <div class="logo-img-wrapper">
+              <img src="{{ asset('assets/landing/logo.png') }}" alt="Logo SIPRASA / Kementerian" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
+            </div>
+            <span class="logo-caption">SIPRASA</span>
+          </div>
+
+          <div class="logo-divider"></div>
+
+          <!-- Logo Poliban -->
+          <div class="logo-item">
+            <div class="logo-img-wrapper">
+              <img src="{{ asset('assets/landing/logo poliban.png') }}" alt="Logo Poliban" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
+            </div>
+            <span class="logo-caption">POLIBAN</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- SUMMARY INFO GRID (APA ITU, DIGUNAKAN UNTUK APA, KEUNGGULAN) -->
+      <div class="info-summary-grid">
+        <!-- Card 1: APA ITU SIPRASA -->
+        <div class="info-card">
+          <div class="info-card-header">
+            <i class="fas fa-circle-info"></i>
+            <h4>Apa Itu SIPRASA?</h4>
+          </div>
+          <div class="info-card-body">
+            Sistem Informasi Digital UPTD Asrama Haji Banjarmasin untuk pengelolaan layanan peminjaman fasilitas sarana & prasarana secara praktis dan terintegrasi.
+          </div>
+        </div>
+
+        <!-- Card 2: DIGUNAKAN UNTUK APA -->
+        <div class="info-card">
+          <div class="info-card-header">
+            <i class="fas fa-building"></i>
+            <h4>Digunakan Untuk Apa?</h4>
+          </div>
+          <div class="info-card-body">
+            Reservasi sewa Gedung Utama, Ruang Rapat, Penginapan, serta Sarana Pendukung (Sound System, Proyektor LCD, dan Kursi Tambahan).
+          </div>
+        </div>
+
+        <!-- Card 3: KEUNGGULAN UTAMA -->
+        <div class="info-card">
+          <div class="info-card-header">
+            <i class="fas fa-star"></i>
+            <h4>Keunggulan Utama</h4>
+          </div>
+          <div class="info-card-body">
+            • ⚡ <strong>Jadwal Real-Time</strong> tanpa bentrok<br>
+            • 🛡️ <strong>Aman</strong> OTP Email & Captcha<br>
+            • 📄 <strong>Cetak Invoice PDF</strong> resmi & Ulasan
+          </div>
+        </div>
+      </div>
+
+      <!-- STEPS FLOW SECTION TITLE -->
+      <div class="flow-section-title">
+        <h3>8 LANGKAH ALUR PEMINJAMAN</h3>
+      </div>
+
+      <!-- STEPS GRID (2 ROWS x 4 COLUMNS = 8 STEPS) -->
+      <div class="steps-grid">
+        
+        <!-- STEP 1: REGISTRASI AKUN -->
+        <div class="step-card">
+          <div class="step-badge">01</div>
+          <div class="card-content">
+            <div class="step-icon-wrapper">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <h4 class="step-title">Registrasi Akun</h4>
+            <p class="step-desc">Buka web SIPRASA, klik <strong>Daftar</strong>, lalu isi email, nama lengkap, dan password akun baru Anda.</p>
+          </div>
+          <div class="step-arrow-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+
+        <!-- STEP 2: VERIFIKASI OTP & LOGIN -->
+        <div class="step-card">
+          <div class="step-badge">02</div>
+          <div class="card-content">
+            <div class="step-icon-wrapper">
+              <i class="fas fa-key"></i>
+            </div>
+            <h4 class="step-title">Verifikasi & Login</h4>
+            <p class="step-desc">Input 6-digit kode OTP dari email, masukkan Captcha visual, lalu masuk ke Dashboard Utama.</p>
+          </div>
+          <div class="step-arrow-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+
+        <!-- STEP 3: LENGKAPI PROFIL -->
+        <div class="step-card">
+          <div class="step-badge">03</div>
+          <div class="card-content">
+            <div class="step-icon-wrapper">
+              <i class="fas fa-id-card"></i>
+            </div>
+            <h4 class="step-title">Lengkapi Profil</h4>
+            <p class="step-desc">Isi identitas diri (KTP/KTM), nama instansi/organisasi, nomor WhatsApp, & foto profil pengguna.</p>
+          </div>
+          <div class="step-arrow-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+
+        <!-- STEP 4: PILIH FASILITAS & CEK JADWAL -->
+        <div class="step-card">
+          <div class="step-badge">04</div>
+          <div class="card-content">
+            <div class="step-icon-wrapper">
+              <i class="fas fa-building-user"></i>
+            </div>
+            <h4 class="step-title">Pilih Fasilitas</h4>
+            <p class="step-desc">Pilih Ruangan/Sarana, periksa detail tarif sewa, serta <strong>Kalender Ketersediaan Real-time</strong>.</p>
+          </div>
+        </div>
+
+        <!-- STEP 5: PENGAJUAN RESERVASI -->
+        <div class="step-card">
+          <div class="step-badge">05</div>
+          <div class="card-content">
+            <div class="step-icon-wrapper">
+              <i class="fas fa-file-signature"></i>
+            </div>
+            <h4 class="step-title">Isi Reservasi</h4>
+            <p class="step-desc">Tentukan tanggal & jam sewa, keperluan acara, jumlah peserta, & sarana tambahan (Sound/LCD/Kursi).</p>
+          </div>
+          <div class="step-arrow-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+
+        <!-- STEP 6: VERIFIKASI ADMIN -->
+        <div class="step-card">
+          <div class="step-badge">06</div>
+          <div class="card-content">
+            <div class="step-icon-wrapper">
+              <i class="fas fa-clipboard-check"></i>
+            </div>
+            <h4 class="step-title">Persetujuan Admin</h4>
+            <p class="step-desc">Admin memverifikasi permohonan. Jika disetujui, Invoice & Surat Izin resmi diterbitkan sistem.</p>
+          </div>
+          <div class="step-arrow-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+
+        <!-- STEP 7: CHECK-IN & PELUNASAN -->
+        <div class="step-card">
+          <div class="step-badge">07</div>
+          <div class="card-content">
+            <div class="step-icon-wrapper">
+              <i class="fas fa-hand-holding-dollar"></i>
+            </div>
+            <h4 class="step-title">Check-in & Bayar</h4>
+            <p class="step-desc">Inspeksi fisik awal lokasi bersama Petugas, lalu pelunasan biaya peminjaman langsung di tempat (On-Site).</p>
+          </div>
+          <div class="step-arrow-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+
+        <!-- STEP 8: CHECK-OUT & ULASAN -->
+        <div class="step-card">
+          <div class="step-badge">08</div>
+          <div class="card-content">
+            <div class="step-icon-wrapper">
+              <i class="fas fa-award"></i>
+            </div>
+            <h4 class="step-title">Check-out & Ulasan</h4>
+            <p class="step-desc">Pemeriksaan pengembalian sarana, lalu berikan <strong>Rating Bintang ⭐ & Ulasan</strong> pengalaman Anda.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- POSTER FOOTER -->
+      <footer class="poster-footer">
+        <div class="footer-contacts">
+          <div class="contact-item">
+            <i class="fas fa-location-dot"></i>
+            <span>Jl. Jend. A. Yani Km 28, Landasan Ulin, Banjarbaru</span>
+          </div>
+          <div class="contact-item">
+            <i class="fab fa-whatsapp"></i>
+            <span>+62 812-3456-7890</span>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-globe"></i>
+            <span>siprasa.asramahajibdj.com</span>
+          </div>
+        </div>
+
+        <div class="footer-qr-box">
+          <div class="qr-text">
+            <div class="qr-title">Akses SIPRASA</div>
+            <div class="qr-sub">Scan untuk Akses Web</div>
+          </div>
+          <div class="qr-code-placeholder">
+            <i class="fas fa-qrcode"></i>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- GOLD DUST PARTICLE CANVAS ANIMATION SCRIPT -->
+  <script>
+    const canvas = document.getElementById('goldParticles');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animActive = true;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2.5 + 0.5;
+        this.speedX = Math.random() * 0.4 - 0.2;
+        this.speedY = Math.random() * -0.5 - 0.1;
+        this.alpha = Math.random() * 0.7 + 0.2;
+        this.pulse = Math.random() * 0.02 + 0.005;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.alpha += Math.sin(Date.now() * this.pulse) * 0.01;
+
+        if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) {
+          this.reset();
+          this.y = canvas.height + 10;
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(201, 169, 97, ${Math.max(0.1, Math.min(1, this.alpha))})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = '#C9A961';
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 65; i++) {
+      particles.push(new Particle());
+    }
+
+    function animate() {
+      if (!animActive) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    function toggleParticles() {
+      animActive = !animActive;
+      const btn = document.getElementById('toggleAnimBtn');
+      if (animActive) {
+        animate();
+        btn.classList.remove('btn-outline');
+        btn.innerHTML = '<i class="fas fa-magic"></i> Toggle Animasi';
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        btn.classList.add('btn-outline');
+        btn.innerHTML = '<i class="fas fa-play"></i> Toggle Animasi';
+      }
+    }
+  </script>
+</body>
+</html>

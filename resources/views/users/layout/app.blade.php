@@ -67,9 +67,9 @@
         .sidebar-brand {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             height: var(--navbar-height);
-            padding: 0 14px;
+            padding: 0 15px;
             background-color: var(--gold-dark);
             flex-shrink: 0;
             gap: 12px;
@@ -106,9 +106,11 @@
         #sidebar.collapsed .sidebar-brand {
             justify-content: center;
             padding: 0;
+            gap: 0;
         }
 
         #sidebar.collapsed .brand-text {
+            display: none;
             opacity: 0;
             max-width: 0;
         }

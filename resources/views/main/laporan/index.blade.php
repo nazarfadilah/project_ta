@@ -106,11 +106,97 @@
     {{-- Diagram Batang Statistik --}}
     <div class="card border-0 shadow-sm rounded-3 mb-4">
         <div class="card-header bg-white border-0 py-3" style="border-radius: 8px 8px 0 0;">
-            <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3">
                 <h5 class="fw-bold text-dark mb-0" style="font-size: 15px;">
-                    <i class="fas fa-chart-bar me-2" style="color: #C9A961;"></i>Statistik Transaksi Bulanan (12 Bulan Terakhir)
+                    <i class="fas fa-chart-bar me-2" style="color: #C9A961;"></i>Statistik Transaksi Bulanan
                 </h5>
-                <span class="badge bg-light text-muted fw-semibold" style="font-size: 11px; padding: 6px 10px;">Diagram Batang</span>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    {{-- Filter Tahun --}}
+                    <div class="input-group input-group-sm" style="width: auto;">
+                        <span class="input-group-text bg-light border-grey text-muted" style="font-size: 12px;"><i class="fas fa-calendar-alt"></i></span>
+                        <select id="chartYearFilter" class="form-select form-select-sm border-grey fw-semibold" style="font-size: 12px; width: 150px;">
+                            <option value="rolling">12 Bulan Terakhir</option>
+                            @foreach($availableYears as $yr)
+                                <option value="{{ $yr }}">Tahun {{ $yr }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Filter Status Dropdown Multi-Select --}}
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2 fw-semibold" 
+                                type="button" 
+                                id="chartStatusDropdown" 
+                                data-bs-toggle="dropdown" 
+                                data-bs-auto-close="outside" 
+                                aria-expanded="false" 
+                                style="font-size: 12px; border-color: #dcdcdc; color: #444; padding: 5px 12px;">
+                            <i class="fas fa-filter" style="color: #C9A961;"></i>
+                            <span>Filter Status</span>
+                            <span class="badge rounded-pill bg-warning text-dark ms-1" id="chartStatusCountBadge">7</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end p-3 shadow-lg border-0" aria-labelledby="chartStatusDropdown" style="min-width: 260px; font-size: 12px; border-radius: 8px;">
+                            <div class="d-flex align-items-center justify-content-between pb-2 mb-2 border-bottom">
+                                <span class="fw-bold text-dark"><i class="fas fa-list-check me-1" style="color: #C9A961;"></i>Pilih Status</span>
+                                <div>
+                                    <button type="button" class="btn btn-link p-0 text-decoration-none text-primary fw-semibold me-2" id="chartSelectAllStatus" style="font-size: 11px;">Semua</button>
+                                    <button type="button" class="btn btn-link p-0 text-decoration-none text-danger fw-semibold" id="chartDeselectAllStatus" style="font-size: 11px;">Reset</button>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column gap-2" style="max-height: 250px; overflow-y: auto;">
+                                <div class="form-check me-0">
+                                    <input class="form-check-input chart-status-cb" type="checkbox" value="PENDING" id="cb_pending" checked>
+                                    <label class="form-check-label d-flex align-items-center justify-content-between w-100 cursor-pointer" for="cb_pending">
+                                        <span>Pending</span>
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1" style="font-size: 10px;">Pending</span>
+                                    </label>
+                                </div>
+                                <div class="form-check me-0">
+                                    <input class="form-check-input chart-status-cb" type="checkbox" value="APPROVED" id="cb_approved" checked>
+                                    <label class="form-check-label d-flex align-items-center justify-content-between w-100 cursor-pointer" for="cb_approved">
+                                        <span>Approved</span>
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1" style="font-size: 10px;">Disetujui</span>
+                                    </label>
+                                </div>
+                                <div class="form-check me-0">
+                                    <input class="form-check-input chart-status-cb" type="checkbox" value="REJECTED" id="cb_rejected" checked>
+                                    <label class="form-check-label d-flex align-items-center justify-content-between w-100 cursor-pointer" for="cb_rejected">
+                                        <span>Rejected</span>
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1" style="font-size: 10px;">Ditolak</span>
+                                    </label>
+                                </div>
+                                <div class="form-check me-0">
+                                    <input class="form-check-input chart-status-cb" type="checkbox" value="CHECK_IN" id="cb_checkin" checked>
+                                    <label class="form-check-label d-flex align-items-center justify-content-between w-100 cursor-pointer" for="cb_checkin">
+                                        <span>Check In</span>
+                                        <span class="badge bg-primary text-white px-2 py-1" style="font-size: 10px;">CHECK_IN</span>
+                                    </label>
+                                </div>
+                                <div class="form-check me-0">
+                                    <input class="form-check-input chart-status-cb" type="checkbox" value="CHECK_OUT" id="cb_checkout" checked>
+                                    <label class="form-check-label d-flex align-items-center justify-content-between w-100 cursor-pointer" for="cb_checkout">
+                                        <span>Check Out</span>
+                                        <span class="badge bg-info text-dark px-2 py-1" style="font-size: 10px;">CHECK_OUT</span>
+                                    </label>
+                                </div>
+                                <div class="form-check me-0">
+                                    <input class="form-check-input chart-status-cb" type="checkbox" value="BATAL" id="cb_batal" checked>
+                                    <label class="form-check-label d-flex align-items-center justify-content-between w-100 cursor-pointer" for="cb_batal">
+                                        <span>Batal</span>
+                                        <span class="badge bg-danger text-white px-2 py-1" style="font-size: 10px;">BATAL</span>
+                                    </label>
+                                </div>
+                                <div class="form-check me-0">
+                                    <input class="form-check-input chart-status-cb" type="checkbox" value="SELESAI" id="cb_selesai" checked>
+                                    <label class="form-check-label d-flex align-items-center justify-content-between w-100 cursor-pointer" for="cb_selesai">
+                                        <span>Selesai</span>
+                                        <span class="badge bg-success text-white px-2 py-1" style="font-size: 10px;">SELESAI</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="card-body">
@@ -231,6 +317,47 @@
                         </select>
                     </div>
                     -->
+
+                    <!-- 1. Filter Status Transaksi -->
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <label class="form-label fw-semibold text-dark mb-0" style="font-size: 13px;">Status Transaksi</label>
+                            <div>
+                                <button type="button" class="btn btn-link p-0 text-decoration-none text-primary fw-semibold me-2" id="exportSelectAllStatus" style="font-size: 11px;">Semua</button>
+                                <button type="button" class="btn btn-link p-0 text-decoration-none text-danger fw-semibold" id="exportDeselectAllStatus" style="font-size: 11px;">Reset</button>
+                            </div>
+                        </div>
+                        <div class="p-2 border rounded-3 bg-light d-flex flex-wrap gap-2" style="font-size: 12px; max-height: 120px; overflow-y: auto;">
+                            <div class="form-check me-2">
+                                <input class="form-check-input export-status-cb" type="checkbox" name="statuses[]" value="PENDING" id="exp_pending" checked>
+                                <label class="form-check-label" for="exp_pending">Pending</label>
+                            </div>
+                            <div class="form-check me-2">
+                                <input class="form-check-input export-status-cb" type="checkbox" name="statuses[]" value="APPROVED" id="exp_approved" checked>
+                                <label class="form-check-label" for="exp_approved">Approved</label>
+                            </div>
+                            <div class="form-check me-2">
+                                <input class="form-check-input export-status-cb" type="checkbox" name="statuses[]" value="REJECTED" id="exp_rejected" checked>
+                                <label class="form-check-label" for="exp_rejected">Rejected</label>
+                            </div>
+                            <div class="form-check me-2">
+                                <input class="form-check-input export-status-cb" type="checkbox" name="statuses[]" value="CHECK_IN" id="exp_checkin" checked>
+                                <label class="form-check-label" for="exp_checkin">Check In</label>
+                            </div>
+                            <div class="form-check me-2">
+                                <input class="form-check-input export-status-cb" type="checkbox" name="statuses[]" value="CHECK_OUT" id="exp_checkout" checked>
+                                <label class="form-check-label" for="exp_checkout">Check Out</label>
+                            </div>
+                            <div class="form-check me-2">
+                                <input class="form-check-input export-status-cb" type="checkbox" name="statuses[]" value="BATAL" id="exp_batal" checked>
+                                <label class="form-check-label" for="exp_batal">Batal</label>
+                            </div>
+                            <div class="form-check me-2">
+                                <input class="form-check-input export-status-cb" type="checkbox" name="statuses[]" value="SELESAI" id="exp_selesai" checked>
+                                <label class="form-check-label" for="exp_selesai">Selesai</label>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- 2. Filter Ruangan -->
                     <div class="mb-3">
@@ -460,16 +587,16 @@
         gradient.addColorStop(0, '#C9A961'); // Gold primary
         gradient.addColorStop(1, '#E9D6AC'); // Light gold
 
-        const chartLabels = {!! json_encode($formattedLabels) !!};
-        const chartData = {!! json_encode($formattedData) !!};
+        const initialLabels = {!! json_encode($formattedLabels) !!};
+        const initialData = {!! json_encode($formattedData) !!};
 
-        new Chart(ctx, {
+        const peminjamanChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: chartLabels,
+                labels: initialLabels,
                 datasets: [{
                     label: 'Jumlah Booking',
-                    data: chartData,
+                    data: initialData,
                     backgroundColor: gradient,
                     borderColor: '#B8953F',
                     borderWidth: 1,
@@ -529,6 +656,122 @@
                         }
                     }
                 }
+            }
+        });
+
+        // Function to fetch & update Chart Data via AJAX
+        function updateChartData() {
+            const selectedYear = $('#chartYearFilter').val();
+            const selectedStatuses = [];
+            $('.chart-status-cb:checked').each(function() {
+                selectedStatuses.push($(this).val());
+            });
+
+            // Update badge count in header dropdown
+            $('#chartStatusCountBadge').text(selectedStatuses.length);
+
+            $.ajax({
+                url: "{{ route('main.laporan.chart-data') }}",
+                type: 'GET',
+                data: {
+                    tahun: selectedYear,
+                    statuses: selectedStatuses
+                },
+                success: function(response) {
+                    peminjamanChart.data.labels = response.labels;
+                    peminjamanChart.data.datasets[0].data = response.data;
+                    peminjamanChart.update();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Gagal memuat data grafik:', error);
+                }
+            });
+        }
+
+        // Event Listeners for Chart Filters
+        $('#chartYearFilter').on('change', function() {
+            updateChartData();
+        });
+
+        $('.chart-status-cb').on('change', function() {
+            updateChartData();
+        });
+
+        $('#chartSelectAllStatus').on('click', function(e) {
+            e.preventDefault();
+            $('.chart-status-cb').prop('checked', true);
+            updateChartData();
+        });
+
+        $('#chartDeselectAllStatus').on('click', function(e) {
+            e.preventDefault();
+            $('.chart-status-cb').prop('checked', false);
+            updateChartData();
+        });
+
+        // Export Modal Status Checkbox Quick Selects
+        $('#exportSelectAllStatus').on('click', function(e) {
+            e.preventDefault();
+            $('.export-status-cb').prop('checked', true);
+        });
+
+        $('#exportDeselectAllStatus').on('click', function(e) {
+            e.preventDefault();
+            $('.export-status-cb').prop('checked', false);
+        });
+
+        // Export Modal: Restrict Datepicker inputs based on Selected Month
+        $('#bulan').on('change', function() {
+            const selectedMonthStr = $(this).val(); // e.g. "2026-07" or ""
+            const $tglMulai = $('#tanggal_mulai');
+            const $tglSelesai = $('#tanggal_selesai');
+
+            if (selectedMonthStr) {
+                const parts = selectedMonthStr.split('-');
+                const year = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10);
+
+                // Calculate total days in selected month
+                const daysInMonth = new Date(year, month, 0).getDate();
+                const pad = (num) => String(num).padStart(2, '0');
+                const minDate = `${year}-${pad(month)}-01`;
+                const maxDate = `${year}-${pad(month)}-${pad(daysInMonth)}`;
+
+                // Apply min & max limits on date inputs
+                $tglMulai.attr('min', minDate).attr('max', maxDate);
+                $tglSelesai.attr('min', minDate).attr('max', maxDate);
+
+                // Auto reset dates if they fall outside the selected month range
+                const currMulai = $tglMulai.val();
+                const currSelesai = $tglSelesai.val();
+
+                if (currMulai && (currMulai < minDate || currMulai > maxDate)) {
+                    $tglMulai.val('');
+                }
+                if (currSelesai && (currSelesai < minDate || currSelesai > maxDate)) {
+                    $tglSelesai.val('');
+                }
+            } else {
+                // Clear min/max restrictions when "Semua Bulan" is chosen
+                $tglMulai.removeAttr('min').removeAttr('max');
+                $tglSelesai.removeAttr('min').removeAttr('max');
+            }
+        });
+
+        // Dynamic constraint: Dari Tanggal <= Sampai Tanggal
+        $('#tanggal_mulai').on('change', function() {
+            const val = $(this).val();
+            const monthVal = $('#bulan').val();
+            if (val && !monthVal) {
+                $('#tanggal_selesai').attr('min', val);
+            }
+        });
+
+        $('#tanggal_selesai').on('change', function() {
+            const val = $(this).val();
+            const monthVal = $('#bulan').val();
+            if (val && !monthVal) {
+                $('#tanggal_mulai').attr('max', val);
             }
         });
     });

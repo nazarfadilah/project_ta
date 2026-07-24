@@ -9,12 +9,22 @@
         <!-- Kolom Kiri: Welcome Banner & Kartu Statistik -->
         <div class="col-xl-{{ Auth::user()->roleId == 3 ? '8' : '12' }} col-lg-{{ Auth::user()->roleId == 3 ? '8' : '12' }} col-md-12 transition-all-layout" id="mainCardsContainer">
             <!-- Welcome Banner -->
-            <div class="welcome-banner" style="background: linear-gradient(135deg, #C9A961 0%, #A48135 100%); border-radius: 16px; color: white; padding: 40px; margin-bottom: 35px; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(201, 169, 97, 0.2);">
-                <div class="welcome-content" style="position: relative; z-index: 2; max-width: 100%;">
-                    <h1 class="welcome-title" style="font-size: 32px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.5px;">Selamat Datang, {{ Auth::user()->role->name ?? 'Administrator' }}!</h1>
-                    <p class="welcome-subtitle" style="font-size: 16px; opacity: 0.95; line-height: 1.6; font-weight: 400;">
-                        Di portal manajemen SIPRASA (Sistem Informasi Peminjaman Sarana & Prasarana). Sebagai administrator/staff, Anda dapat memantau data transaksi, mengonfirmasi pengajuan dari peminjam, mengelola ketersediaan ruangan, sarana, prasarana, serta menghasilkan laporan performa secara terintegrasi.
-                    </p>
+            <div class="welcome-banner" style="background: linear-gradient(135deg, #C9A961 0%, #A48135 100%); border-radius: 16px; color: white; padding: 35px 40px; margin-bottom: 35px; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(201, 169, 97, 0.2);">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 position-relative" style="z-index: 2;">
+                    <div class="welcome-content" style="max-width: 78%;">
+                        <h1 class="welcome-title" style="font-size: 30px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.5px;">Selamat Datang, {{ Auth::user()->role->name ?? 'Administrator' }}!</h1>
+                        <p class="welcome-subtitle" style="font-size: 15px; opacity: 0.95; line-height: 1.6; font-weight: 400; margin-bottom: 0;">
+                            Di portal manajemen SIPRASA (Sistem Informasi Peminjaman Sarana & Prasarana). Sebagai administrator/staff, Anda dapat memantau data transaksi, mengonfirmasi pengajuan dari peminjam, mengelola ketersediaan ruangan, sarana, prasarana, serta menghasilkan laporan performa secara terintegrasi.
+                        </p>
+                    </div>
+                    @if(in_array(Auth::user()->roleId, [1, 2]))
+                    <div class="flex-shrink-0 mt-2 mt-md-0">
+                        <button class="btn d-flex align-items-center gap-2 shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#calendarCollapse" aria-expanded="false" aria-controls="calendarCollapse" id="btnToggleCalendar" style="background: rgba(255, 255, 255, 0.22); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.4); color: #fff; font-weight: 600; font-size: 14px; border-radius: 30px; padding: 10px 20px; transition: all 0.3s;">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span id="calendarToggleText">Buka Kalender</span>
+                        </button>
+                    </div>
+                    @endif
                 </div>
                 <style>
                     .welcome-banner::before {
@@ -309,16 +319,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Toggle Button Kalender untuk Admin & Pimpinan (Sejajar dengan Welcome Banner / Atas) -->
-    @if(in_array(Auth::user()->roleId, [1, 2]))
-    <div class="position-absolute" style="top: 30px; right: 60px; z-index: 10;">
-        <button class="btn d-flex align-items-center gap-2 shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#calendarCollapse" aria-expanded="false" aria-controls="calendarCollapse" id="btnToggleCalendar" style="background: linear-gradient(135deg, #C9A961 0%, #B89750 100%); border: none; color: #fff; font-weight: 600; font-size: 14px; border-radius: 8px; padding: 8px 16px; transition: all 0.3s;">
-            <i class="fas fa-calendar-alt"></i>
-            <span id="calendarToggleText">Buka Kalender</span>
-        </button>
-    </div>
-    @endif
 
     <!-- Section Datatables Monitoring -->
     <div class="row mt-4">
@@ -845,7 +845,10 @@
         if (calendarCollapse && userRoleId !== 3) {
             calendarCollapse.addEventListener('show.bs.collapse', function () {
                 if (calendarToggleText) calendarToggleText.textContent = 'Tutup Kalender';
-                if (btnToggleCalendar) btnToggleCalendar.style.background = 'linear-gradient(135deg, #6c757d 0%, #5a6268 100%)';
+                if (btnToggleCalendar) {
+                    btnToggleCalendar.style.background = 'rgba(0, 0, 0, 0.35)';
+                    btnToggleCalendar.style.borderColor = 'rgba(255, 255, 255, 0.5)';
+                }
                 
                 // Shrink stat cards container to col-xl-8
                 const mainCardsContainer = document.getElementById('mainCardsContainer');
@@ -856,7 +859,10 @@
             });
             calendarCollapse.addEventListener('hide.bs.collapse', function () {
                 if (calendarToggleText) calendarToggleText.textContent = 'Buka Kalender';
-                if (btnToggleCalendar) btnToggleCalendar.style.background = 'linear-gradient(135deg, #C9A961 0%, #B89750 100%)';
+                if (btnToggleCalendar) {
+                    btnToggleCalendar.style.background = 'rgba(255, 255, 255, 0.22)';
+                    btnToggleCalendar.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                }
                 
                 // Expand stat cards container back to col-xl-12
                 const mainCardsContainer = document.getElementById('mainCardsContainer');

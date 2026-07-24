@@ -65,13 +65,25 @@ class LaporanController extends Controller
             }
         }
 
+        // 4. Fetch available years for chart year filter
+        $availableYears = PeminjamanTransaksi::selectRaw('YEAR(tanggal) as year')
+            ->whereNotNull('tanggal')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year')
+            ->toArray();
+
+        if (empty($availableYears)) {
+            $availableYears = [Carbon::now()->year];
+        }
+
         // Prepare simple KPI values for view
         $totalPeminjaman = PeminjamanTransaksi::count();
         $totalApproved = PeminjamanTransaksi::where('statusApproval', 'APPROVED')->count();
         $totalPending = PeminjamanTransaksi::where('statusApproval', 'PENDING')->count();
         
-        // Sum of all income (harga + biayaTambahan where APPROVED)
-        $totalPendapatan = PeminjamanTransaksi::where('statusApproval', 'APPROVED')
+        // Sum of all income (harga + biayaTambahan where statusPeminjaman is SELESAI)
+        $totalPendapatan = PeminjamanTransaksi::where('statusPeminjaman', 'SELESAI')
             ->join('paket_ruangan', 'peminjaman_transaksi.facilityId', '=', 'paket_ruangan.id')
             ->sum(DB::raw('paket_ruangan.harga + peminjaman_transaksi.biayaTambahan'));
 
@@ -86,6 +98,7 @@ class LaporanController extends Controller
             'formattedLabels',
             'formattedData',
             'monthFilterList',
+            'availableYears',
             'totalPeminjaman',
             'totalApproved',
             'totalPending',
@@ -93,9 +106,98 @@ class LaporanController extends Controller
         ));
     }
 
+    public function getChartData(Request $request)
+    {
+        $tahun = $request->get('tahun', 'rolling');
+        $statuses = $request->get('statuses', []);
+
+        if (is_string($statuses)) {
+            $statuses = array_filter(explode(',', $statuses));
+        }
+
+        Carbon::setLocale('id');
+        $chartLabels = [];
+        $chartData = [];
+
+        if ($tahun === 'rolling' || empty($tahun)) {
+            for ($i = 11; $i >= 0; $i--) {
+                $date = Carbon::now()->subMonths($i);
+                $monthKey = $date->format('Y-m');
+                $monthLabel = $date->translatedFormat('F Y');
+                $chartLabels[$monthKey] = $monthLabel;
+                $chartData[$monthKey] = 0;
+            }
+            $startDate = Carbon::now()->subMonths(11)->startOfMonth()->format('Y-m-d');
+            $endDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+        } else {
+            $year = intval($tahun);
+            for ($m = 1; $m <= 12; $m++) {
+                $date = Carbon::createFromDate($year, $m, 1);
+                $monthKey = $date->format('Y-m');
+                $monthLabel = $date->translatedFormat('F Y');
+                $chartLabels[$monthKey] = $monthLabel;
+                $chartData[$monthKey] = 0;
+            }
+            $startDate = "$year-01-01";
+            $endDate = "$year-12-31";
+        }
+
+        if (!empty($statuses)) {
+            $query = PeminjamanTransaksi::selectRaw("DATE_FORMAT(tanggal, '%Y-%m') as month_key, COUNT(*) as count")
+                ->whereBetween('tanggal', [$startDate, $endDate]);
+
+            $query->where(function ($q) use ($statuses) {
+                $approvalStatuses = array_intersect($statuses, ['PENDING', 'APPROVED', 'REJECTED']);
+                if (!empty($approvalStatuses)) {
+                    $q->orWhere(function ($sub) use ($approvalStatuses) {
+                        $sub->where('statusPeminjaman', 'RESERVASI')
+                            ->whereIn('statusApproval', $approvalStatuses);
+                    });
+                }
+                $peminjamanStatuses = array_intersect($statuses, ['CHECK_IN', 'CHECK_OUT', 'BATAL', 'SELESAI']);
+                if (!empty($peminjamanStatuses)) {
+                    $q->orWhereIn('statusPeminjaman', $peminjamanStatuses);
+                }
+            });
+
+            $bookingsByMonth = $query->groupBy('month_key')
+                ->pluck('count', 'month_key')
+                ->toArray();
+
+            foreach ($bookingsByMonth as $key => $count) {
+                if (isset($chartData[$key])) {
+                    $chartData[$key] = $count;
+                }
+            }
+        }
+
+        return response()->json([
+            'labels' => array_values($chartLabels),
+            'data' => array_values($chartData)
+        ]);
+    }
+
     public function export(Request $request)
     {
         $query = PeminjamanTransaksi::with(['guest.user', 'paketRuangan.ruangan', 'user']);
+
+        // Filter based on Statuses
+        if ($request->filled('statuses') && is_array($request->statuses)) {
+            $selectedStatuses = $request->statuses;
+            $query->where(function ($q) use ($selectedStatuses) {
+                $approvalStatuses = array_intersect($selectedStatuses, ['PENDING', 'APPROVED', 'REJECTED']);
+                if (!empty($approvalStatuses)) {
+                    $q->orWhere(function ($sub) use ($approvalStatuses) {
+                        $sub->where('statusPeminjaman', 'RESERVASI')
+                            ->whereIn('statusApproval', $approvalStatuses);
+                    });
+                }
+                $peminjamanStatuses = array_intersect($selectedStatuses, ['CHECK_IN', 'CHECK_OUT', 'BATAL', 'SELESAI']);
+                if (!empty($peminjamanStatuses)) {
+                    $q->orWhereIn('statusPeminjaman', $peminjamanStatuses);
+                }
+            });
+        }
 
         // Filter based on Room (Ruangan)
         if ($request->filled('ruangan_id')) {

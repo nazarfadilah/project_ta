@@ -34,6 +34,9 @@ use Illuminate\Support\Facades\Auth;
 
 // ─── PUBLIC PAGE ROUTES ───────────────────────────────────────────
 Route::get('/', [LandingPageController::class, 'beranda'])->name('home');
+Route::get('/poster', function () {
+    return view('poster');
+})->name('poster');
 Route::get('/fasilitas', [LandingPageController::class, 'fasilitas'])->name('fasilitas');
 Route::get('/galeri', [LandingPageController::class, 'galeri'])->name('galeri');
 Route::get('/reservasi', [LandingPageController::class, 'reservasi'])->name('reservasi');
@@ -262,6 +265,7 @@ Route::middleware(['auth:web', 'admin'])->prefix('admin')->group(function () {
     // Laporan Management
     Route::prefix('laporan')->name('main.laporan.')->group(function () {
         Route::get('/', [LaporanController::class, 'index'])->name('index');
+        Route::get('/chart-data', [LaporanController::class, 'getChartData'])->name('chart-data');
         Route::get('/export', [LaporanController::class, 'export'])->name('export');
     });
 });
